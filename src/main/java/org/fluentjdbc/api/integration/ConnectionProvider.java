@@ -3,12 +3,13 @@ package org.fluentjdbc.api.integration;
 import java.sql.SQLException;
 
 /**
- * API for providing Connections to Fluent-Jdbc queries. Note that the API allows both acquiring and releasing a Connection.
+ * API for providing Connections to Fluent-Jdbc queries. Note that the API allows both acquiring and
+ * releasing a Connection. This makes it possible to integrate FluentJdbc to most pooling / transaction
+ * management solutions.
  *
- * This makes it possible to integrate FluentJdbc to most transaction management solutions.
+ * Example implementations:
  *
- *
- * See for example the implementation of DataSourceConnectionProvider (for managed DataSources):
+ * Getting connection from a datasource (provided in the library as DataSourceConnectionProvider):
  *
  * query -> {
  *      try(Connection connection = dataSource.getConnection()) {
@@ -17,7 +18,7 @@ import java.sql.SQLException;
  *   }
  *
  *
- * Or integrating with Spring through JdbcOperations/JdbcTemplate:
+ * Getting connection from a callback mechanism (Spring JdbcOperations/JdbcTemplate):
  *
  * query -> {
  *     jdbcOperations.execute(connection -> {
