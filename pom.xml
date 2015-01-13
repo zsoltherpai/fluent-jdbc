@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.fluentjdbc</groupId>
+    <artifactId>fluentjdbc</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>FluentJdbc</name>
+    <description>Fluent Query API for running JDBC queries</description>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Zsolt Herpai</name>
+            <email>zsolt.herpai@gmail.com</email>
+            <organization>Github</organization>
+            <organizationUrl>https://github.com/mrcellux</organizationUrl>
+        </developer>
+    </developers>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <scm>
+        <connection>scm:git:git@github.com:mrcellux/fluent-jdbc.git</connection>
+        <developerConnection>scm:git:git@github.com:mrcellux/fluent-jdbc.git</developerConnection>
+        <url>git@github.com:mrcellux/fluent-jdbc.git</url>
+    </scm>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
