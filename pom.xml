@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.fluentjdbc</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.8-SNAPSHOT</version>
     <name>FluentJdbc</name>
     <description>
         Fluent JDBC provides a fluent, functional API for executing JDBC queries in java 8.
