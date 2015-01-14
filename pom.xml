@@ -8,7 +8,7 @@
     <description>
         Fluent JDBC provides a fluent, functional API for executing JDBC queries in java 8.
 
-        Light-weight, no external dependencies and can be easily integrated to a large range of
+        Light-weight, no external dependencies and can be easily integrated to a range of
         connection pooling / transaction management solutions (like EJB, Spring, Guice-persist, ...).
     </description>
     <licenses>
@@ -31,7 +31,7 @@
     <scm>
         <connection>scm:git:git@github.com:zsoltherpai/fluent-jdbc.git</connection>
         <developerConnection>scm:git:git@github.com:zsoltherpai/fluent-jdbc.git</developerConnection>
-        <url>https://github.com/zsoltherpai/fluent-jdbc/</url>
+        <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     </scm>
     <build>
         <plugins>
