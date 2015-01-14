@@ -29,9 +29,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <scm>
-        <connection>scm:git:git@github.com:mrcellux/fluent-jdbc.git</connection>
-        <developerConnection>scm:git:git@github.com:mrcellux/fluent-jdbc.git</developerConnection>
-        <url>https://github.com/mrcellux/fluent-jdbc/</url>
+        <connection>scm:git:git@github.com:zsoltherpai/fluent-jdbc.git</connection>
+        <developerConnection>scm:git:git@github.com:zsoltherpai/fluent-jdbc.git</developerConnection>
+        <url>https://github.com/zsoltherpai/fluent-jdbc/</url>
     </scm>
     <build>
         <plugins>
