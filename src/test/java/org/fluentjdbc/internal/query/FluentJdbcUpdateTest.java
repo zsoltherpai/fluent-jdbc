@@ -16,7 +16,7 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
         Long expectedUpdatedRows = 5L;
         when(preparedStatement.executeUpdate()).thenReturn(expectedUpdatedRows.intValue());
         UpdateResult updateResult = fluentJdbc.query().update(query).params(param1, param2).run();
-        assertThat(updateResult.updated(), is(equalTo(expectedUpdatedRows)));
+        assertThat(updateResult.affectedRows(), is(equalTo(expectedUpdatedRows)));
         verifyQuerying();
         verify(preparedStatement).executeUpdate();
     }

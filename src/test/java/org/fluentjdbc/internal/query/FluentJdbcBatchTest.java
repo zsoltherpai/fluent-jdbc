@@ -61,7 +61,7 @@ public class FluentJdbcBatchTest extends UpdateTestBase {
     private void verifyUpdateResults(int[] expectedUpdated, List<UpdateResult> updated) {
         assertThat(updated.size(), is(expectedUpdated.length));
         for(int i = 0; i < updated.size(); ++i) {
-            assertThat(updated.get(i).updated(), is(equalTo((long) expectedUpdated[i])));
+            assertThat(updated.get(i).affectedRows(), is(equalTo((long) expectedUpdated[i])));
         }
     }
 }

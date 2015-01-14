@@ -3,14 +3,14 @@ package org.fluentjdbc.internal.query;
 import org.fluentjdbc.api.query.UpdateResult;
 
 public class UpdateResultInternal implements UpdateResult {
-    private final Long updated;
+    private final Long affectedRows;
 
-    public UpdateResultInternal(Long updated) {
-        this.updated = updated;
+    public UpdateResultInternal(Long affectedRows) {
+        this.affectedRows = affectedRows;
     }
 
     @Override
-    public Long updated() {
-        return updated;
+    public Long affectedRows() {
+        return affectedRows;
     }
 }

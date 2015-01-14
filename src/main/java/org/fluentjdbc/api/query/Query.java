@@ -1,21 +1,30 @@
 package org.fluentjdbc.api.query;
 
 /**
- * Fluent Query API
+ * Fluent Query API. Thread-safe if FluentJdbc's ConnectionProvider is thread-safe.
  */
 public interface Query {
     /**
-     * Select query for the given SQL statement
+     * Creates a select query for a SQL statement
+     *
+     * @param sql SQL statement
+     * @return Select query for the SQL statement
      */
     SelectQuery select(String sql);
 
     /**
-     * Update or insert query for the given SQL statement
+     * Creates an update or insert query for a SQL statement
+     *
+     * @param sql SQL statement
+     * @return Update query for the SQL statement
      */
     UpdateQuery update(String sql);
 
     /**
-     * Batch update or insert for the given SQL statement
+     * Creates a batch update or insert query for a SQL statement
+     *
+     * @param sql SQL statement
+     * @return Batch update or insert query for the SQL statement
      */
     BatchQuery batch(String sql);
 }
