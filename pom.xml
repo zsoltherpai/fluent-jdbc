@@ -5,7 +5,12 @@
     <artifactId>fluentjdbc</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>FluentJdbc</name>
-    <description>Fluent Query API for running JDBC queries</description>
+    <description>
+        Fluent JDBC provides a fluent, functional API for executing JDBC queries in java 8.
+
+        Light-weight, no external dependencies and can be easily integrated to a large range of
+        connection pooling / transaction management solutions (like EJB, Spring, Guice-persist, ...).
+    </description>
     <licenses>
         <license>
             <name>MIT License</name>
@@ -16,8 +21,6 @@
         <developer>
             <name>Zsolt Herpai</name>
             <email>zsolt.herpai@gmail.com</email>
-            <organization>Github</organization>
-            <organizationUrl>https://github.com/mrcellux</organizationUrl>
         </developer>
     </developers>
     <properties>
@@ -28,7 +31,7 @@
     <scm>
         <connection>scm:git:git@github.com:mrcellux/fluent-jdbc.git</connection>
         <developerConnection>scm:git:git@github.com:mrcellux/fluent-jdbc.git</developerConnection>
-        <url>git@github.com:mrcellux/fluent-jdbc.git</url>
+        <url>https://github.com/mrcellux/fluent-jdbc/</url>
     </scm>
     <dependencies>
         <dependency>
@@ -50,5 +53,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>
