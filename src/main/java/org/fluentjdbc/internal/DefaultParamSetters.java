@@ -1,5 +1,6 @@
 package org.fluentjdbc.internal;
 
+import java.sql.SQLException;
 import java.time.*;
 import java.util.Collections;
 import java.util.Date;
@@ -13,9 +14,12 @@ public class DefaultParamSetters {
 
     static {
         Map<Class, ParamSetter> ss = new HashMap<>();
-        reg(ss, Date.class, (param, ps, i) -> {
-            ps.setDate(i, new java.sql.Date(param.getTime()));
-        });
+        javaDate(ss);
+        javaTime(ss);
+        setters = Collections.unmodifiableMap(ss);
+    }
+
+    private static void javaTime(Map<Class, ParamSetter> ss) {
         reg(ss, Instant.class, (param, ps, i) -> {
             ps.setTimestamp(i, timestamp(param));
         });
@@ -40,7 +44,12 @@ public class DefaultParamSetters {
         reg(ss, YearMonth.class, (param, ps, i) -> {
             ps.setDate(i, java.sql.Date.valueOf(LocalDate.of(param.getYear(), param.getMonth(), 1)));
         });
-        setters = Collections.unmodifiableMap(ss);
+    }
+
+    private static void javaDate(Map<Class, ParamSetter> ss) {
+        reg(ss, Date.class, (param, ps, i) -> {
+            ps.setDate(i, new java.sql.Date(param.getTime()));
+        });
     }
 
     public static Map<Class, ParamSetter> setters() {
