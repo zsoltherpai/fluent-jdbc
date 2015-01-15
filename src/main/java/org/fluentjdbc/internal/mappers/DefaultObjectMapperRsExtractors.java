@@ -1,10 +1,7 @@
 package org.fluentjdbc.internal.mappers;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,25 +19,17 @@ public class DefaultObjectMapperRsExtractors {
 
     static {
         Map<Class, ObjectMapperRsExtractor<?>> exs = new HashMap<>();
-        reg(exs, Boolean.class, ResultSet::getBoolean);
-        reg(exs, boolean.class, ResultSet::getBoolean);
-        reg(exs, Short.class, ResultSet::getShort);
-        reg(exs, short.class, ResultSet::getShort);
-        reg(exs, Integer.class, ResultSet::getInt);
-        reg(exs, int.class, ResultSet::getInt);
-        reg(exs, Long.class, (resultSet, columnIndex) -> {
-            return resultSet.getLong(columnIndex);
-        });
-        reg(exs, long.class, ResultSet::getLong);
-        reg(exs, Float.class, ResultSet::getFloat);
-        reg(exs, float.class, ResultSet::getFloat);
-        reg(exs, Double.class, ResultSet::getDouble);
-        reg(exs, double.class, ResultSet::getDouble);
-        reg(exs, BigDecimal.class, ResultSet::getBigDecimal);
-        reg(exs, Timestamp.class, ResultSet::getTimestamp);
-        reg(exs, Time.class, ResultSet::getTime);
-        reg(exs, java.sql.Date.class, ResultSet::getDate);
-        reg(exs, String.class, ResultSet::getString);
+        basicTypes(exs);
+        javaDate(exs);
+        javaTimeTypes(exs);
+        extractors = Collections.unmodifiableMap(exs);
+    }
+
+    private static void javaDate(Map<Class, ObjectMapperRsExtractor<?>> exs) {
+        reg(exs, java.util.Date.class, ResultSet::getDate);
+    }
+
+    private static void javaTimeTypes(Map<Class, ObjectMapperRsExtractor<?>> exs) {
         reg(exs, LocalDate.class, (rs, i) -> {
             Date date = rs.getDate(i);
             return date != null ? date.toLocalDate() : null;
@@ -65,7 +54,26 @@ public class DefaultObjectMapperRsExtractors {
             Timestamp stamp = rs.getTimestamp(i);
             return stamp != null ? stamp.toInstant() : null;
         });
-        extractors = Collections.unmodifiableMap(exs);
+    }
+
+    private static void basicTypes(Map<Class, ObjectMapperRsExtractor<?>> exs) {
+        reg(exs, Boolean.class, ResultSet::getBoolean);
+        reg(exs, boolean.class, ResultSet::getBoolean);
+        reg(exs, Short.class, ResultSet::getShort);
+        reg(exs, short.class, ResultSet::getShort);
+        reg(exs, Integer.class, ResultSet::getInt);
+        reg(exs, int.class, ResultSet::getInt);
+        reg(exs, Long.class, ResultSet::getLong);
+        reg(exs, long.class, ResultSet::getLong);
+        reg(exs, Float.class, ResultSet::getFloat);
+        reg(exs, float.class, ResultSet::getFloat);
+        reg(exs, Double.class, ResultSet::getDouble);
+        reg(exs, double.class, ResultSet::getDouble);
+        reg(exs, BigDecimal.class, ResultSet::getBigDecimal);
+        reg(exs, Timestamp.class, ResultSet::getTimestamp);
+        reg(exs, Time.class, ResultSet::getTime);
+        reg(exs, Date.class, ResultSet::getDate);
+        reg(exs, String.class, ResultSet::getString);
     }
 
     public static Map<Class, ObjectMapperRsExtractor> extractors() {
