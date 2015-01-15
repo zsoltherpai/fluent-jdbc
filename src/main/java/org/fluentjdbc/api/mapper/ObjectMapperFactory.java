@@ -24,7 +24,7 @@ public class ObjectMapperFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Mapper<T> forClass(Class<T> clazz) {
+    public <T> Mapper<T> create(Class<T> clazz) {
         if(!mappers.containsKey(clazz)) {
             mappers.put(clazz, new ObjectMapper<>(clazz, extractors));
         }

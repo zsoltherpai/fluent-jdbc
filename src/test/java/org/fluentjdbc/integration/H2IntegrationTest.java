@@ -27,7 +27,7 @@ public class H2IntegrationTest {
     static DataSource h2DataSource;
     static FluentJdbc fluentJdbc;
     static final ObjectMapperFactory objectMappers = ObjectMapperFactory.builder().build();
-    static final Mapper<Dummy> dummyMapper = objectMappers.forClass(Dummy.class);
+    static final Mapper<Dummy> dummyMapper = objectMappers.create(Dummy.class);
 
     @BeforeClass
     public static void initH2() throws Exception {

@@ -43,8 +43,6 @@ public class QueryInternal implements Query {
         return new BatchQueryInternal(sql, this);
     }
 
-
-
     <T> T query(QueryRunner<T> runner, String sql) {
         try {
             QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
@@ -61,31 +59,16 @@ public class QueryInternal implements Query {
     }
 
     PreparedStatement preparedStatement(Connection con, String sql, List<Object> params, Map<String, Object> namedParams) throws SQLException {
-        final String sqlStatement;
-        final List<Object> parameters;
-        if(!namedParams.isEmpty()) {
-            NamedSqlAndParams namedSqlAndParams = namedSqlAndParams(sql, namedParams);
-            sqlStatement = namedSqlAndParams.sql();
-            parameters = namedSqlAndParams.params();
-        } else {
-            sqlStatement = sql;
-            parameters = params;
-        }
-        PreparedStatement statement = con.prepareStatement(sqlStatement);
-        assignParams(statement, parameters);
+        SqlAndParams sqlAndParams = namedParams.isEmpty() ?
+                new SqlAndParams(sql, params) :
+                NamedSqlAndParams.sqlAndParams(transformedSql(sql), namedParams);
+        PreparedStatement statement = con.prepareStatement(sqlAndParams.sql());
+        assignParams(statement, sqlAndParams.params());
         return statement;
     }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
         paramAssigner.assignParams(statement, params);
-    }
-
-    NamedSqlAndParams namedSqlAndParams(String sql, Map<String, Object> namedParams) {
-        return namedSqlAndParams(transformedSql(sql), namedParams);
-    }
-
-    NamedSqlAndParams namedSqlAndParams(TransformedSql transformedSql, Map<String, Object> namedParams) {
-        return new NamedSqlAndParams(transformedSql.sql(), transformedSql.parsedSql(), namedParams);
     }
 
     TransformedSql transformedSql(String sql) {

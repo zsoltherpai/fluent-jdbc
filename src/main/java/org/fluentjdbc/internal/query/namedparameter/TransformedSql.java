@@ -21,4 +21,8 @@ public class TransformedSql {
     public ParsedSql parsedSql() {
         return parsedSql;
     }
+
+    public Integer unnamedParameterCount() {
+        return parsedSql.getUnnamedParameterCount();
+    }
 }

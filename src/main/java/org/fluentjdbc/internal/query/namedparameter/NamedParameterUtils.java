@@ -277,7 +277,7 @@ public abstract class NamedParameterUtils {
         for (int i = 0; i < paramNames.size(); i++) {
             String paramName = paramNames.get(i);
                 if(!namedParams.containsKey(paramName)) {
-                    throw new FluentJdbcException(String.format("Named pParameter not set: %s", paramName));
+                    throw new FluentJdbcException(String.format("Named parameter not set: %s", paramName));
                 }
                 Object value = namedParams.get(paramName);
                 paramArray[i] = value;

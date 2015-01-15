@@ -78,8 +78,8 @@ class BatchQueryInternal implements BatchQuery {
                         List<UpdateResult> updateResults = new ArrayList<>();
                         while (namedParams.get().hasNext()){
                             Map<String, Object> namedParamElement = namedParams.get().next();
-                            NamedSqlAndParams namedSqlAndParams = query.namedSqlAndParams(transformedSql, namedParamElement);
-                            i = assignParamAndRunBatchWhenNeeded(statement, i, updateResults, namedSqlAndParams.params());
+                            SqlAndParams sqlAndParams = NamedSqlAndParams.sqlAndParams(transformedSql, namedParamElement);
+                            i = assignParamAndRunBatchWhenNeeded(statement, i, updateResults, sqlAndParams.params());
                         }
                         updateResults.addAll(runBatch(statement));
                         return Collections.unmodifiableList(updateResults);

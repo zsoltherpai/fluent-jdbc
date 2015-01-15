@@ -17,9 +17,7 @@ public class Maps {
                 stream(iterable).collect(
                         Collectors.toMap(
                                 keyFunction,
-                                value -> {
-                                    return value;
-                                }
+                                value -> value
                         )
                 )
         );

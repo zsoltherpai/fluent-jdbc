@@ -113,7 +113,7 @@ class ParsedSql {
     /**
      * Return the count of all of the unnamed parameters in the SQL statement.
      */
-    int getUnnamedParameterCount() {
+    public int getUnnamedParameterCount() {
         return this.unnamedParameterCount;
     }
 

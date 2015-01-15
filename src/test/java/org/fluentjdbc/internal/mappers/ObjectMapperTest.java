@@ -70,7 +70,7 @@ public class ObjectMapperTest {
 
     @Test
     public void map() throws SQLException {
-        Mapper<Dummy> mapper = factory.forClass(Dummy.class);
+        Mapper<Dummy> mapper = factory.create(Dummy.class);
         Dummy mappedDummy = mapper.map(resultSet);
         Dummy expectedDummy = expectedDummy();
         assertThat(mappedDummy, is(equalTo(expectedDummy)));
