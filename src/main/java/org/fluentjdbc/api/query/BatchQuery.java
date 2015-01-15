@@ -2,6 +2,7 @@ package org.fluentjdbc.api.query;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Batch insert or update query for a SQL statement. A BatchQuery is mutable, non-threadsafe.
@@ -13,6 +14,13 @@ public interface BatchQuery {
      * @return this
      */
     BatchQuery params(Iterator<List<Object>> params);
+
+    /**
+     *
+     * @param params Parameters used by the batch update
+     * @return this
+     */
+    BatchQuery namedParams(Iterator<Map<String, Object>> params);
 
     /**
      * Sets size of a batch

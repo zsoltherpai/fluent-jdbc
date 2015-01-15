@@ -41,10 +41,16 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
+    public SelectQuery namedParams(Map<String, Object> namedParams) {
+        addNamedParameters(namedParams);
+        return this;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> Optional<T> firstResult(Mapper<T> mapper) {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, sql, params);
+            try (PreparedStatement ps = query.preparedStatement(connection, sql, params, namedParams);
                  ResultSet rs = ps.executeQuery();
             ) {
                 Optional<T> result = Optional.empty();
@@ -88,7 +94,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @SuppressWarnings("unchecked")
     public <T> void iterateResult(Mapper<T> mapper, Consumer<T> consumer) {
         query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, sql, params);
+            try (PreparedStatement ps = query.preparedStatement(connection, sql, params, namedParams);
                  ResultSet rs = ps.executeQuery();
             ) {
                 while (rs.next()) {
@@ -97,7 +103,6 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                         consumer.accept(candidate);
                     }
                 }
-
             }
             return null;
         }, sql);

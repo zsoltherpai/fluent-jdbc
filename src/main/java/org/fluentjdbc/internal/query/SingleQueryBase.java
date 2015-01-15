@@ -1,17 +1,25 @@
 package org.fluentjdbc.internal.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.fluentjdbc.internal.support.Preconditions;
+
+import java.util.*;
 
 abstract class SingleQueryBase {
     protected final List<Object> params = new ArrayList<>();
-    
-    public void addParameters(List<Object> params) {
+    protected final Map<String, Object> namedParams = new HashMap<>();
+
+    protected void addParameters(List<Object> params) {
+        Preconditions.checkArgument(namedParams.isEmpty(), "Can not add positional parameters if named parameters are set.");
         this.params.addAll(params);
     }
-    
-    public void addParameters(Object... params) {
+
+    protected void addParameters(Object... params) {
         addParameters(Arrays.asList(params));
+    }
+
+    protected void addNamedParameters(Map<String, Object> namedParams) {
+        Preconditions.checkArgument(params.isEmpty(), "Can not add named parameters if positional parameters are set.");
+        Preconditions.checkArgument(!namedParams.isEmpty(), "Can not set empty named parameters");
+        this.namedParams.putAll(namedParams);
     }
 }

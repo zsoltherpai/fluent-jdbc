@@ -9,8 +9,8 @@ public class Preconditions {
         }
     }
     
-    public static void checkArgument(Object obj, String description) {
-        if(obj == null) {
+    public static void checkArgument(Boolean arg, String description) {
+        if(!arg) {
             throw new FluentJdbcException(description);
         }
     }

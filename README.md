@@ -7,10 +7,10 @@ The solution is lightweight and has no external dependencies.
 
 #####Main advantages over plain JDBC#####
 - a flexible, functional API making the most common JDBC operations trivial one-liners
-- implicit resource management, avoiding leaks of connections, statements, resultsets
+- implicit resource management, avoiding leaks of Connections, PreparedStatements, ResultSets
 - out of the box support for non-jdbc data types (java.time), plugin API for custom types
-- automatic mapping of results to java beans
-- named parameters - coming soon
+- automatic mapping of results to java beans, plugin API for custom types
+- named query parameters
 
 Full documentation on wiki:
 
@@ -54,6 +54,16 @@ fluentJdbc.query()
 	.params(params)
 	.singleResult(Mappers.singleLong);
 ```
+######Named parameters######
+Map<String, Object> namedParams = new HashMap<>();
+namedParams.put("myParam1", "paramValue1");
+namedParams.put("myParam2", "paramValue2");
+
+fluentJdbc.query()
+	.update("UPDATE FOO SET BAR1 = :myParam1, BAR2 = :myParam2")
+	.namedParams(namedParams)
+	.run();
+
 ######java.time support for query parameters######
 ```java
 fluentJdbc.query()

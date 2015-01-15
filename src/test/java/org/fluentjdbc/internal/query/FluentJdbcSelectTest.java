@@ -8,6 +8,7 @@ import org.fluentjdbc.internal.query.UpdateResultInternal;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -15,16 +16,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -115,6 +114,37 @@ public class FluentJdbcSelectTest {
         Optional<Dummy> dummy = fluentJdbc.query().select(query).params(param1, param2).firstResult(dummyMapper);
         assertThat(dummy.isPresent(), is(false));
         verifyQuerying();
+    }
+
+    @Test
+    public void selectWithNamedParameters() throws SQLException {
+        String namedParamSql = "SELECT * FROM BAR WHERE COL1 = :param1 AND COL2 = :param2 AND COL3 = :param1";
+        String expectedSql = "SELECT * FROM BAR WHERE COL1 = ? AND COL2 = ? AND COL3 = ?";
+        when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
+        mockSelectData();
+
+        Map<String, Object> namedParams = new HashMap<>();
+        namedParams.put("param1", param1);
+        namedParams.put("param2", param2);
+
+        fluentJdbc.query().select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
+
+        ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
+        verify(connection).prepareStatement(queryCaptor.capture());
+        assertThat(queryCaptor.getValue(), is(equalTo(expectedSql)));
+
+        verify(preparedStatement).setObject(1, param1);
+        verify(preparedStatement).setObject(2, param2);
+        verify(preparedStatement).setObject(3, param1);
+    }
+
+    @Test(expected = FluentJdbcException.class)
+    public void selectWithMissingNamedParameters() throws SQLException {
+        String namedParamSql = "SELECT * FROM BAR WHERE COL1 = :param1";
+        when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
+        mockSelectData();
+        Map<String, Object> namedParams = new HashMap<>();
+        fluentJdbc.query().select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
     }
 
     private void assertResult(List<Dummy> dummyList) throws SQLException {

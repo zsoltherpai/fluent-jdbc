@@ -1,6 +1,7 @@
 package org.fluentjdbc.api.query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
  */
 public interface SelectQuery {
     /**
-     * Adds query parameters
+     * Adds positional query parameters. Can not be added if named parameters are already added.
      *
      * @param params additional query parameters
      * @return this
@@ -19,12 +20,20 @@ public interface SelectQuery {
     SelectQuery params(List<Object> params);
 
     /**
-     * Adds query parameters
+     * Adds positional query parameters. Can not be added if named parameters are already added.
      *
      * @param params additional query parameters
      * @return this
      */
     SelectQuery params(Object... params);
+
+    /**
+     * Adds named query paramaters. Can not be added if positional parameters are already added.
+     *
+     * @param namedParams additional named query parameters
+     * @return this
+     */
+    SelectQuery namedParams(Map<String, Object> namedParams);
 
 
     /**
