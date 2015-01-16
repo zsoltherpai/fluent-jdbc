@@ -33,7 +33,7 @@ query
 ```
 ######Query for a list of results######
 ```java
-List<Customer> foo = query
+List<Customer> customers = query
 	.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.listResult(customerMapper);
