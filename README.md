@@ -3,7 +3,7 @@
 FluentJdbc provides a fluent API for executing JDBC SQL queries in Java 8. The main focus is on querying convenience 
 and easy integration with most connection pooling and transaction managing solutions.
 
-The solution is lightweight and has no external dependencies.
+FluentJdbc is lightweight and has no external dependencies.
 
 #####Main advantages over plain JDBC#####
 - a flexible, functional API making the most common JDBC operations trivial one-liners
