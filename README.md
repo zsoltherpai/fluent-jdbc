@@ -45,7 +45,7 @@ resultSet -> new Customer(resultSet.getString("NAME"), resultSet.getString("ADDR
 ```
 or mapping can be performed automatically to a java bean
 ```java
-objectMapperFactory.create(Customer.class);
+objectMappers.forClass(Customer.class);
 ```
 ######Query for single result######
 ```java
@@ -60,7 +60,7 @@ Iterator<List<Object>> params = ...;
 query
 	.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)
-	.singleResult(Mappers.singleLong);
+	.run();
 ```
 ######Named parameters######
 ```java

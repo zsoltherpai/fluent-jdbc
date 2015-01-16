@@ -17,17 +17,17 @@ import org.codejargon.fluentjdbc.internal.support.Maps;
  *
  * Matching of fields is case insensitive and excludes '_' characters
  */
-public class ObjectMapperFactory {
+public class ObjectMappers {
     private final Map<Class, ObjectMapperRsExtractor> extractors;
     private final Map<Class, Mapper<?>> mappers;
 
-    private ObjectMapperFactory(Map<Class, ObjectMapperRsExtractor> extractors) {
+    private ObjectMappers(Map<Class, ObjectMapperRsExtractor> extractors) {
         this.extractors = Maps.merge(DefaultObjectMapperRsExtractors.extractors(), extractors);
         mappers = new ConcurrentHashMap<>();
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Mapper<T> create(Class<T> clazz) {
+    public <T> Mapper<T> forClass(Class<T> clazz) {
         if(!mappers.containsKey(clazz)) {
             mappers.put(clazz, new ObjectMapper<>(clazz, extractors));
         }
@@ -50,8 +50,8 @@ public class ObjectMapperFactory {
             return this;
         }
         
-        public ObjectMapperFactory build() {
-            return new ObjectMapperFactory(Maps.copyOf(extractors));
+        public ObjectMappers build() {
+            return new ObjectMappers(Maps.copyOf(extractors));
         }
     }
 }

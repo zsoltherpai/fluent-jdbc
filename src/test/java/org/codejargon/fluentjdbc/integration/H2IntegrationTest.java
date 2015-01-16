@@ -1,7 +1,7 @@
 package org.codejargon.fluentjdbc.integration;
 
 import org.codejargon.fluentjdbc.api.mapper.Mappers;
-import org.codejargon.fluentjdbc.api.mapper.ObjectMapperFactory;
+import org.codejargon.fluentjdbc.api.mapper.ObjectMappers;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.internal.support.Arrs;
 import org.codejargon.fluentjdbc.api.FluentJdbc;
@@ -21,8 +21,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class H2IntegrationTest {
-    static final ObjectMapperFactory objectMappers = ObjectMapperFactory.builder().build();
-    static final Mapper<Dummy> dummyMapper = objectMappers.create(Dummy.class);
+    static final ObjectMappers objectMappers = ObjectMappers.builder().build();
+    static final Mapper<Dummy> dummyMapper = objectMappers.forClass(Dummy.class);
     static final Dummy dummy1 = new Dummy("idValue1", "barValue1");
     static final Dummy dummy2 = new Dummy("idValue2", "barValue2");
 

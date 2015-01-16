@@ -1,6 +1,6 @@
 package org.codejargon.fluentjdbc.internal.mappers;
 
-import org.codejargon.fluentjdbc.api.mapper.ObjectMapperFactory;
+import org.codejargon.fluentjdbc.api.mapper.ObjectMappers;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class ObjectMapperTest {
     @Mock
     ResultSetMetaData meta;
 
-    ObjectMapperFactory factory = ObjectMapperFactory.builder().build();
+    ObjectMappers factory = ObjectMappers.builder().build();
 
     @Before
     public void setUp() throws SQLException {
@@ -70,7 +70,7 @@ public class ObjectMapperTest {
 
     @Test
     public void map() throws SQLException {
-        Mapper<Dummy> mapper = factory.create(Dummy.class);
+        Mapper<Dummy> mapper = factory.forClass(Dummy.class);
         Dummy mappedDummy = mapper.map(resultSet);
         Dummy expectedDummy = expectedDummy();
         assertThat(mappedDummy, is(equalTo(expectedDummy)));
