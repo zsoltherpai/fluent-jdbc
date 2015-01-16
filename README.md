@@ -69,7 +69,7 @@ namedParams.put("name", "John Doe");
 namedParams.put("address", "Dallas");
 
 query
-	.update("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
+	.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
 	.namedParams(namedParams)
 	.run();
 ```
