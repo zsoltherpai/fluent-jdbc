@@ -13,6 +13,8 @@ import org.fluentjdbc.internal.support.Maps;
  * In addition to types in JDBC, supports java.time
  *
  * Supports custom types field types through ObjectMapperRsExtractors.
+ *
+ * Matching of fields is case insensitive and excludes '_' characters
  */
 public class ObjectMapperFactory {
     private final Map<Class, ObjectMapperRsExtractor> extractors;

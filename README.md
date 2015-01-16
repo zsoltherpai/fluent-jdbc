@@ -18,30 +18,30 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki).
 
 ######Update or insert queries######
 ```java
-fluentJdbc.query()
+query
 	.update("UPDATE CUSTOMER SET NAME = ?, ADDRESS = ?")
 	.params("John Doe", "Dallas")
 	.run();
 ```
 ######Query for a list of results######
 ```java
-List<Customer> foo = fluentJdbc.query()
+List<Customer> foo = query
 	.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.listResult(customerMapper);
 ```
 ######Mapping of results######
-Mapper can be done manually
+Mapper<Customer> can be implemented manually
 ```java
 resultSet -> new Customer(resultSet.getString("NAME"), resultSet.getString("ADDRESS"));
 ```
-or automatically to a java bean
+or mapping can be performed automatically to a java bean
 ```java
 objectMapperFactory.create(Customer.class);
 ```
 ######Query for single result######
 ```java
-Long count = fluentJdbc.query()
+Long count = query
 	.select("SELECT COUNT(*) FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.singleResult(Mappers.singleLong);
@@ -49,7 +49,7 @@ Long count = fluentJdbc.query()
 ######Batch insert or update######
 ```java
 Iterator<List<Object>> params = ...;
-fluentJdbc.query()
+query
 	.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)
 	.singleResult(Mappers.singleLong);
@@ -60,7 +60,7 @@ Map<String, Object> namedParams = new HashMap<>();
 namedParams.put("name", "John Doe");
 namedParams.put("address", "Dallas");
 
-fluentJdbc.query()
+query
 	.update("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
 	.namedParams(namedParams)
 	.run();
@@ -68,7 +68,7 @@ fluentJdbc.query()
 
 ######java.time support for query parameters######
 ```java
-fluentJdbc.query()
+query
 	.update("UPDATE CUSTOMER SET DEADLINE = ?, UPDATED = ?")
 	.params(LocalDate.of(2015, Month.MARCH, 5), Instant.now())
 	.run();
@@ -79,11 +79,12 @@ DataSource dataSource = ...
 FluentJdbc fluentJdbc = new FluentJdbcBuilder()
 	.connectionProvider(new DataSourceConnectionProvider(dataSource)
         .build();
+Query query = fluentJdbc.query();
 ```
 ######Querying with a specific connection object######
 ```java
 Connection connection = ...
-fluentJdbc.queryOn(connection)...
+Query query = fluentJdbc.queryOn(connection)...
 ```
 ######Creating a custom connection provider - eg spring JdbcOperations/JdbcTemplate######
 ```java

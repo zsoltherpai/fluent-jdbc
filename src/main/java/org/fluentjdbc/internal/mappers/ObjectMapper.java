@@ -29,7 +29,7 @@ public class ObjectMapper<T> implements Mapper<T> {
         while (inspectedClass != null) {
             for (Field field : inspectedClass.getDeclaredFields()) {
                 field.setAccessible(true);
-                allFields.put(field.getName().toLowerCase(), field);
+                allFields.put(prepareFieldName(field.getName()), field);
             }
             inspectedClass = inspectedClass.getSuperclass();
         }
@@ -89,6 +89,10 @@ public class ObjectMapper<T> implements Mapper<T> {
     }
 
     private String fieldName(ResultSetMetaData metadata, int i) throws SQLException {
-        return metadata.getColumnName(i).toLowerCase();
+        return prepareFieldName(metadata.getColumnName(i));
+    }
+
+    private String prepareFieldName(String fieldName) {
+        return fieldName.toLowerCase().replace("_", "");
     }
 }

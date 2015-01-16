@@ -53,18 +53,18 @@ public class ObjectMapperTest {
         when(resultSet.getMetaData()).thenReturn(meta);
 
         mockMetaColumnNames(
-                "LONGCOLUMN",
-                "INTCOLUMN",
-                "STRINGCOLUMN",
-                "STRINGNULLCOLUMN",
-                "BIGDECIMALCOLUMN",
-                "YEARCOLUMN",
-                "YEARMONTHCOLUMN",
-                "LOCALDATECOLUMN",
-                "LOCALDATETIMECOLUMN",
-                "INSTANTCOLUMN",
-                "INSTANTNULLCOLUMN",
-                "NOTMAPPEDINDUMMY"
+                "LONG_COLUMN",
+                "INT_COLUMN",
+                "STRING_COLUMN",
+                "STRING_NULL_COLUMN",
+                "BIGDECIMAL_COLUMN",
+                "YEAR_COLUMN",
+                "YEARMONTH_COLUMN",
+                "LOCALDATE_COLUMN",
+                "LOCALDATETIME_COLUMN",
+                "INSTANT_COLUMN",
+                "INSTANT_NULL_COLUMN",
+                "NOT_MAPPED_IN_DUMMY"
         );
     }
 
