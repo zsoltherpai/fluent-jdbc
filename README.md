@@ -12,6 +12,14 @@ The solution is lightweight and has no external dependencies.
 - automatic mapping of results to java beans
 - named query parameters
 
+```
+<dependency>
+    <groupId>org.codejargon</groupId>
+    <artifactId>fluentjdbc</artifactId>
+    <version>0.8</version>
+</dependency>
+```
+
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki).
 
 #####Code examples#####
