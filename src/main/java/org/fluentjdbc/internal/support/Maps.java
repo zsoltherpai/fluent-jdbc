@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import static org.fluentjdbc.internal.support.Iterables.stream;
 
 public class Maps {
-    public static <K, V> Map<K, V> immutableCopyOf(Map<K, V> map) {
+    public static <K, V> Map<K, V> copyOf(Map<K, V> map) {
         return Collections.unmodifiableMap(new HashMap<>(map));
     }
 

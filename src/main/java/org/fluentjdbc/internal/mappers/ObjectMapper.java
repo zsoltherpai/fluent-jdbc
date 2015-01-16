@@ -1,8 +1,6 @@
 package org.fluentjdbc.internal.mappers;
 
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -35,7 +33,7 @@ public class ObjectMapper<T> implements Mapper<T> {
             }
             inspectedClass = inspectedClass.getSuperclass();
         }
-        return Maps.immutableCopyOf(allFields);
+        return Maps.copyOf(allFields);
     }
 
     @Override

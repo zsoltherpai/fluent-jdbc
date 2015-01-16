@@ -36,19 +36,19 @@ public class ObjectMapperFactory {
     }
     
     public static class Builder {
-        private Map<Class, ObjectMapperRsExtractor> extractors = Maps.immutableCopyOf(new HashMap<>());
+        private Map<Class, ObjectMapperRsExtractor> extractors = Maps.copyOf(new HashMap<>());
         
         private Builder() {
             
         }
         
         public Builder converters(Map<Class, ObjectMapperRsExtractor> extractors) {
-            this.extractors = Maps.immutableCopyOf(extractors);
+            this.extractors = Maps.copyOf(extractors);
             return this;
         }
         
         public ObjectMapperFactory build() {
-            return new ObjectMapperFactory(Maps.immutableCopyOf(extractors));
+            return new ObjectMapperFactory(Maps.copyOf(extractors));
         }
     }
 }

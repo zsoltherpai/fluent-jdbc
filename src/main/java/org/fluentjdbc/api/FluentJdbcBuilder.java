@@ -10,7 +10,7 @@ import static org.fluentjdbc.internal.support.Preconditions.checkNotNull;
 
 public class FluentJdbcBuilder {
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
-    private Map<Class, ParamSetter> paramSetters = Maps.immutableCopyOf(new HashMap<>());
+    private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
 
     public FluentJdbcBuilder() {
         
@@ -29,6 +29,6 @@ public class FluentJdbcBuilder {
     }
     
     public FluentJdbc build() {
-        return new FluentJdbcInternal(connectionProvider, Maps.immutableCopyOf(paramSetters));
+        return new FluentJdbcInternal(connectionProvider, Maps.copyOf(paramSetters));
     }
 }
