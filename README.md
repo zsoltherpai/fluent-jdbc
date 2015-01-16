@@ -12,7 +12,7 @@ The solution is lightweight and has no external dependencies.
 - automatic mapping of results to java beans
 - named query parameters
 
-Full documentation on wiki:
+Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki).
 
 #####Code examples#####
 
