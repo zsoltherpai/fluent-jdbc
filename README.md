@@ -81,6 +81,13 @@ query
 	.params(LocalDate.of(2015, Month.MARCH, 5), Instant.now())
 	.run();
 ```
+######Iterating over a large resultset######
+query
+	.select("SELECT * FROM CUSTOMER")
+	.iterateResult(customerMapper, (customer) -> {
+		// do something with the customer
+	});
+
 ######Creating FluentJdbc with DataSource as connection provider######
 ```java
 DataSource dataSource = ...
