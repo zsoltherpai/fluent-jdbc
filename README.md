@@ -19,6 +19,7 @@ FluentJdbc is lightweight and has no external dependencies.
     <version>0.8</version>
 </dependency>
 ```
+Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki).
 
