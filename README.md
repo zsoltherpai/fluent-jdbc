@@ -85,7 +85,9 @@ query
 query
 	.select("SELECT * FROM CUSTOMER")
 	.iterateResult(customerMapper, (customer) -> {
-		// do something with the customer
+		if(customer.isExpired()) {
+			...
+		}
 	});
 
 ######Creating FluentJdbc with DataSource as connection provider######
