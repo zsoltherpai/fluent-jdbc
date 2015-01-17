@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.8</version>
+    <version>0.9-SNAPSHOT</version>
     <name>FluentJdbc</name>
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     <description>
@@ -30,7 +30,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <scm>
-        <connection>scm:git:git@github.com:zsoltherpai/fluent-jdbc.git</connection>
+        <connection>scm:git:https://github.com/zsoltherpai/fluent-jdbc.git</connection>
         <developerConnection>scm:git:git@github.com:zsoltherpai/fluent-jdbc.git</developerConnection>
         <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     </scm>
