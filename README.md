@@ -81,7 +81,7 @@ query
 	.params(LocalDate.of(2015, Month.MARCH, 5), Instant.now())
 	.run();
 ```
-######Iterating over a large resultset######
+######Iterating a large resultset######
 query
 	.select("SELECT * FROM CUSTOMER")
 	.iterateResult(customerMapper, (customer) -> {
