@@ -22,6 +22,7 @@ FluentJdbc is lightweight and has no external dependencies.
 Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki).
+[Javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.8)
 
 #####Code examples#####
 
