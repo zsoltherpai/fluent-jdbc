@@ -1,15 +1,16 @@
 ####About FluentJdbc####
 
-FluentJdbc provides a fluent API for executing JDBC SQL queries in Java 8. The main focus is on querying convenience 
-and easy integration with most connection pooling and transaction managing solutions.
+FluentJdbc provides a fluent API for executing SQL queries in java. It is best suited for projects that
+require fine control over SQL queries and operations in a convenient, declarative way.
 
-FluentJdbc is lightweight and has no external dependencies.
+It wraps JDBC, provides additional features while avoids JDBC inconveniences and clutter. FluentJdbc is 
+light-weight, has no 3rd party dependencies.
 
 #####Main advantages over plain JDBC#####
 - a flexible, functional API making the most common JDBC operations trivial one-liners
 - implicit resource management, avoiding leaks of Connections, PreparedStatements, ResultSets
 - out of the box support for java.time, Extension API for more custom types
-- automatic mapping of results to java beans
+- automatic mapping of results to POJOs
 - named query parameters
 
 ```
@@ -22,9 +23,10 @@ FluentJdbc is lightweight and has no external dependencies.
 Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki)  
-Latest [Javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.8)
+Latest [javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.8)
 
 #####Code examples#####
+Some common use cases
 
 ######Update or insert queries######
 ```java
@@ -56,6 +58,14 @@ Long count = query
 	.params("John Doe")
 	.singleResult(Mappers.singleLong);
 ```
+######Query for first result######
+```java
+Optional<Customer> customer = query
+	.select("SELECT FROM CUSTOMER WHERE NAME = ?")
+	.params("John Doe")
+	.firstResult(customerMapper);
+```
+
 ######Batch insert or update######
 ```java
 Iterator<List<Object>> params = ...;

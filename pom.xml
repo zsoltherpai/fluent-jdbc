@@ -7,10 +7,14 @@
     <name>FluentJdbc</name>
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     <description>
-        Fluent JDBC provides a fluent, functional API for executing JDBC queries in java 8.
-
-        Light-weight, no external dependencies and can be easily integrated to a range of
-        connection pooling / transaction management solutions (like EJB, Spring, Guice-persist, ...).
+        FluentJdbc provides a fluent API for executing SQL queries. It is best suited for projects that
+        require fine control over SQL queries and operations in a convenient, declarative way.
+        
+        It wraps JDBC, providing additional features like: support for custom parameter types (like java.time),
+        named query parameters, automatic ResultSet to POJO mapping, etc. It also avoids inconveniences with 
+        JDBC API, like: checked exceptions, explicit resource management / leaks, clutter.
+        
+        FluentJdbc is light-weight, has no 3rd party dependencies.
     </description>
     <licenses>
         <license>
