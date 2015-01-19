@@ -7,6 +7,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * ConnectionProvider based on a DataSource.
+ */
 public class DataSourceConnectionProvider implements ConnectionProvider {
     private final DataSource dataSource;
 

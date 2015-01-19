@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 /**
  * <p>
- * API for providing Connections to Fluent-Jdbc queries. Note that the API allows both acquiring and
+ * Provides Connections to FluentJdbc Queries. Note that the API allows both acquiring and
  * releasing a Connection. This makes it possible to integrate FluentJdbc to most pooling / transaction
  * management solutions.
  * </p>
