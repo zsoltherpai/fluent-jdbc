@@ -16,19 +16,18 @@ import org.codejargon.fluentjdbc.api.query.SelectQuery;
 import org.codejargon.fluentjdbc.api.query.UpdateQuery;
 import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedSqlAndParams;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.TransformedSql;
 
 public class QueryInternal implements Query {
 
     final ConnectionProvider connectionProvider;
-    private final ParamAssigner paramAssigner;
-    private final Map<String, TransformedSql> namedParamSqlCache;
+    final QueryConfig config;
 
-
-    public QueryInternal(ConnectionProvider connectionProvider, ParamAssigner paramAssigner, Map<String, TransformedSql> namedParamSqlCache) {
+    public QueryInternal(
+            ConnectionProvider connectionProvider, 
+            QueryConfig config
+    ) {
         this.connectionProvider = connectionProvider;
-        this.paramAssigner = paramAssigner;
-        this.namedParamSqlCache = namedParamSqlCache;
+        this.config = config;
     }
 
     @Override
@@ -61,23 +60,25 @@ public class QueryInternal implements Query {
         return e.isPresent() ? new FluentJdbcSqlException(message, e.get()) : new FluentJdbcException(message);
     }
 
-    PreparedStatement preparedStatement(Connection con, String sql, List<Object> params, Map<String, Object> namedParams) throws SQLException {
-        SqlAndParams sqlAndParams = namedParams.isEmpty() ?
-                new SqlAndParams(sql, params) :
-                NamedSqlAndParams.sqlAndParams(transformedSql(sql), namedParams);
+    PreparedStatement preparedStatement(
+            Connection con, 
+            QuerySpecification querySpec
+    ) throws SQLException {
+        SqlAndParams sqlAndParams = querySpec.sqlAndParams(config);
         PreparedStatement statement = con.prepareStatement(sqlAndParams.sql());
+        fetchSize(statement, querySpec.selectFetchSize);
         assignParams(statement, sqlAndParams.params());
         return statement;
     }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
-        paramAssigner.assignParams(statement, params);
+        config.paramAssigner.assignParams(statement, params);
     }
 
-    TransformedSql transformedSql(String sql) {
-        if(!namedParamSqlCache.containsKey(sql)) {
-            namedParamSqlCache.put(sql, TransformedSql.forSql(sql));
+    private void fetchSize(PreparedStatement statement, Optional<Integer> selectFetchSize) throws SQLException {
+        Optional<Integer> activeFetchSize = config.fetchSize(selectFetchSize);
+        if(activeFetchSize.isPresent()) {
+            statement.setFetchSize(activeFetchSize.get());
         }
-        return namedParamSqlCache.get(sql);
     }
 }

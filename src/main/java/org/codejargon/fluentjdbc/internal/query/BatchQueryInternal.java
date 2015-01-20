@@ -72,7 +72,7 @@ class BatchQueryInternal implements BatchQuery {
     private List<UpdateResult> named() {
         return query.query(
                 connection -> {
-                    TransformedSql transformedSql = query.transformedSql(sql);
+                    TransformedSql transformedSql = query.config.transformedSql(sql);
                     try (PreparedStatement statement = connection.prepareStatement(transformedSql.sql())) {
                         int i = 0;
                         List<UpdateResult> updateResults = new ArrayList<>();

@@ -45,6 +45,15 @@ public interface SelectQuery {
      */
     <T> SelectQuery filter(Predicate<T> predicate);
 
+    /**
+     * Sets fetch size of select statements - the number of rows returned with one network roundtrip.
+     * FluentJdbc configured default or vendor default is used if not set. Note that vendor defaults 
+     * may be different, eg MySQL default is 0 (no limit) which may lead to memory issues, Oracle DB's default 
+     * is 10 which may result in poor performance with large ResultSets.
+     * @param rows Number of rows fetched by a select statement.
+     * @return this
+     */
+    SelectQuery fetchSize(Integer rows);
 
     /**
      * Runs the select query and returns first result - if any

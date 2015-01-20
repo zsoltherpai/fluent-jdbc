@@ -10,12 +10,16 @@ import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.internal.support.Predicates;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
 
+import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
+import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
+
 class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
     private final QueryInternal query;
     private final String sql;
-
+    
     private Predicate filter = Predicates.alwaysTrue();
+    private Optional<Integer> fetchSize = Optional.empty();
 
     SelectQueryInternal(String sql, QueryInternal query) {
         super();
@@ -26,6 +30,14 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @Override
     public <T> SelectQuery filter(Predicate<T> filter) {
         this.filter = filter;
+        return this;
+    }
+
+    @Override
+    public SelectQuery fetchSize(Integer rows) {
+        checkNotNull(rows, "rows");
+        checkArgument(rows >= 0, "Fetch size rows must be >= 0");
+        this.fetchSize = Optional.of(rows);
         return this;
     }
 
@@ -51,7 +63,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @SuppressWarnings("unchecked")
     public <T> Optional<T> firstResult(Mapper<T> mapper) {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, sql, params, namedParams);
+            try (PreparedStatement ps = query.preparedStatement(connection, querySpecs());
                  ResultSet rs = ps.executeQuery();
             ) {
                 Optional<T> result = Optional.empty();
@@ -95,7 +107,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @SuppressWarnings("unchecked")
     public <T> void iterateResult(Mapper<T> mapper, Consumer<T> consumer) {
         query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, sql, params, namedParams);
+            try (PreparedStatement ps = query.preparedStatement(connection, querySpecs());
                  ResultSet rs = ps.executeQuery();
             ) {
                 while (rs.next()) {
@@ -107,6 +119,10 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
             }
             return null;
         }, sql);
+    }
+
+    private QuerySpecification querySpecs() {
+        return new QuerySpecification(sql, params, namedParams, fetchSize);
     }
 
 

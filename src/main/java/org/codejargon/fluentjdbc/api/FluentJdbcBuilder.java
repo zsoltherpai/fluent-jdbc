@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
 
 /**
  * Configures and builds a FluentJdbc instance.
  */
 public class FluentJdbcBuilder {
+    private Optional<Integer> defaultFetchSize = Optional.empty();
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
     private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
 
@@ -48,10 +50,29 @@ public class FluentJdbcBuilder {
     }
 
     /**
+     * Sets default fetch size of select statements - the number of rows returned with one network roundtrip.
+     * Vendor default is used if not set. Note that vendor defaults may be different, eg MySQL default 
+     * is 0 (no limit) which may lead to memory issues, Oracle DB's default is 10 which may result in poor 
+     * performance with large ResultSets.
+     * @param rows Number of rows fetched by a select statement by default.
+     * @return this
+     */
+    public FluentJdbcBuilder defaultFetchSize(Integer rows) {
+        checkNotNull(rows, "rows");
+        checkArgument(rows >= 0, "Fetch size rows must be >= 0");
+        this.defaultFetchSize = Optional.of(rows);
+        return this;
+    }
+
+    /**
      * Returns a FluentJdbc instance configured by the builder.
      * @return FluentJdbc instance
      */
     public FluentJdbc build() {
-        return new FluentJdbcInternal(connectionProvider, Maps.copyOf(paramSetters));
+        return new FluentJdbcInternal(
+                connectionProvider, 
+                Maps.copyOf(paramSetters),
+                defaultFetchSize
+        );
     }
 }

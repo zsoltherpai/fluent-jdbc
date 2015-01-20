@@ -5,6 +5,7 @@ import org.codejargon.fluentjdbc.api.query.UpdateResult;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     private final String sql;
@@ -19,7 +20,7 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     @Override
     public UpdateResult run() {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, sql, params, namedParams)) {
+            try (PreparedStatement ps = query.preparedStatement(connection, querySpecs())) {
                 return new UpdateResultInternal((long) ps.executeUpdate());
             }
         }, sql);
@@ -41,5 +42,9 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     public UpdateQuery namedParams(Map<String, Object> namedParams) {
         addNamedParameters(namedParams);
         return this;
+    }
+    
+    private QuerySpecification querySpecs() {
+        return new QuerySpecification(sql, params, namedParams, Optional.<Integer>empty());
     }
 }
