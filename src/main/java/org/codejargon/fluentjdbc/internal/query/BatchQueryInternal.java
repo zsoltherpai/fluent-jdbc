@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 class BatchQueryInternal implements BatchQuery {
     private final String sql;
     private final QueryInternal query;
-    private Optional<Iterator<List<Object>>> params = Optional.empty(); // (new ArrayList<List<Object>>()).iterator();
-    private Optional<Iterator<Map<String, Object>>> namedParams = Optional.empty(); // (new ArrayList<Map<String, Object>>()).iterator();
+    private Optional<Iterator<List<Object>>> params = Optional.empty();
+    private Optional<Iterator<Map<String, Object>>> namedParams = Optional.empty();
     private Optional<Integer> batchSize = Optional.empty();
 
     public BatchQueryInternal(String sql, QueryInternal query) {
