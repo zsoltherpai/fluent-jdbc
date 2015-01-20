@@ -94,6 +94,7 @@ query
 	.run();
 ```
 ######Iterating a large resultset######
+```java
 query
 	.select("SELECT * FROM CUSTOMER")
 	.iterateResult(customerMapper, (customer) -> {
@@ -101,7 +102,7 @@ query
 			...
 		}
 	});
-
+```
 ######Creating FluentJdbc with DataSource as connection provider######
 ```java
 DataSource dataSource = ...
