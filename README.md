@@ -9,7 +9,7 @@ light-weight, has no 3rd party dependencies.
 #####Main advantages over plain JDBC#####
 - a flexible, functional API making the most common JDBC operations trivial one-liners
 - implicit resource management, avoiding leaks of Connections, PreparedStatements, ResultSets
-- out of the box support for java.time, Extension API for more custom types
+- out of the box support for java.time, extension API for more custom types
 - automatic mapping of results to POJOs
 - named query parameters
 
