@@ -38,8 +38,8 @@ public class FluentJdbcBuilder {
      * ParamSetters add support for accepting parameters of custom types in all queries (select/update/insert/batch).
      * These setters can also override types supported by FluentJdbc out of the box (JDBC-supported types, 
      * java.util.Date, java.time)
-     * @param paramSetters Map of Class / ParamSetters pairs.
-     * @return
+     * @param paramSetters Map of parameter class / ParamSetters pairs.
+     * @return this
      */
     public FluentJdbcBuilder paramSetters(Map<Class, ParamSetter> paramSetters) {
         checkNotNull(paramSetters, "paramSetters");
