@@ -103,6 +103,15 @@ query
 		}
 	});
 ```
+######Query for a list of limited results######
+```java
+List<Customer> customers = query
+	.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
+	.params("John Doe")
+	.maxRows(345L)
+	.listResult(customerMapper);
+```
+
 ######Creating FluentJdbc with DataSource as connection provider######
 ```java
 DataSource dataSource = ...
