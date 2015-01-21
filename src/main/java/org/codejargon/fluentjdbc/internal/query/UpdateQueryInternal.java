@@ -44,7 +44,7 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
         return this;
     }
     
-    private QuerySpecification querySpecs() {
-        return new QuerySpecification(sql, params, namedParams, Optional.<Integer>empty());
+    private SingleQuerySpecification querySpecs() {
+        return new SingleQuerySpecification(sql, params, namedParams, Optional.<Integer>empty());
     }
 }

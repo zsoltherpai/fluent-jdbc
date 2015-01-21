@@ -19,7 +19,7 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
     @Test
     public void update() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(expectedUpdatedRows.intValue());
-        UpdateResult updateResult = fluentJdbc.query().update(query).params(param1, param2).run();
+        UpdateResult updateResult = query.update(sql).params(param1, param2).run();
         assertThat(updateResult.affectedRows(), is(equalTo(expectedUpdatedRows)));
         verifyQuerying();
         verify(preparedStatement).executeUpdate();
@@ -29,7 +29,7 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
     public void updateWithNamedParams() throws SQLException {
         when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(expectedUpdatedRows.intValue());
-        fluentJdbc.query().update(queryWithNamedParams).namedParams(namedParams()).run();
+        query.update(sqlWithNamedParams).namedParams(namedParams()).run();
         verifyQuerying();
     }
 
@@ -40,6 +40,6 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
         verify(preparedStatement).setObject(2, param2);
         verify(preparedStatement).executeUpdate();
         verify(preparedStatement).close();
-        assertThat(queryCaptor.getValue(), is(equalTo(query)));
+        assertThat(queryCaptor.getValue(), is(equalTo(sql)));
     }
 }

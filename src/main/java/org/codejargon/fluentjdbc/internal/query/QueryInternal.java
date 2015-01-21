@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
@@ -15,7 +14,6 @@ import org.codejargon.fluentjdbc.api.query.Query;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
 import org.codejargon.fluentjdbc.api.query.UpdateQuery;
 import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedSqlAndParams;
 
 public class QueryInternal implements Query {
 
@@ -62,7 +60,7 @@ public class QueryInternal implements Query {
 
     PreparedStatement preparedStatement(
             Connection con, 
-            QuerySpecification querySpec
+            SingleQuerySpecification querySpec
     ) throws SQLException {
         SqlAndParams sqlAndParams = querySpec.sqlAndParams(config);
         PreparedStatement statement = con.prepareStatement(sqlAndParams.sql());

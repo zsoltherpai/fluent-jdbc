@@ -121,8 +121,8 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
         }, sql);
     }
 
-    private QuerySpecification querySpecs() {
-        return new QuerySpecification(sql, params, namedParams, fetchSize);
+    private SingleQuerySpecification querySpecs() {
+        return new SingleQuerySpecification(sql, params, namedParams, fetchSize);
     }
 
 

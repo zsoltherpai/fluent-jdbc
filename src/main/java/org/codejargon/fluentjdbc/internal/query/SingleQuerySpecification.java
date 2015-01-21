@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-class QuerySpecification {
+class SingleQuerySpecification {
     final String sql;
     final List<Object> params;
     final Map<String, Object> namedParams;
     final Optional<Integer> selectFetchSize;
 
-    QuerySpecification(String sql, List<Object> params, Map<String, Object> namedParams, Optional<Integer> selectFetchSize) {
+    SingleQuerySpecification(String sql, List<Object> params, Map<String, Object> namedParams, Optional<Integer> selectFetchSize) {
         this.sql = sql;
         this.params = params;
         this.namedParams = namedParams;

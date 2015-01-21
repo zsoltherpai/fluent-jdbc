@@ -33,7 +33,7 @@ public class FluentJdbcBatchTest extends UpdateTestBase {
         ).iterator();
         when(preparedStatement.executeBatch()).thenReturn(expectedUpdated);
 
-        List<UpdateResult> updated = fluentJdbc.query().batch(query).params(params).run();
+        List<UpdateResult> updated = query.batch(sql).params(params).run();
         verifyUpdateResults(expectedUpdated, updated);
         verify4Params();
         verifyQuery(2, 1);
@@ -48,7 +48,7 @@ public class FluentJdbcBatchTest extends UpdateTestBase {
                 Arrays.asList(param5, param6)
         ).iterator();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1, 1}, new int[]{1});
-        List<UpdateResult> updated = fluentJdbc.query().batch(query).batchSize(2).params(params).run();
+        List<UpdateResult> updated = query.batch(sql).batchSize(2).params(params).run();
         verifyUpdateResults(expectedUpdated, updated);
         verify6Params();
         verifyQuery(3, 2);
@@ -63,11 +63,11 @@ public class FluentJdbcBatchTest extends UpdateTestBase {
         ).iterator();
         when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
         when(preparedStatement.executeBatch()).thenReturn(expectedUpdated);
-        fluentJdbc.query().batch(queryWithNamedParams).namedParams(namedParams).run();
+        query.batch(sqlWithNamedParams).namedParams(namedParams).run();
 
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
         verify(connection).prepareStatement(queryCaptor.capture());
-        assertThat(queryCaptor.getValue(), is(equalTo(query)));
+        assertThat(queryCaptor.getValue(), is(equalTo(sql)));
 
         verify2Params();
         verifyQuery(1, 1);

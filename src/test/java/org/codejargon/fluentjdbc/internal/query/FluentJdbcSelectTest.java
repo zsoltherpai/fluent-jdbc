@@ -4,6 +4,7 @@ import org.codejargon.fluentjdbc.api.FluentJdbc;
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
+import org.codejargon.fluentjdbc.api.query.Query;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FluentJdbcSelectTest {
-    static final String query = "SELECT * FROM BAR";
+    static final String sql = "SELECT * FROM BAR";
     static final String column = "FOO";
 
 
@@ -43,20 +44,21 @@ public class FluentJdbcSelectTest {
     PreparedStatement preparedStatement;
     @Mock
     ResultSet resultset;
-    FluentJdbc fluentJdbc;
+    Query query;
 
     @Before
     public void setUp() throws SQLException {
-        when(connection.prepareStatement(query)).thenReturn(preparedStatement);
-        fluentJdbc = new FluentJdbcBuilder().connectionProvider((q) -> {
+        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+        FluentJdbc fluentJdbc = new FluentJdbcBuilder().connectionProvider((q) -> {
             q.receive(connection);
         }).build();
+        query = fluentJdbc.query();
     }
 
     @Test
     public void selectList() throws SQLException {
         mockSelectData();
-        List<Dummy> dummies = fluentJdbc.query().select(query).params(param1, param2).listResult(dummyMapper);
+        List<Dummy> dummies = query.select(sql).params(param1, param2).listResult(dummyMapper);
         assertResult(dummies);
         verifyQuerying();
     }
@@ -64,8 +66,8 @@ public class FluentJdbcSelectTest {
     @Test
     public void selectListWithFiltering() throws SQLException {
         mockSelectData();
-        List<Dummy> dummies = fluentJdbc.query()
-                .select(query)
+        List<Dummy> dummies = query
+                .select(sql)
                 .params(param1, param2)
                 .filter((Dummy dummy) -> dummy.foo.equals(result1))
                 .listResult(dummyMapper);
@@ -77,7 +79,7 @@ public class FluentJdbcSelectTest {
     @Test
     public void selectSet() throws SQLException {
         mockSelectData();
-        Set<Dummy> dummies = fluentJdbc.query().select(query).params(param1, param2).setResult(dummyMapper);
+        Set<Dummy> dummies = query.select(sql).params(param1, param2).setResult(dummyMapper);
         assertThat(dummies.size(), is(3));
         verifyQuerying();
     }
@@ -85,7 +87,7 @@ public class FluentJdbcSelectTest {
     @Test
     public void selectSingle() throws SQLException {
         mockSelectData();
-        Dummy d = fluentJdbc.query().select(query).params(param1, param2).singleResult(dummyMapper);
+        Dummy d = query.select(sql).params(param1, param2).singleResult(dummyMapper);
         assertThat(d.foo, is(equalTo(result1)));
         verifyQuerying();
     }
@@ -93,13 +95,13 @@ public class FluentJdbcSelectTest {
     @Test(expected = FluentJdbcException.class)
     public void selectSingleWithoutResults() throws SQLException {
         mockEmptySelectData();
-        fluentJdbc.query().select(query).params(param1, param2).singleResult(dummyMapper);
+        query.select(sql).params(param1, param2).singleResult(dummyMapper);
     }
 
     @Test
     public void selectFirst() throws SQLException {
         mockSelectData();
-        Optional<Dummy> dummy = fluentJdbc.query().select(query).params(param1, param2).firstResult(dummyMapper);
+        Optional<Dummy> dummy = query.select(sql).params(param1, param2).firstResult(dummyMapper);
         assertThat(dummy.isPresent(), is(true));
         assertThat(dummy.get().foo, is(equalTo(result1)));
         verifyQuerying();
@@ -108,7 +110,7 @@ public class FluentJdbcSelectTest {
     @Test
     public void selectFirstWithoutResults() throws SQLException {
         mockEmptySelectData();
-        Optional<Dummy> dummy = fluentJdbc.query().select(query).params(param1, param2).firstResult(dummyMapper);
+        Optional<Dummy> dummy = query.select(sql).params(param1, param2).firstResult(dummyMapper);
         assertThat(dummy.isPresent(), is(false));
         verifyQuerying();
     }
@@ -124,7 +126,7 @@ public class FluentJdbcSelectTest {
         namedParams.put("param1", param1);
         namedParams.put("param2", param2);
 
-        fluentJdbc.query().select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
+        query.select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
 
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
         verify(connection).prepareStatement(queryCaptor.capture());
@@ -141,8 +143,20 @@ public class FluentJdbcSelectTest {
         when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
         mockSelectData();
         Map<String, Object> namedParams = new HashMap<>();
-        fluentJdbc.query().select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
+        query.select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
     }
+
+    @Test
+    public void selectFetchSize() throws SQLException {
+        Integer fetchSize = 3;
+        mockSelectData();
+        List<Dummy> dummies = query.select(sql).params(param1, param2).fetchSize(fetchSize).listResult(dummyMapper);
+        assertResult(dummies);
+        verifyQuerying();
+        verify(preparedStatement).setFetchSize(fetchSize);
+    }
+    
+    
 
     private void assertResult(List<Dummy> dummyList) throws SQLException {
         assertThat(dummyList.size(), is(equalTo(3)));
@@ -174,7 +188,7 @@ public class FluentJdbcSelectTest {
 
 
     private void verifyQuerying() throws SQLException {
-        verify(connection).prepareStatement(query);
+        verify(connection).prepareStatement(sql);
         verify(preparedStatement).setObject(1, param1);
         verify(preparedStatement).setObject(2, param2);
         verify(preparedStatement).executeQuery();
