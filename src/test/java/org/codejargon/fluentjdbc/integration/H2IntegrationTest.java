@@ -85,13 +85,25 @@ public class H2IntegrationTest {
     }
 
     @Test
-         public void batchInsertWithNamedParams() {
+    public void batchInsertWithNamedParams() {
         fluentJdbc.query()
                 .batch("INSERT INTO foo(id, bar) VALUES(:id, :bar)")
                 .namedParams(namedBatchParamsFor(dummy1, dummy2))
                 .run();
         List<Dummy> dummies = fluentJdbc.query().select("SELECT * FROM foo").listResult(dummyMapper);
         verifyBatchResults(dummies);
+    }
+    
+    @Test
+    public void maxRows() {
+        fluentJdbc.query()
+                .batch("INSERT INTO foo(id, bar) VALUES(:id, :bar)")
+                .namedParams(namedBatchParamsFor(dummy1, dummy2))
+                .run();
+        List<Dummy> dummies = fluentJdbc.query().select("SELECT * FROM foo").listResult(dummyMapper);
+        assertThat(dummies.size(), is(2));
+        List<Dummy> partialDummies = fluentJdbc.query().select("SELECT * FROM foo").maxRows(1L).listResult(dummyMapper);
+        assertThat(partialDummies.size(), is(1));
     }
 
     private void verifyBatchResults(List<Dummy> dummies) {
@@ -126,7 +138,7 @@ public class H2IntegrationTest {
         List<List<Object>> allParams = new ArrayList<>();
         Arrs.stream(dummies).forEach(
                 dummy -> {
-                    List<Object> params = new ArrayList();
+                    List<Object> params = new ArrayList<>();
                     params.add(dummy.id);
                     params.add(dummy.bar);
                     allParams.add(params);
