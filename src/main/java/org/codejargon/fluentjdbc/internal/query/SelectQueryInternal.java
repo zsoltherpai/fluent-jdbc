@@ -20,6 +20,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     
     private Predicate filter = Predicates.alwaysTrue();
     private Optional<Integer> fetchSize = Optional.empty();
+    private Optional<Long> maxRows = Optional.empty();
 
     SelectQueryInternal(String sql, QueryInternal query) {
         super();
@@ -38,6 +39,14 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
         checkNotNull(rows, "rows");
         checkArgument(rows >= 0, "Fetch size rows must be >= 0");
         this.fetchSize = Optional.of(rows);
+        return this;
+    }
+
+    @Override
+    public SelectQuery maxRows(Long rows) {
+        checkNotNull(rows, "rows");
+        checkArgument(rows >= 0, "Max results rows must be >= 0");
+        this.maxRows = Optional.of(rows);
         return this;
     }
 
@@ -122,7 +131,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     private SingleQuerySpecification querySpecs() {
-        return new SingleQuerySpecification(sql, params, namedParams, fetchSize);
+        return SingleQuerySpecification.forSelect(sql, params, namedParams, fetchSize, maxRows);
     }
 
 

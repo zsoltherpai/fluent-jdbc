@@ -56,6 +56,14 @@ public interface SelectQuery {
     SelectQuery fetchSize(Integer rows);
 
     /**
+     * Limits the number of rows returned by the database for a select statement. 
+     * If rows > Integer.MAX_VALUE, JDBC driver must support setLargeMaxRows()
+     * @param rows number of rows
+     * @return this
+     */
+    SelectQuery maxRows(Long rows);
+
+    /**
      * Runs the select query and returns first result - if any
      *
      * @param mapper ResultSet mapper

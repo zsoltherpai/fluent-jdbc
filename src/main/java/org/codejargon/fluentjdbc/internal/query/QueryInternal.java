@@ -19,13 +19,15 @@ public class QueryInternal implements Query {
 
     final ConnectionProvider connectionProvider;
     final QueryConfig config;
+    private final PreparedStatementFactory preparedStatementFactory;
 
     public QueryInternal(
-            ConnectionProvider connectionProvider, 
+            ConnectionProvider connectionProvider,
             QueryConfig config
     ) {
         this.connectionProvider = connectionProvider;
         this.config = config;
+        preparedStatementFactory = new PreparedStatementFactory(config);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class QueryInternal implements Query {
             QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
             connectionProvider.provide(receiver);
             return receiver.returnValue();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw queryException(sql, Optional.empty(), Optional.of(e));
         }
     }
@@ -59,24 +61,13 @@ public class QueryInternal implements Query {
     }
 
     PreparedStatement preparedStatement(
-            Connection con, 
+            Connection con,
             SingleQuerySpecification querySpec
     ) throws SQLException {
-        SqlAndParams sqlAndParams = querySpec.sqlAndParams(config);
-        PreparedStatement statement = con.prepareStatement(sqlAndParams.sql());
-        fetchSize(statement, querySpec.selectFetchSize);
-        assignParams(statement, sqlAndParams.params());
-        return statement;
+        return preparedStatementFactory.create(con, querySpec);
     }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
-        config.paramAssigner.assignParams(statement, params);
-    }
-
-    private void fetchSize(PreparedStatement statement, Optional<Integer> selectFetchSize) throws SQLException {
-        Optional<Integer> activeFetchSize = config.fetchSize(selectFetchSize);
-        if(activeFetchSize.isPresent()) {
-            statement.setFetchSize(activeFetchSize.get());
-        }
+        preparedStatementFactory.assignParams(statement, params);
     }
 }

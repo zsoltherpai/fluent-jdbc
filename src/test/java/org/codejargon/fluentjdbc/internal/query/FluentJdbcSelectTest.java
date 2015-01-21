@@ -155,6 +155,18 @@ public class FluentJdbcSelectTest {
         verifyQuerying();
         verify(preparedStatement).setFetchSize(fetchSize);
     }
+
+    @Test
+    public void selectMaxResults() throws SQLException {
+        Long maxRows = 3L;
+        mockSelectData();
+        List<Dummy> dummies = query.select(sql).params(param1, param2).maxRows(maxRows).listResult(dummyMapper);
+        assertResult(dummies);
+        verifyQuerying();
+        ArgumentCaptor<Integer> maxRowsCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(preparedStatement).setMaxRows(maxRowsCaptor.capture());
+        assertThat(maxRowsCaptor.getValue(), is(equalTo((int) maxRows.longValue())));
+    }
     
     
 
