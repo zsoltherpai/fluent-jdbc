@@ -1,9 +1,9 @@
-####About FluentJdbc####
+####About Fluent-Jdbc####
 
-FluentJdbc provides a fluent API for executing SQL queries in java. It is best suited for projects that
+Fluent-Jdbc provides a fluent API for executing SQL queries in java. It is best suited for projects that
 require fine control over SQL queries and operations in a convenient, declarative way.
 
-It wraps JDBC, provides additional features while avoids JDBC inconveniences and clutter. FluentJdbc is 
+It wraps JDBC, provides additional features while avoids JDBC inconveniences and clutter. Fluent-Jdbc is
 light-weight, has no 3rd party dependencies.
 
 #####Main advantages over plain JDBC#####
