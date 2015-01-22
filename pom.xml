@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9</version>
     <name>FluentJdbc</name>
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     <description>
