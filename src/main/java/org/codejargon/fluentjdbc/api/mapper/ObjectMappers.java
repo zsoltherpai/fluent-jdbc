@@ -10,8 +10,10 @@ import org.codejargon.fluentjdbc.internal.mappers.DefaultObjectMapperRsExtractor
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
 /**
- * Constructs Mappers for mapping a ResultSet row into a POJO. The objects must have a no-arg constructor,
- * fields can be private without accessors. Additional fields (not found in the results) will be ignored.
+ * Constructs Mappers for mapping a ResultSet row into a plain java object. The target class must have 
+ * a no-arg constructor, fields can be private without accessors. Matching of field names/result column names is 
+ * case insensitive and excludes '_' characters. Additional fields (not found in the results and
+ * found in the target class will be ignored.
  * 
  * Matching of field names/result column names is case insensitive and excludes '_' characters
  *  
@@ -47,7 +49,12 @@ public class ObjectMappers {
         private Builder() {
             
         }
-        
+
+        /**
+         * Sets converters to support custom (non-JDBC) fields.
+         * @param extractors Map of field class / ResultSet extractors
+         * @return this
+         */
         public Builder converters(Map<Class, ObjectMapperRsExtractor> extractors) {
             this.extractors = Maps.copyOf(extractors);
             return this;
