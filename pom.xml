@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
@@ -9,11 +10,11 @@
     <description>
         FluentJdbc provides a fluent API for executing SQL queries. It is best suited for projects that
         require fine control over SQL queries and operations in a convenient, declarative way.
-        
+
         It wraps JDBC, providing additional features like: support for custom parameter types (like java.time),
-        named query parameters, automatic ResultSet to POJO mapping, etc. It also avoids inconveniences with 
+        named query parameters, automatic ResultSet to POJO mapping, etc. It also avoids inconveniences with
         JDBC API, like: checked exceptions, explicit resource management / leaks, clutter.
-        
+
         FluentJdbc is light-weight, has no 3rd party dependencies.
     </description>
     <licenses>
@@ -58,6 +59,20 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <parallel>classes</parallel>
+                    <threadCount>1</threadCount>
+                    <perCoreThreadCount>true</perCoreThreadCount>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <profiles>
         <profile>
             <id>ossrh-release</id>
@@ -99,17 +114,9 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <excludePackageNames>org.codejargon.fluentjdbc.internal:org.codejargon.fluentjdbc.internal.*</excludePackageNames>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.18.1</version>
-                        <configuration>
-                            <parallel>classes</parallel>
-                            <threadCount>1</threadCount>
-                            <perCoreThreadCount>true</perCoreThreadCount>
+                            <excludePackageNames>
+                                org.codejargon.fluentjdbc.internal:org.codejargon.fluentjdbc.internal.*
+                            </excludePackageNames>
                         </configuration>
                     </plugin>
                     <plugin>
