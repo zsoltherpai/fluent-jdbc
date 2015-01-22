@@ -57,7 +57,7 @@ public interface SelectQuery {
 
     /**
      * Limits the number of rows returned by the database for a select statement. 
-     * If rows > Integer.MAX_VALUE, JDBC driver must support setLargeMaxRows()
+     * If rows &lt; Integer.MAX_VALUE, JDBC driver must support setLargeMaxRows()
      * @param rows number of rows
      * @return this
      */
