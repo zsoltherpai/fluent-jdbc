@@ -119,7 +119,7 @@ List<Customer> customers = query
 ```java
 DataSource dataSource = ...
 FluentJdbc fluentJdbc = new FluentJdbcBuilder()
-	.connectionProvider(new DataSourceConnectionProvider(dataSource)
+	.connectionProvider(new DataSourceConnectionProvider(dataSource))
         .build();
 Query query = fluentJdbc.query();
 ```
