@@ -108,6 +108,8 @@
                         <version>2.18.1</version>
                         <configuration>
                             <parallel>classes</parallel>
+                            <threadCount>1</threadCount>
+                            <perCoreThreadCount>true</perCoreThreadCount>
                         </configuration>
                     </plugin>
                     <plugin>
