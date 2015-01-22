@@ -58,6 +58,12 @@
             <version>1.4.184</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.11.1.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -66,10 +72,23 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18.1</version>
                 <configuration>
+                    <excludedGroups>org.codejargon.fluentjdbc.integration.IntegrationTest</excludedGroups>
                     <parallel>classes</parallel>
-                    <threadCount>1</threadCount>
+                    <threadCount>8</threadCount>
                     <perCoreThreadCount>true</perCoreThreadCount>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <groups>org.codejargon.fluentjdbc.integration.IntegrationTest</groups>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

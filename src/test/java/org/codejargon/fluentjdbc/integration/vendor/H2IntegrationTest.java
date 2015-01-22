@@ -1,16 +1,17 @@
-package org.codejargon.fluentjdbc.integration;
+package org.codejargon.fluentjdbc.integration.vendor;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
+import org.codejargon.fluentjdbc.integration.IntegrationTest;
+import org.codejargon.fluentjdbc.integration.IntegrationTestDefinition;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
+@Category(IntegrationTest.class)
 public class H2IntegrationTest extends IntegrationTestDefinition {
 
     static Connection sentry;
