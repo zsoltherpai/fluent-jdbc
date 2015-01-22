@@ -20,7 +20,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public abstract class IntegrationTestBase {
+public abstract class IntegrationTestDefinition {
     private static final ObjectMappers objectMappers = ObjectMappers.builder().build();
     private static final Mapper<Dummy> dummyMapper = objectMappers.forClass(Dummy.class);
     private static final Dummy dummy1 = new Dummy("idValue1", "barValue1");
