@@ -17,13 +17,16 @@ light-weight, has no 3rd party dependencies.
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.8</version>
+    <version>0.9</version>
 </dependency>
 ```
 Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki)  
-Latest [javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.8)
+Latest [javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.9)
+
+#####News#####
+0.9 released - support for select query customization (maxRows, defaultFetchSize, fetchSize)
 
 #####Code examples#####
 Some common use cases
