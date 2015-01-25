@@ -7,6 +7,7 @@ import org.codejargon.fluentjdbc.api.query.UpdateResult;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedSqlAndParams;
 import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -51,56 +52,63 @@ class BatchQueryInternal implements BatchQuery {
     @Override
     public List<UpdateResult> run() {
         Preconditions.checkArgument(params.isPresent() || namedParams.isPresent(), "Parameters must be set to run a batch query");
-        return params.isPresent() ? positional() : named();
-    }
-
-    private List<UpdateResult> positional() {
         return query.query(
-                connection -> {
-                    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                        int i = 0;
-                        List<UpdateResult> updateResults = new ArrayList<>();
-                        while (params.get().hasNext()){
-                            i = assignParamAndRunBatchWhenNeeded(statement, i, updateResults, params.get().next());
-                        }
-                        updateResults.addAll(runBatch(statement));
-                        return Collections.unmodifiableList(updateResults);
-                    }
-                }, sql);
+                connection -> params.isPresent() ? positional(connection) : named(connection),
+                sql
+        );
     }
 
-    private List<UpdateResult> named() {
-        return query.query(
-                connection -> {
-                    TransformedSql transformedSql = query.config.transformedSql(sql);
-                    try (PreparedStatement statement = connection.prepareStatement(transformedSql.sql())) {
-                        int i = 0;
-                        List<UpdateResult> updateResults = new ArrayList<>();
-                        while (namedParams.get().hasNext()){
-                            Map<String, Object> namedParamElement = namedParams.get().next();
-                            SqlAndParams sqlAndParams = NamedSqlAndParams.sqlAndParams(transformedSql, namedParamElement);
-                            i = assignParamAndRunBatchWhenNeeded(statement, i, updateResults, sqlAndParams.params());
-                        }
-                        updateResults.addAll(runBatch(statement));
-                        return Collections.unmodifiableList(updateResults);
-                    }
-                }, sql);
+    private List<UpdateResult> positional(Connection connection) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            Batch batch = new Batch();
+            while (params.get().hasNext()) {
+                assignParamAndRunBatchWhenNeeded(statement, batch, params.get().next());
+            }
+            runBatch(statement, batch);
+            return batch.results();
+        }
+
     }
 
-    private int assignParamAndRunBatchWhenNeeded(PreparedStatement statement, int i, List<UpdateResult> updateResults, List<Object> params) throws SQLException {
+    private List<UpdateResult> named(Connection connection) throws SQLException {
+        TransformedSql transformedSql = query.config.transformedSql(sql);
+        try (PreparedStatement statement = connection.prepareStatement(transformedSql.sql())) {
+            Batch batch = new Batch();
+            while (namedParams.get().hasNext()) {
+                SqlAndParams sqlAndParams = NamedSqlAndParams.sqlAndParams(transformedSql, namedParams.get().next());
+                assignParamAndRunBatchWhenNeeded(statement, batch, sqlAndParams.params());
+            }
+            runBatch(statement, batch);
+            return batch.results();
+        }
+    }
+
+    private void assignParamAndRunBatchWhenNeeded(PreparedStatement statement, Batch batch, List<Object> params) throws SQLException {
         query.assignParams(statement, params);
         statement.addBatch();
-        ++i;
-        if (batchSize.isPresent() && i % batchSize.get() == 0) {
-            updateResults.addAll(runBatch(statement));
+        batch.added();
+        if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
+            runBatch(statement, batch);
         }
-        return i;
     }
 
-    private List<UpdateResult> runBatch(PreparedStatement statement) throws SQLException{
+    private void runBatch(PreparedStatement statement, Batch batch) throws SQLException {
         List<Integer> updateds = Ints.asList(statement.executeBatch());
-        return Collections.unmodifiableList(
+        batch.updateResults.addAll(
                 updateds.stream().map(i -> (long) i).map(UpdateResultInternal::new).collect(Collectors.toList())
         );
+    }
+    
+    private static class Batch {
+        private int batchesAdded = 0;
+        private List<UpdateResult> updateResults = new ArrayList<>();
+        
+        private void added() {
+            ++batchesAdded;
+        }
+        
+        private List<UpdateResult> results() {
+            return Collections.unmodifiableList(updateResults);
+        }
     }
 }
