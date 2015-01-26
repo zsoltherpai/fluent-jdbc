@@ -94,17 +94,21 @@ class BatchQueryInternal implements BatchQuery {
 
     private void runBatch(PreparedStatement statement, Batch batch) throws SQLException {
         List<Integer> updateds = Ints.asList(statement.executeBatch());
-        batch.updateResults.addAll(
+        batch.newResults(
                 updateds.stream().map(i -> (long) i).map(UpdateResultInternal::new).collect(Collectors.toList())
         );
     }
     
     private static class Batch {
         private int batchesAdded = 0;
-        private List<UpdateResult> updateResults = new ArrayList<>();
+        private final List<UpdateResult> updateResults = new ArrayList<>();
         
         private void added() {
             ++batchesAdded;
+        }
+        
+        private void newResults(List<UpdateResult> newResults) {
+            updateResults.addAll(newResults);
         }
         
         private List<UpdateResult> results() {
