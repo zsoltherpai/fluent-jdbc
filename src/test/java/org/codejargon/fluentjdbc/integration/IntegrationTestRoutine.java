@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -20,11 +21,16 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public abstract class IntegrationTestDefinition {
+public abstract class IntegrationTestRoutine {
     private static final ObjectMappers objectMappers = ObjectMappers.builder().build();
     private static final Mapper<Dummy> dummyMapper = objectMappers.forClass(Dummy.class);
     private static final Dummy dummy1 = new Dummy("idValue1", "barValue1");
     private static final Dummy dummy2 = new Dummy("idValue2", "barValue2");
+    
+    private static final String insertSqlPositional = "INSERT INTO foo(id, bar) VALUES(?, ?)";
+    private static final String insertSqlNamed = "INSERT INTO foo(id, bar) VALUES(:id, :bar)";
+    private static final String selectAllSql = "SELECT * FROM foo";
+    
     protected FluentJdbc fluentJdbc;
 
     protected abstract DataSource dataSource();
@@ -44,19 +50,17 @@ public abstract class IntegrationTestDefinition {
 
     @Test
     public void insertWithPositional() throws SQLException {
-        fluentJdbc.query().update("INSERT INTO foo(id, bar) VALUES(?, ?)").params(dummy1.id, dummy1.bar).run();
-        Dummy dummy = fluentJdbc.query().select("SELECT * FROM foo").singleResult(dummyMapper);
+        fluentJdbc.query().update(insertSqlPositional).params(dummy1.id, dummy1.bar).run();
+        Dummy dummy = fluentJdbc.query().select(selectAllSql).singleResult(dummyMapper);
         verifyDummy(dummy, dummy1);
     }
 
     @Test
     public void insertWithNamedParams() throws SQLException{
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", dummy1.id);
-        params.put("bar", dummy1.bar);
+        Map<String, Object> params = namedParams(dummy1);
 
-        fluentJdbc.query().update("INSERT INTO foo(id, bar) VALUES(:id, :bar)").namedParams(params).run();
-        Dummy dummy = fluentJdbc.query().select("SELECT * FROM foo").singleResult(dummyMapper);
+        fluentJdbc.query().update(insertSqlNamed).namedParams(params).run();
+        Dummy dummy = fluentJdbc.query().select(selectAllSql).singleResult(dummyMapper);
 
         verifyDummy(dummy, dummy1);
     }
@@ -64,39 +68,50 @@ public abstract class IntegrationTestDefinition {
     @Test
     public void batchInsertWithPositionalParams() {
         fluentJdbc.query()
-                .batch("INSERT INTO foo(id, bar) VALUES(?, ?)")
+                .batch(insertSqlPositional)
                 .params(batchParamsFor(dummy1, dummy2))
                 .run();
-        List<Dummy> dummies = fluentJdbc.query().select("SELECT * FROM foo").listResult(dummyMapper);
+        List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper);
         verifyBatchResults(dummies);
     }
 
     @Test
     public void batchInsertWithNamedParams() {
         fluentJdbc.query()
-                .batch("INSERT INTO foo(id, bar) VALUES(:id, :bar)")
+                .batch(insertSqlNamed)
                 .namedParams(namedBatchParamsFor(dummy1, dummy2))
                 .run();
-        List<Dummy> dummies = fluentJdbc.query().select("SELECT * FROM foo").listResult(dummyMapper);
+        List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper);
         verifyBatchResults(dummies);
     }
 
     @Test
     public void maxRows() {
         fluentJdbc.query()
-                .batch("INSERT INTO foo(id, bar) VALUES(:id, :bar)")
+                .batch(insertSqlNamed)
                 .namedParams(namedBatchParamsFor(dummy1, dummy2))
                 .run();
-        List<Dummy> dummies = fluentJdbc.query().select("SELECT * FROM foo").listResult(dummyMapper);
+        List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper);
         assertThat(dummies.size(), is(2));
-        List<Dummy> partialDummies = fluentJdbc.query().select("SELECT * FROM foo").maxRows(1L).listResult(dummyMapper);
+        List<Dummy> partialDummies = fluentJdbc.query().select(selectAllSql).maxRows(1L).listResult(dummyMapper);
         assertThat(partialDummies.size(), is(1));
+    }
+    
+    protected static void createTestTable(Connection connection) {
+        new FluentJdbcBuilder().build().queryOn(connection).update("CREATE TABLE foo (id VARCHAR(255) PRIMARY KEY, bar VARCHAR(255))").run();
     }
 
     private void removeContentAndVerify() {
         fluentJdbc.query().update("DELETE FROM foo").run();
         Optional<String> id = fluentJdbc.query().select("SELECT id FROM foo").firstResult(Mappers.singleString());
         assertThat(id.isPresent(), is(false));
+    }
+
+    private Map<String, Object> namedParams(Dummy dummy) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", dummy.id);
+        params.put("bar", dummy.bar);
+        return Maps.copyOf(params);
     }
 
     private void verifyBatchResults(List<Dummy> dummies) {

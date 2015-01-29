@@ -1,9 +1,7 @@
 package org.codejargon.fluentjdbc.integration.vendor;
 
-import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
 import org.codejargon.fluentjdbc.integration.IntegrationTest;
-import org.codejargon.fluentjdbc.integration.IntegrationTestDefinition;
-import org.h2.jdbcx.JdbcDataSource;
+import org.codejargon.fluentjdbc.integration.IntegrationTestRoutine;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
@@ -17,7 +15,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 @Category(IntegrationTest.class)
-public class HSQLIntegrationTest extends IntegrationTestDefinition {
+public class HSQLIntegrationTest extends IntegrationTestRoutine {
     static String connectionString = "jdbc:hsqldb:mem:testdb";
     static Connection sentry;
     static DataSource hsqlDataSource;
@@ -25,7 +23,7 @@ public class HSQLIntegrationTest extends IntegrationTestDefinition {
     @BeforeClass
     public static void initHsql() throws Exception {
         initH2DataSource();
-        createDummyTable();
+        createTestTable(sentry);
     }
 
     @AfterClass
@@ -40,12 +38,10 @@ public class HSQLIntegrationTest extends IntegrationTestDefinition {
     private static void initH2DataSource() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
         Class.forName("org.hsqldb.jdbcDriver");
         hsqlDataSource = new HsqlDatasource();
+        // keep a connection open for the duration of the tests
         sentry = hsqlDataSource.getConnection();
     }
-
-    private static void createDummyTable() {
-        new FluentJdbcBuilder().build().queryOn(sentry).update("CREATE TABLE foo (id VARCHAR(255) PRIMARY KEY, bar VARCHAR(1023))").run();
-    }
+    
 
     @Override
     protected DataSource dataSource() {

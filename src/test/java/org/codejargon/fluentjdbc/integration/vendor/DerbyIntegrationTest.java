@@ -1,9 +1,8 @@
 package org.codejargon.fluentjdbc.integration.vendor;
 
 import org.apache.derby.jdbc.EmbeddedDataSource;
-import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
 import org.codejargon.fluentjdbc.integration.IntegrationTest;
-import org.codejargon.fluentjdbc.integration.IntegrationTestDefinition;
+import org.codejargon.fluentjdbc.integration.IntegrationTestRoutine;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
@@ -13,14 +12,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @Category(IntegrationTest.class)
-public class DerbyIntegrationTest extends IntegrationTestDefinition {
+public class DerbyIntegrationTest extends IntegrationTestRoutine {
     static Connection sentry;
     static DataSource derbyDataSource;
 
     @BeforeClass
     public static void initH2() throws Exception {
         initDerbyDataSource();
-        createDummyTable();
+        createTestTable(sentry);
     }
 
     @AfterClass
@@ -39,10 +38,6 @@ public class DerbyIntegrationTest extends IntegrationTestDefinition {
         ds.setCreateDatabase("create");
         derbyDataSource = ds;
         sentry = ds.getConnection();
-    }
-
-    private static void createDummyTable() {
-        new FluentJdbcBuilder().build().queryOn(sentry).update("CREATE TABLE foo (id VARCHAR(255) PRIMARY KEY, bar VARCHAR(1023))").run();
     }
 
     @Override
