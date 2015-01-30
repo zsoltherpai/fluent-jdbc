@@ -6,7 +6,8 @@ import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionP
 import org.codejargon.fluentjdbc.api.mapper.Mappers;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers;
 import org.codejargon.fluentjdbc.api.query.Mapper;
-import org.codejargon.fluentjdbc.internal.support.Arrs;
+import org.codejargon.fluentjdbc.api.query.Query;
+import org.codejargon.fluentjdbc.integration.testdata.Dummy;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 import org.junit.After;
 import org.junit.Before;
@@ -17,29 +18,27 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.codejargon.fluentjdbc.integration.testdata.DummyTool.*;
+import static org.codejargon.fluentjdbc.integration.testdata.TestQuery.*;
+import static org.codejargon.fluentjdbc.integration.testdata.Dummies.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public abstract class IntegrationTestRoutine {
-    private static final ObjectMappers objectMappers = ObjectMappers.builder().build();
-    private static final Mapper<Dummy> dummyMapper = objectMappers.forClass(Dummy.class);
-    private static final Dummy dummy1 = new Dummy("idValue1", "stringValue1");
-    private static final Dummy dummy2 = new Dummy("idValue2", "stringValue2");
-    
-    private static final String insertSqlPositional = "INSERT INTO DUMMY(id, string) VALUES(?, ?)";
-    private static final String insertSqlNamed = "INSERT INTO DUMMY(id, string) VALUES(:id, :string)";
-    private static final String selectAllSql = "SELECT * FROM DUMMY";
+    private static final Mapper<Dummy> dummyMapper = ObjectMappers.builder().build().forClass(Dummy.class);
+
     
     protected FluentJdbc fluentJdbc;
+    protected Query query;
 
     protected abstract DataSource dataSource();
 
     @Before
-    public void initializeFluentJdbcAndCleanUp() {
+    public void initializeFluentJdbcAndCleanUpDb() {
         fluentJdbc = new FluentJdbcBuilder()
                 .connectionProvider(new DataSourceConnectionProvider(dataSource()))
                 .build();
+        query = fluentJdbc.query();
         removeContentAndVerify();
     }
     
@@ -50,26 +49,23 @@ public abstract class IntegrationTestRoutine {
 
     @Test
     public void insertWithPositional() throws SQLException {
-        fluentJdbc.query().update(insertSqlPositional).params(dummy1.id, dummy1.string).run();
+        query.update(insertSqlPositional).params(params(dummy1)).run();
         Dummy dummy = fluentJdbc.query().select(selectAllSql).singleResult(dummyMapper);
         verifyDummy(dummy, dummy1);
     }
 
     @Test
     public void insertWithNamedParams() throws SQLException{
-        Map<String, Object> params = namedParams(dummy1);
-
-        fluentJdbc.query().update(insertSqlNamed).namedParams(params).run();
+        query.update(insertSqlNamed).namedParams(namedParams(dummy1)).run();
         Dummy dummy = fluentJdbc.query().select(selectAllSql).singleResult(dummyMapper);
-
         verifyDummy(dummy, dummy1);
     }
 
     @Test
     public void batchInsertWithPositionalParams() {
-        fluentJdbc.query()
+        query
                 .batch(insertSqlPositional)
-                .params(batchParamsFor(dummy1, dummy2))
+                .params(batchParams(dummy1, dummy2))
                 .run();
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper);
         verifyBatchResults(dummies);
@@ -77,9 +73,9 @@ public abstract class IntegrationTestRoutine {
 
     @Test
     public void batchInsertWithNamedParams() {
-        fluentJdbc.query()
+        query
                 .batch(insertSqlNamed)
-                .namedParams(namedBatchParamsFor(dummy1, dummy2))
+                .namedParams(namedBatchParams(dummy1, dummy2))
                 .run();
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper);
         verifyBatchResults(dummies);
@@ -87,9 +83,9 @@ public abstract class IntegrationTestRoutine {
 
     @Test
     public void maxRows() {
-        fluentJdbc.query()
+        query
                 .batch(insertSqlNamed)
-                .namedParams(namedBatchParamsFor(dummy1, dummy2))
+                .namedParams(namedBatchParams(dummy1, dummy2))
                 .run();
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper);
         assertThat(dummies.size(), is(2));
@@ -98,73 +94,23 @@ public abstract class IntegrationTestRoutine {
     }
     
     protected static void createTestTable(Connection connection) {
-        new FluentJdbcBuilder().build().queryOn(connection).update("CREATE TABLE DUMMY (id VARCHAR(255) PRIMARY KEY, string VARCHAR(255))").run();
+        new FluentJdbcBuilder().build().queryOn(connection).update(createDummyTable).run();
     }
 
     private void removeContentAndVerify() {
-        fluentJdbc.query().update("DELETE FROM DUMMY").run();
+        query.update("DELETE FROM DUMMY").run();
         Optional<String> id = fluentJdbc.query().select("SELECT id FROM DUMMY").firstResult(Mappers.singleString());
         assertThat(id.isPresent(), is(false));
     }
 
-    private Map<String, Object> namedParams(Dummy dummy) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", dummy.id);
-        params.put("string", dummy.string);
-        return Maps.copyOf(params);
-    }
-
     private void verifyBatchResults(List<Dummy> dummies) {
         assertThat(dummies.size(), is(2));
-        Map<String, Dummy> dummyIndex = Maps.uniqueIndex(dummies, dummy -> dummy.id);
-        assertThat(dummyIndex.containsKey(dummy1.id), is(true));
-        verifyDummy(dummyIndex.get(dummy1.id), dummy1);
-
-        assertThat(dummyIndex.containsKey(dummy2.id), is(true));
-        verifyDummy(dummyIndex.get(dummy2.id), dummy2);
+        Map<String, Dummy> dummyIndex = Maps.uniqueIndex(dummies, Dummy::id);
+        assertThat(dummyIndex.containsKey(dummy1.id()), is(true));
+        verifyDummy(dummyIndex.get(dummy1.id()), dummy1);
+        assertThat(dummyIndex.containsKey(dummy2.id()), is(true));
+        verifyDummy(dummyIndex.get(dummy2.id()), dummy2);
     }
 
-    private void verifyDummy(Dummy actual, Dummy expected) {
-        assertThat(actual.id, is(equalTo(expected.id)));
-        assertThat(actual.string, is(equalTo(expected.string)));
-    }
 
-    private Iterator<Map<String, Object>> namedBatchParamsFor(Dummy... dummies) {
-        List<Map<String, Object>> allParams = new ArrayList<>();
-        Arrs.stream(dummies).forEach(
-                dummy -> {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("id", dummy.id);
-                    params.put("string", dummy.string);
-                    allParams.add(params);
-                }
-        );
-        return allParams.iterator();
-    }
-
-    private Iterator<List<Object>> batchParamsFor(Dummy... dummies) {
-        List<List<Object>> allParams = new ArrayList<>();
-        Arrs.stream(dummies).forEach(
-                dummy -> {
-                    List<Object> params = new ArrayList<>();
-                    params.add(dummy.id);
-                    params.add(dummy.string);
-                    allParams.add(params);
-                }
-        );
-        return allParams.iterator();
-    }
-
-    public static class Dummy {
-        String id;
-        String string;
-
-        public Dummy(String id, String string) {
-            this.id = id;
-            this.string = string;
-        }
-
-        public Dummy() {
-        }
-    }
 }
