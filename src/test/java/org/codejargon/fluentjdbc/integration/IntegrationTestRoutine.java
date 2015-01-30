@@ -24,12 +24,12 @@ import static org.junit.Assert.assertThat;
 public abstract class IntegrationTestRoutine {
     private static final ObjectMappers objectMappers = ObjectMappers.builder().build();
     private static final Mapper<Dummy> dummyMapper = objectMappers.forClass(Dummy.class);
-    private static final Dummy dummy1 = new Dummy("idValue1", "barValue1");
-    private static final Dummy dummy2 = new Dummy("idValue2", "barValue2");
+    private static final Dummy dummy1 = new Dummy("idValue1", "stringValue1");
+    private static final Dummy dummy2 = new Dummy("idValue2", "stringValue2");
     
-    private static final String insertSqlPositional = "INSERT INTO foo(id, bar) VALUES(?, ?)";
-    private static final String insertSqlNamed = "INSERT INTO foo(id, bar) VALUES(:id, :bar)";
-    private static final String selectAllSql = "SELECT * FROM foo";
+    private static final String insertSqlPositional = "INSERT INTO DUMMY(id, string) VALUES(?, ?)";
+    private static final String insertSqlNamed = "INSERT INTO DUMMY(id, string) VALUES(:id, :string)";
+    private static final String selectAllSql = "SELECT * FROM DUMMY";
     
     protected FluentJdbc fluentJdbc;
 
@@ -50,7 +50,7 @@ public abstract class IntegrationTestRoutine {
 
     @Test
     public void insertWithPositional() throws SQLException {
-        fluentJdbc.query().update(insertSqlPositional).params(dummy1.id, dummy1.bar).run();
+        fluentJdbc.query().update(insertSqlPositional).params(dummy1.id, dummy1.string).run();
         Dummy dummy = fluentJdbc.query().select(selectAllSql).singleResult(dummyMapper);
         verifyDummy(dummy, dummy1);
     }
@@ -98,19 +98,19 @@ public abstract class IntegrationTestRoutine {
     }
     
     protected static void createTestTable(Connection connection) {
-        new FluentJdbcBuilder().build().queryOn(connection).update("CREATE TABLE foo (id VARCHAR(255) PRIMARY KEY, bar VARCHAR(255))").run();
+        new FluentJdbcBuilder().build().queryOn(connection).update("CREATE TABLE DUMMY (id VARCHAR(255) PRIMARY KEY, string VARCHAR(255))").run();
     }
 
     private void removeContentAndVerify() {
-        fluentJdbc.query().update("DELETE FROM foo").run();
-        Optional<String> id = fluentJdbc.query().select("SELECT id FROM foo").firstResult(Mappers.singleString());
+        fluentJdbc.query().update("DELETE FROM DUMMY").run();
+        Optional<String> id = fluentJdbc.query().select("SELECT id FROM DUMMY").firstResult(Mappers.singleString());
         assertThat(id.isPresent(), is(false));
     }
 
     private Map<String, Object> namedParams(Dummy dummy) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", dummy.id);
-        params.put("bar", dummy.bar);
+        params.put("string", dummy.string);
         return Maps.copyOf(params);
     }
 
@@ -126,7 +126,7 @@ public abstract class IntegrationTestRoutine {
 
     private void verifyDummy(Dummy actual, Dummy expected) {
         assertThat(actual.id, is(equalTo(expected.id)));
-        assertThat(actual.bar, is(equalTo(expected.bar)));
+        assertThat(actual.string, is(equalTo(expected.string)));
     }
 
     private Iterator<Map<String, Object>> namedBatchParamsFor(Dummy... dummies) {
@@ -135,7 +135,7 @@ public abstract class IntegrationTestRoutine {
                 dummy -> {
                     Map<String, Object> params = new HashMap<>();
                     params.put("id", dummy.id);
-                    params.put("bar", dummy.bar);
+                    params.put("string", dummy.string);
                     allParams.add(params);
                 }
         );
@@ -148,7 +148,7 @@ public abstract class IntegrationTestRoutine {
                 dummy -> {
                     List<Object> params = new ArrayList<>();
                     params.add(dummy.id);
-                    params.add(dummy.bar);
+                    params.add(dummy.string);
                     allParams.add(params);
                 }
         );
@@ -157,11 +157,11 @@ public abstract class IntegrationTestRoutine {
 
     public static class Dummy {
         String id;
-        String bar;
+        String string;
 
-        public Dummy(String id, String bar) {
+        public Dummy(String id, String string) {
             this.id = id;
-            this.bar = bar;
+            this.string = string;
         }
 
         public Dummy() {
