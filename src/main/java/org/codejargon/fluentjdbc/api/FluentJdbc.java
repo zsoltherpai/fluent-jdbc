@@ -16,7 +16,7 @@ public interface FluentJdbc {
     Query query();
 
     /**
-     * Creates a Query on a given managed connection.
+     * Creates a Query using a given managed connection.
      *
      * @param connection managed sql Connection
      * @return Query API for the given connection

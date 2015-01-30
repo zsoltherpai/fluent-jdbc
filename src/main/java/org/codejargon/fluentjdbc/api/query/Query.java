@@ -1,7 +1,7 @@
 package org.codejargon.fluentjdbc.api.query;
 
 /**
- * Fluent Query API. Thread-safe if FluentJdbc's ConnectionProvider is thread-safe.
+ * Fluent Query API. Thread-safe.
  */
 public interface Query {
     /**
