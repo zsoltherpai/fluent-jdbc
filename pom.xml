@@ -10,6 +10,7 @@
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     <modules>
         <module>fluent-jdbc</module>
+        <module>fluent-jdbc-guice-persist</module>
     </modules>
     <description>
         FluentJdbc provides a fluent API for executing SQL queries. It is best suited for projects that
