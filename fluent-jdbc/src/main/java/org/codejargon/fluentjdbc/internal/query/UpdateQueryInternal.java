@@ -5,7 +5,6 @@ import org.codejargon.fluentjdbc.api.query.UpdateResult;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     private final String sql;
