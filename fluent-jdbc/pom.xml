@@ -8,7 +8,6 @@
         <version>0.9.1-SNAPSHOT</version>
     </parent>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
     <name>Fluent-Jdbc</name>
     <dependencies>
         <dependency>
