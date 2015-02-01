@@ -9,14 +9,14 @@ import org.codejargon.fluentjdbc.api.query.Query;
  */
 public interface FluentJdbc {
     /**
-     * Creates a Query on a connection provided by the ConnectionProvider. Fails if no ConnectionProvider is set.
+     * Creates a Query API on a connection provided by the ConnectionProvider. Fails if no ConnectionProvider is set.
      *
      * @return Query API on a connection provided by the ConnectionProvider
      */
     Query query();
 
     /**
-     * Creates a Query using a given managed connection.
+     * Creates a Query API using a given managed connection.
      *
      * @param connection managed sql Connection
      * @return Query API for the given connection
