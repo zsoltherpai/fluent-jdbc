@@ -10,7 +10,7 @@
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     <modules>
         <module>fluent-jdbc</module>
-        <module>fluent-jdbc-guice-persist</module>
+        <module>extensions</module>
     </modules>
     <description>
         FluentJdbc provides a fluent API for executing SQL queries. It is best suited for projects that
@@ -59,38 +59,15 @@
         </dependency>
     </dependencies>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18.1</version>
-                <executions>
-                    <execution>
-                        <id>unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <excludedGroups>org.codejargon.fluentjdbc.integration.IntegrationTest</excludedGroups>
-                            <parallel>classes</parallel>
-                            <threadCount>8</threadCount>
-                            <perCoreThreadCount>true</perCoreThreadCount>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>integration-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <groups>org.codejargon.fluentjdbc.integration.IntegrationTest</groups>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
     <profiles>
         <profile>

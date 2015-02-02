@@ -7,9 +7,10 @@
         <artifactId>fluentjdbc-parent</artifactId>
         <version>0.9.1-SNAPSHOT</version>
     </parent>
-    <artifactId>fluentjdbc-guice-persist</artifactId>
-    <name>Fluent-Jdbc Guice Persist</name>
-    <dependencies>
-
-    </dependencies>
+    <artifactId>fluentjdbc-extensions-parent</artifactId>
+    <name>Fluent-Jdbc Extensions Parent</name>
+    <packaging>pom</packaging>
+    <modules>
+        <module>fluent-jdbc-guice-persist</module>
+    </modules>
 </project>

@@ -1,7 +1,9 @@
 package org.codejargon.fluentjdbc.api;
 
 import java.sql.Connection;
+import java.util.Optional;
 
+import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Query;
 
 /**
@@ -22,4 +24,10 @@ public interface FluentJdbc {
      * @return Query API for the given connection
      */
     Query queryOn(Connection connection);
+
+    /**
+     * Returns the underlying ConnectionProvider (if any is set)
+     * @return ConnectionProvider
+     */
+    Optional<ConnectionProvider> connectionProvider();
 }

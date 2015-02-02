@@ -29,6 +29,5 @@ public class QueryConfig {
     
     Optional<Integer> fetchSize(Optional<Integer> selectFetchSize) {
         return selectFetchSize.isPresent() ? selectFetchSize : defaultFetchSize;
-        
     }
 }
