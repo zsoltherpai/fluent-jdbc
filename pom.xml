@@ -14,10 +14,11 @@
     </modules>
     <description>
         FluentJdbc provides a fluent API for executing SQL queries. It is best suited for projects that
-        require fine control over SQL queries and operations in a convenient, declarative way.
+        require fine control over SQL queries and operations in a convenient, declarative way. Can be used
+        standalone or complement higher level of abstractions like JPA or other ORM solutions.
 
-        It wraps JDBC, providing additional features like: support for custom parameter types (like java.time),
-        named query parameters, automatic ResultSet to POJO mapping, etc. It also avoids inconveniences with
+        It provides features like: support for custom parameter types (like java.time),
+        named query parameters, automatic ResultSet to POJO mapping, etc. It also avoids inconveniences of
         JDBC API, like: checked exceptions, explicit resource management / leaks, clutter.
 
         FluentJdbc is light-weight, has no 3rd party dependencies.
