@@ -1,7 +1,8 @@
 package org.codejargon.fluentjdbc.api.query;
 
 /**
- * Fluent Query API. Thread-safe.
+ * <p>Fluent Query API to run select, update/insert, and batch update/insert queries. Thread-safe - if the underlying ConnectionProvider is thread-safe.</p>
+ * @see org.codejargon.fluentjdbc.api.integration.ConnectionProvider
  */
 public interface Query {
     /**
