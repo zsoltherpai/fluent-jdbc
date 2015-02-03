@@ -1,8 +1,8 @@
 ####About Fluent-Jdbc####
 
-FluentJdbc provides a fluent API for executing SQL queries. It is best suited for projects that
+FluentJdbc provides a fluent API for executing native SQL queries. It is best suited for projects that
 require fine control over SQL queries and operations in a convenient, declarative way. Can be used
-standalone or complement higher level of abstractions like JPA or other ORM solutions.
+standalone or complement higher level abstractions like JPA or other ORMs.
 
 It provides features like: support for custom parameter types (like java.time), named query parameters, 
 automatic ResultSet to POJO mapping, etc. It also avoids inconveniences of JDBC API, like: 
@@ -139,3 +139,9 @@ ConnectionProvider provider = query -> {
    	});
 }
 ```
+######Transactions######
+Transaction-managed connections can be provided by the ConnectionProvider implementation. This is possible in a number of ways.
+- Using a transaction-aware DataSource (eg JEE DataSources, Spring's TransactionAwareDataSourceProxy)
+- Getting the underlying connection from a JPA session (eg Guice Persist with JPA)
+- Getting transaction-managed connection from a Connection callback.
+- There is an extension library for Guice Persist: fluentjdbc-guice-persist, which supports standalone transaction management (without JPA or other tech)
