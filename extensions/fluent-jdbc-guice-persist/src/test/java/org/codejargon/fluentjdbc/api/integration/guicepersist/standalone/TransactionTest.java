@@ -7,21 +7,24 @@ import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
 import org.codejargon.fluentjdbc.api.mapper.Mappers;
 import org.codejargon.fluentjdbc.api.query.Query;
 import org.codejargon.fluentjdbc.integration.IntegrationTest;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @Category(IntegrationTest.class)
 public class TransactionTest extends TransactionTestDb {
-    Injector injector;
-    Query query;
-    TransactionTestService testService;
+    static Injector injector;
+    static Query query;
+    static TransactionTestService testService;
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void initFluentJdbcAndTestService() {
         TransactionalConnectionProvider cp = new TransactionalConnectionProvider(ds);
         FluentJdbc fluentJdbc = new FluentJdbcBuilder().connectionProvider(cp).build();
         injector = Guice.createInjector(new FluentJdbcTransactionalModule(fluentJdbc));
@@ -32,40 +35,90 @@ public class TransactionTest extends TransactionTestDb {
     @Test
     public void noTransaction() {
         testService.noTransaction();
-        assertThat(count(), is(1));
+        assertThat(inserted(), is(1));
     }
 
     @Test
     public void transaction() {
         testService.transaction();
-        assertThat(count(), is(1));
+        assertThat(inserted(), is(1));
     }
 
-    @Test(expected = TransactionBreaking.class)
+    @Test
     public void transactionBreaking() {
-        testService.transactionBreaking();
-        assertThat(count(), is(0));
+        try {
+            testService.transactionBreaking();
+        } catch (TransactionBreaking e) {
+            // ignore
+        }
+        assertThat(inserted(), is(0));
     }
-    
+
     @Test
     public void propagatedTransaction() {
         testService.propagatedTransaction();
-        assertThat(count(), is(2));
+        assertThat(inserted(), is(2));
     }
 
-    @Test(expected = TransactionBreaking.class)
+    @Test
     public void propagatedTransactionBreaking() {
-        testService.propagatedTransactionBreaking();
-        assertThat(count(), is(0));
+        try {
+            testService.propagatedTransactionBreaking();
+        } catch (TransactionBreaking e) {
+            // ignore
+        }
+        assertThat(inserted(), is(0));
     }
 
-    @Test(expected = TransactionBreaking.class)
+    @Test
     public void propagatedTransactionOriginalBreaking() {
-        testService.propagatedTransactionOriginalBreaking();
-        assertThat(count(), is(0));
+        try {
+            testService.propagatedTransactionOriginalBreaking();
+        } catch (TransactionBreaking e) {
+            // ignore
+        }
+        assertThat(inserted(), is(0));
     }
-    
-    private int count() {
+
+    @Test
+    public void rollbackRulesNoException() {
+        testService.rollbackRulesNoException();
+        assertThat(inserted(), is(1));
+    }
+
+    @Test
+    public void rollbackRulesNonRollbackException() {
+        try {
+            testService.rollbackRulesNonRollbackException();
+        } catch (UnsupportedOperationException e) {
+            // ignore
+        }
+        assertThat(inserted(), is(1));
+
+    }
+
+    @Test
+    public void rollbackRulesRollbackException() throws IOException {
+        try {
+            testService.rollbackRulesRollbackException();
+        } catch (IOException e) {
+            // ignore
+        }
+        assertThat(inserted(), is(0));
+    }
+
+    @Test
+    public void rollbackRulesIgnoredException() throws FileNotFoundException {
+        try {
+            testService.rollbackRulesIgnoredException();
+        } catch(FileNotFoundException e) {
+            // ignore
+        }
+        assertThat(inserted(), is(1));
+    }
+
+
+    private int inserted() {
         return queryOnSentry().select("SELECT COUNT(*) FROM DUMMY").singleResult(Mappers.singleInteger());
     }
 }
