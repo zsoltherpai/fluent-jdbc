@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Plugin for setting parameters of custom types (eg. Joda time, etc..)
+ * <p>Plugin for setting parameters of custom types (eg. Joda time, etc..)</p>
  *
  * Support for java.time is implemented by Fluent-Jdbc by default
  */

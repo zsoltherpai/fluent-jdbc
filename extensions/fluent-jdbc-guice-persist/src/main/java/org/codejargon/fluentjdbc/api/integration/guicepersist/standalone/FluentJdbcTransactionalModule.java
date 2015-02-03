@@ -22,6 +22,7 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkPres
  * FluentJdbc fluentJdbc = new FluentJdbcBuilder().connectionProvider(cp).build();
  * Injector injector = Guice.createInjector(new FluentJdbcTransactionalModule(fluentJdbc), ...);
  * </pre>
+ * @see org.codejargon.fluentjdbc.api.integration.guicepersist.standalone.TransactionalConnectionProvider
  */
 public class FluentJdbcTransactionalModule extends AbstractModule {
     private final TransactionalConnectionProvider transactionalConnectionProvider;

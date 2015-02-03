@@ -4,7 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * API for supporting custom types in ObjectMapper
+ * <p>Plug-in for supporting custom types in ObjectMappers</p>
+ * @see org.codejargon.fluentjdbc.api.mapper.ObjectMappers
  */
 public interface ObjectMapperRsExtractor<T> {
     /**

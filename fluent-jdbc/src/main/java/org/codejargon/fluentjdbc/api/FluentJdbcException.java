@@ -1,7 +1,7 @@
 package org.codejargon.fluentjdbc.api;
 
 /**
- * Base exception for exceptions thrown by Fluent-Jdbc
+ * Base exception for exceptions thrown by FluentJdbc
  */
 public class FluentJdbcException extends RuntimeException {
     public FluentJdbcException(String message) {

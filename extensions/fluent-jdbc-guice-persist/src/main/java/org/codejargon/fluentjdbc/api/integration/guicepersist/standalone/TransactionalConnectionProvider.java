@@ -10,8 +10,9 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Wraps a ConnectionProvider to support transaction management without the use of a JPA provider. 
- * Needs FluentJdbcTransactionalModule installed to enable transaction handling.
+ * <p>Wraps a ConnectionProvider to support transaction management without the use of a JPA provider. 
+ * Needs FluentJdbcTransactionalModule installed to enable transaction handling.</p>
+ * @see org.codejargon.fluentjdbc.api.integration.guicepersist.standalone.FluentJdbcTransactionalModule
  */
 public class TransactionalConnectionProvider implements ConnectionProvider {
     private final ThreadLocal<Optional<Connection>> currentTxConnection = new ThreadLocal<Optional<Connection>>() {

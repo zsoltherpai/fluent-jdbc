@@ -10,17 +10,13 @@ import org.codejargon.fluentjdbc.internal.mappers.DefaultObjectMapperRsExtractor
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
 /**
- * Constructs Mappers for mapping a ResultSet row into a plain java object. The target class must have 
- * a no-arg constructor, fields can be private without accessors. Matching of field names/result column names is 
- * case insensitive and excludes '_' characters. Additional fields (not found in the results and
- * found in the target class will be ignored.
- * 
- * Matching of field names/result column names is case insensitive and excludes '_' characters
- *  
- * In addition to types in JDBC types, supports java.time types out of the box.
- * Supports custom types field types through ObjectMapperRsExtractors.
+ * <p>Constructs Mappers for mapping a ResultSet row into a plain java object based on object field vs ResultSet column
+ * match. Matching is case insensitive and ignore '_' characters. The target class must have
+ * a no-arg constructor, fields can be private, no need for accessors.</p>
  *
-
+ * <p>In addition to JDBC types, supports java.time types out of the box. Supports plugins for custom types.</p>
+ *
+ * @see org.codejargon.fluentjdbc.api.query.Mapper
  */
 public class ObjectMappers {
     private final Map<Class, ObjectMapperRsExtractor> extractors;

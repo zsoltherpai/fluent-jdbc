@@ -3,7 +3,8 @@ package org.codejargon.fluentjdbc.api.mapper;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 
 /**
- * A set of common mappers for convenience
+ * <p>A set of common mappers for convenience.</p>
+ * @see org.codejargon.fluentjdbc.api.mapper.ObjectMappers
  */
 public abstract class Mappers {
     private static final Mapper<Integer> singleInteger = (rs) -> rs.getInt(1);
