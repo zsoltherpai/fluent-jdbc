@@ -117,7 +117,6 @@ public class TransactionTest extends TransactionTestDb {
         assertThat(inserted(), is(1));
     }
 
-
     private int inserted() {
         return queryOnSentry().select("SELECT COUNT(*) FROM DUMMY").singleResult(Mappers.singleInteger());
     }

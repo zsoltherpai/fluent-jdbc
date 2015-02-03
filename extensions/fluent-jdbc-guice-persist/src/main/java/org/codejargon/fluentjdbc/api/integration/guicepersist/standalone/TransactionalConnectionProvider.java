@@ -22,23 +22,24 @@ public class TransactionalConnectionProvider implements ConnectionProvider {
         }
     };
 
+    // Note: this connectionProvider will never close a Connection. Needs to be handled in "provide".
     private final ConnectionProvider connectionProvider;
 
     /**
-     * Constructs TransactionalConnectionProvider based on ConnectionProvider. The ConnectionProvider implementation 
-     * must keep the connection open (closing would disrupt transaction management)
-     * @param connectionProvider an implementation that keeps the connection open
-     */
-    public TransactionalConnectionProvider(ConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
-    }
-
-    /**
-     * Convenience constructor. Constructs TransactionalConnectionProvider based on a DataSource.
+     * Constructs TransactionalConnectionProvider based on a DataSource.
      * @param dataSource Non-transactionaware DataSource
      */
     public TransactionalConnectionProvider(DataSource dataSource) {
         this.connectionProvider = q -> q.receive(dataSource.getConnection());
+    }
+
+    /**
+     * Constructs TransactionalConnectionProvider based on ConnectionProvider. The ConnectionProvider implementation
+     * must keep the connection open (closing would disrupt transaction management)
+     * @param connectionProvider an implementation that keeps the connection open after acquiring it
+     */
+    public TransactionalConnectionProvider(ConnectionProvider connectionProvider) {
+        this.connectionProvider = connectionProvider;
     }
 
     @Override
@@ -46,8 +47,11 @@ public class TransactionalConnectionProvider implements ConnectionProvider {
         Optional<Connection> current = currentTxConnection.get();
         if (current.isPresent()) {
             query.receive(current.get());
+            // TransactionInterceptor will call removeActiveTransactionConnection() to close the connection
         } else {
-            connectionProvider.provide(query);
+            try(Connection connection = fetchNewConnection()) {
+                query.receive(connection);
+            }
         }
     }
 
