@@ -8,6 +8,15 @@ import java.sql.SQLException;
  * releasing a Connection. This makes it possible to integrate FluentJdbc to most pooling / transaction
  * management solutions.
  * </p>
+ * 
+ * <p>Implementation pattern</p>
+ * <pre>
+ * query -&gt; {
+ *     Connection connection = ... // acquire a connection 
+ *     query.receive(connection)   // make the connection available to FluentJdbc queries
+ *     connection.close()          // release connection - may not be needed if connection is already managed
+ * }         
+ * </pre>
  *
  * <p>
  * Example implementations:
@@ -31,7 +40,7 @@ import java.sql.SQLException;
  *
  * <pre>
  * query -&gt; {
- *     jdbcOperations.execute(connection -&gt; {
+ *     jdbcTemplate.execute(connection -&gt; {
  *        query.receive(connection);
  *     });
  * }
