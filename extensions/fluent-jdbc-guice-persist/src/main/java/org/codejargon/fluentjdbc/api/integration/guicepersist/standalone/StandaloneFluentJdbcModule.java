@@ -23,7 +23,7 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkPres
  * Example:<br><br>
  * <pre>
  * FluentJdbcBuilder fluentJdbcBuilder = new FluentJdbcBuilder(); // ... configure if needed
- * DataSource dataSource = ...*
+ * DataSource dataSource = ...
  * StandaloneFluentJdbcModule module = new StandaloneFluentJdbcModule(fluentJdbcBuilder, dataSource);
  * </pre>
  */

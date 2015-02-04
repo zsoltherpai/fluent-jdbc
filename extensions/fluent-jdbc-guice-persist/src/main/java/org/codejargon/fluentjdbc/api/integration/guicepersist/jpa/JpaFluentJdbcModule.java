@@ -8,7 +8,14 @@ import org.codejargon.fluentjdbc.internal.support.Preconditions;
 import javax.persistence.EntityManager;
 
 /**
- * Binds FluentJdbc and Query using a JPA ConnectionProvider. Requires an already bound EntityManager.
+ * <p>Binds FluentJdbc and Query using a JPA ConnectionProvider. Requires an already bound EntityManager.</p>
+ * Example<br><br>
+ * <pre>
+ * FluentJdbcBuilder fluentJdbcBuilder = new FluentJdbcBuilder(); // ... configure if needed
+ * JpaConnectionExtractor extractor = ... 
+ * JpaFluentJdbcModule module = new JpaFluentJdbcModule(fluentJdbcBuilder, extractor);
+ * </pre>  
+ * @see org.codejargon.fluentjdbc.api.integration.guicepersist.jpa.JpaConnectionExtractor
  */
 public class JpaFluentJdbcModule extends AbstractModule {
     private final FluentJdbcBuilder fluentJdbcBuilder;
