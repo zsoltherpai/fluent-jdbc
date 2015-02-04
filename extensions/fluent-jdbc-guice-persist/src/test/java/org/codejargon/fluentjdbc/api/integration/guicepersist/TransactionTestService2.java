@@ -1,7 +1,8 @@
-package org.codejargon.fluentjdbc.api.integration.guicepersist.standalone;
+package org.codejargon.fluentjdbc.api.integration.guicepersist;
 
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import org.codejargon.fluentjdbc.api.integration.guicepersist.standalone.TransactionBreaking;
 import org.codejargon.fluentjdbc.api.query.Query;
 
 public class TransactionTestService2 {

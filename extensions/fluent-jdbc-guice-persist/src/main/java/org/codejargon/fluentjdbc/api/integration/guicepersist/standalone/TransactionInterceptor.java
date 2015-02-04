@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 class TransactionInterceptor implements MethodInterceptor {
-    private final TransactionalConnectionProvider transactionalConnectionProvider;
+    private final StandaloneTxConnectionProvider standaloneTxConnectionProvider;
 
-    TransactionInterceptor(TransactionalConnectionProvider transactionalConnectionProvider) {
-        this.transactionalConnectionProvider = transactionalConnectionProvider;
+    TransactionInterceptor(StandaloneTxConnectionProvider standaloneTxConnectionProvider) {
+        this.standaloneTxConnectionProvider = standaloneTxConnectionProvider;
     }
 
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
@@ -22,7 +22,7 @@ class TransactionInterceptor implements MethodInterceptor {
         try {
             Object result = methodInvocation.proceed();
             if (newTransactionStarted) {
-                transactionalConnectionProvider.commitActiveTransaction(Optional.empty());
+                standaloneTxConnectionProvider.commitActiveTransaction(Optional.empty());
             }
             return result;
         } catch (Exception e) {
@@ -30,14 +30,14 @@ class TransactionInterceptor implements MethodInterceptor {
             throw e;
         } finally {
             if (newTransactionStarted) {
-                transactionalConnectionProvider.removeActiveTransactionConnection();
+                standaloneTxConnectionProvider.removeActiveTransactionConnection();
             }
         }
     }
 
     private Boolean startNewTransactionIfNecessary() {
-        if (!transactionalConnectionProvider.hasActiveTransaction()) {
-            transactionalConnectionProvider.startNewTransaction();
+        if (!standaloneTxConnectionProvider.hasActiveTransaction()) {
+            standaloneTxConnectionProvider.startNewTransaction();
             return true;
         } else {
             return false;
@@ -46,9 +46,9 @@ class TransactionInterceptor implements MethodInterceptor {
 
     private void rollbackOrCommit(MethodInvocation methodInvocation, Exception e) {
         if (rollbackNecessary(e, transactional(methodInvocation))) {
-            transactionalConnectionProvider.rollbackActiveTransaction();
+            standaloneTxConnectionProvider.rollbackActiveTransaction();
         } else {
-            transactionalConnectionProvider.commitActiveTransaction(Optional.of(e));
+            standaloneTxConnectionProvider.commitActiveTransaction(Optional.of(e));
         }
     }
 

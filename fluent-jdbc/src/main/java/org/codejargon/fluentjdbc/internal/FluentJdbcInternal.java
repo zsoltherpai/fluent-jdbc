@@ -54,7 +54,6 @@ public class FluentJdbcInternal implements FluentJdbc {
         );
     }
 
-    @Override
     public Optional<ConnectionProvider> connectionProvider() {
         return connectionProvider;
     }

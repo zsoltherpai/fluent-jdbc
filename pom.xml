@@ -6,16 +6,16 @@
     <artifactId>fluentjdbc-parent</artifactId>
     <version>0.9.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Fluent-Jdbc Parent</name>
+    <name>FluentJdbc Parent</name>
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
     <modules>
         <module>fluent-jdbc</module>
         <module>extensions</module>
     </modules>
     <description>
-        FluentJdbc provides a fluent API for executing SQL queries. It is best suited for projects that
+        FluentJdbc provides a fluent API for executing native SQL queries. It is best suited for projects that
         require fine control over SQL queries and operations in a convenient, declarative way. Can be used
-        standalone or complement higher level of abstractions like JPA or other ORM solutions.
+        standalone or complement higher level of abstractions like JPA or others.
 
         It provides features like: support for custom parameter types (like java.time),
         named query parameters, automatic ResultSet to POJO mapping, etc. It also avoids inconveniences of

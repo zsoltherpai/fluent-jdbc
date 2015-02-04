@@ -3,18 +3,14 @@ package org.codejargon.fluentjdbc.api.integration.guicepersist.standalone;
 import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.integration.QueryConnectionReceiver;
+import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/**
- * <p>Wraps a ConnectionProvider to support transaction management without the use of a JPA provider. 
- * Needs FluentJdbcTransactionalModule installed to enable transaction handling.</p>
- * @see org.codejargon.fluentjdbc.api.integration.guicepersist.standalone.FluentJdbcTransactionalModule
- */
-public class TransactionalConnectionProvider implements ConnectionProvider {
+class StandaloneTxConnectionProvider implements ConnectionProvider {
     private final ThreadLocal<Optional<Connection>> currentTxConnection = new ThreadLocal<Optional<Connection>>() {
         @Override
         protected Optional<Connection> initialValue() {
@@ -22,23 +18,24 @@ public class TransactionalConnectionProvider implements ConnectionProvider {
         }
     };
 
-    // Note: this connectionProvider will never close a Connection. Needs to be handled in "provide".
+    // This connectionProvider will never close a Connection. Needs to be handled in "provide".
     private final ConnectionProvider connectionProvider;
 
     /**
      * Constructs TransactionalConnectionProvider based on a DataSource.
      * @param dataSource Non-transactionaware DataSource
      */
-    public TransactionalConnectionProvider(DataSource dataSource) {
+    StandaloneTxConnectionProvider(DataSource dataSource) {
+        Preconditions.checkNotNull(dataSource, "dataSource");
         this.connectionProvider = q -> q.receive(dataSource.getConnection());
     }
 
     /**
-     * Constructs TransactionalConnectionProvider based on ConnectionProvider. The ConnectionProvider implementation
-     * must keep the connection open (closing would disrupt transaction management)
-     * @param connectionProvider an implementation that keeps the connection open after acquiring it
+     * Constructs TransactionalConnectionProvider based on ConnectionProvider. Warning: the ConnectionProvider 
+     * implementation must keep the Connection open after providing it to the query (closing would disrupt transaction management)
+     * @param connectionProvider an implementation that must keep the connection open after providing it to the Query
      */
-    public TransactionalConnectionProvider(ConnectionProvider connectionProvider) {
+    public StandaloneTxConnectionProvider(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
     }
 

@@ -8,6 +8,8 @@ import org.codejargon.fluentjdbc.api.query.Query;
 
 /**
  * Creates fluent Query API baded on FluentJdbc's configuration. Thread-safe.
+ * 
+ * @see org.codejargon.fluentjdbc.api.FluentJdbcBuilder
  */
 public interface FluentJdbc {
     /**
@@ -23,10 +25,4 @@ public interface FluentJdbc {
      * @return Query API for the given connection
      */
     Query queryOn(Connection connection);
-
-    /**
-     * Returns the underlying ConnectionProvider (if any is set)
-     * @return ConnectionProvider
-     */
-    Optional<ConnectionProvider> connectionProvider();
 }

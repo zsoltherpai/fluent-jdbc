@@ -13,6 +13,8 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotN
 
 /**
  * Configures and builds a FluentJdbc instance.
+ * 
+ * @see org.codejargon.fluentjdbc.api.FluentJdbc
  */
 public class FluentJdbcBuilder {
     private Optional<Integer> defaultFetchSize = Optional.empty();
@@ -31,7 +33,7 @@ public class FluentJdbcBuilder {
      * @return this
      */
     public FluentJdbcBuilder connectionProvider(ConnectionProvider connectionProvider) {
-        checkNotNull(connectionProvider, "connnectionProvider");
+        checkNotNull(connectionProvider, "connectionProvider");
         this.connectionProvider = Optional.of(connectionProvider);
         return this;
     }

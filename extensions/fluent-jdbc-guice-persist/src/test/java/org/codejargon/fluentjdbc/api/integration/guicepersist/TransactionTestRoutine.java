@@ -1,47 +1,49 @@
-package org.codejargon.fluentjdbc.api.integration.guicepersist.standalone;
+package org.codejargon.fluentjdbc.api.integration.guicepersist;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.codejargon.fluentjdbc.api.FluentJdbc;
-import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
+import org.codejargon.fluentjdbc.api.FluentJdbcException;
+import org.codejargon.fluentjdbc.api.integration.guicepersist.standalone.TransactionBreaking;
 import org.codejargon.fluentjdbc.api.mapper.Mappers;
 import org.codejargon.fluentjdbc.api.query.Query;
-import org.codejargon.fluentjdbc.integration.IntegrationTest;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
+import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Category(IntegrationTest.class)
-public class TransactionTest extends TransactionTestDb {
-    static Injector injector;
-    static Query query;
-    static TransactionTestService testService;
+public abstract class TransactionTestRoutine {
+    protected abstract Injector injector();
 
-    @BeforeClass
-    public static void initFluentJdbcAndTestService() {
-        TransactionalConnectionProvider cp = new TransactionalConnectionProvider(ds);
-        FluentJdbc fluentJdbc = new FluentJdbcBuilder().connectionProvider(cp).build();
-        injector = Guice.createInjector(new FluentJdbcTransactionalModule(fluentJdbc));
-        testService = injector.getInstance(TransactionTestService.class);
-        query = injector.getInstance(Query.class);
+    @Inject
+    private TransactionTestService testService;
+    @Inject
+    private Query query;
+
+    @Before
+    public void injectAndTableCreate() {
+        injector().injectMembers(this);
+        try {
+            query.update("DROP TABLE DUMMY").run();
+        } catch(FluentJdbcException e) {
+            // ignore
+        }
+        query.update("CREATE TABLE DUMMY (id VARCHAR(255) PRIMARY KEY)").run();
     }
 
     @Test
     public void noTransaction() {
         testService.noTransaction();
-        assertThat(inserted(), is(1));
+        assertCount(1);
     }
 
     @Test
     public void transaction() {
         testService.transaction();
-        assertThat(inserted(), is(1));
+        assertCount(1);
     }
 
     @Test
@@ -51,13 +53,13 @@ public class TransactionTest extends TransactionTestDb {
         } catch (TransactionBreaking e) {
             // ignore
         }
-        assertThat(inserted(), is(0));
+        assertCount(0);
     }
 
     @Test
     public void propagatedTransaction() {
         testService.propagatedTransaction();
-        assertThat(inserted(), is(2));
+        assertCount(2);
     }
 
     @Test
@@ -67,7 +69,7 @@ public class TransactionTest extends TransactionTestDb {
         } catch (TransactionBreaking e) {
             // ignore
         }
-        assertThat(inserted(), is(0));
+        assertCount(0);
     }
 
     @Test
@@ -77,13 +79,13 @@ public class TransactionTest extends TransactionTestDb {
         } catch (TransactionBreaking e) {
             // ignore
         }
-        assertThat(inserted(), is(0));
+        assertCount(0);
     }
 
     @Test
     public void rollbackRulesNoException() {
         testService.rollbackRulesNoException();
-        assertThat(inserted(), is(1));
+        assertCount(1);
     }
 
     @Test
@@ -93,7 +95,7 @@ public class TransactionTest extends TransactionTestDb {
         } catch (UnsupportedOperationException e) {
             // ignore
         }
-        assertThat(inserted(), is(1));
+        assertCount(1);
 
     }
 
@@ -111,13 +113,17 @@ public class TransactionTest extends TransactionTestDb {
     public void rollbackRulesIgnoredException() throws FileNotFoundException {
         try {
             testService.rollbackRulesIgnoredException();
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             // ignore
         }
-        assertThat(inserted(), is(1));
+        assertCount(1);
+    }
+
+    private void assertCount(int i) {
+        assertThat(inserted(), is(i));
     }
 
     private int inserted() {
-        return queryOnSentry().select("SELECT COUNT(*) FROM DUMMY").singleResult(Mappers.singleInteger());
+        return query.select("SELECT COUNT(*) FROM DUMMY").singleResult(Mappers.singleInteger());
     }
 }

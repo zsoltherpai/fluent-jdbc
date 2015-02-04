@@ -8,7 +8,7 @@
         <version>0.9.1-SNAPSHOT</version>
     </parent>
     <artifactId>fluentjdbc-guice-persist</artifactId>
-    <name>Fluent-Jdbc Guice Persist</name>
+    <name>FluentJdbc Guice Persist</name>
     <dependencies>
         <dependency>
             <groupId>org.codejargon</groupId>
@@ -19,6 +19,12 @@
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-persist</artifactId>
             <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.codejargon</groupId>
@@ -33,5 +39,12 @@
             <version>1.4.184</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>2.5.2</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>
