@@ -1,5 +1,4 @@
-####About Fluent-Jdbc####
-
+####About FluentJdbc####
 FluentJdbc provides a fluent API for executing native SQL queries. It is best suited for projects that
 require fine control over SQL queries and operations in a convenient, declarative way. Can be used
 standalone or complement higher level of abstractions like JPA or others.
