@@ -19,15 +19,16 @@ has no 3rd party dependencies.
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9</version>
+    <version>0.9.1</version>
 </dependency>
 ```
 Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki)  
-Latest [javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.9)
+Latest [javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.9.1)
 
 #####News#####
+0.9.1 released - support for guice (standalone jdbc tx module and integration to JPA)
 0.9 released - support for select query customization (maxRows, defaultFetchSize, fetchSize)
 
 #####Code examples#####
