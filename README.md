@@ -25,7 +25,7 @@ has no 3rd party dependencies.
 Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki)  
-Latest [javadoc](http://zsoltherpai.github.io/fluent-jdbc/apidocs-0.9.1)
+Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
 0.9.1 released - support for guice (standalone jdbc tx module and integration to JPA)
