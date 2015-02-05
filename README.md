@@ -140,8 +140,8 @@ ConnectionProvider provider = query -> {
 }
 ```
 ######Transactions######
-Transaction-managed connections can be provided by the ConnectionProvider implementation. This is possible in a number of ways.
+Transaction-managed connections can be provided by the ConnectionProvider implementation. This can be done in a number of ways, eg:
 - Using a transaction-aware DataSource (eg JEE DataSources, Spring's TransactionAwareDataSourceProxy)
-- Getting the underlying connection from a JPA session (eg Guice Persist with JPA)
+- Extracting the underlying connection from a JPA session (eg Guice Persist with JPA)
 - Getting transaction-managed connection from a Connection callback.
 - There is an extension library for Guice Persist: fluentjdbc-guice-persist, which supports standalone transaction management (without JPA or other tech)
