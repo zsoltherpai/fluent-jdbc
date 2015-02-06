@@ -14,8 +14,7 @@ import java.sql.Connection;
  *  <pre>
  *  Session session = entityManager.unwrap(Session.class);
  *  SessionFactoryImplementor sfi = (SessionFactoryImplementor) session.getSessionFactory();
- *  ConnectionProvider cp = sfi.getConnectionProvider();
- *  return cp.getConnection();
+ *  return sfi.getConnectionProvider().getConnection();
  *  </pre>  
  *  <p>Hibernate 3.x and JPA 2.0</p>
  *  <pre>

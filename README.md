@@ -28,8 +28,8 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki)
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-0.9.1 released - support for guice (standalone jdbc tx module and integration to JPA)
-0.9 released - support for select query customization (maxRows, defaultFetchSize, fetchSize)
+* 0.9.1 released - support for guice (standalone jdbc tx module and integration to JPA)
+* 0.9 released - support for select query customization (maxRows, defaultFetchSize, fetchSize)
 
 #####Code examples#####
 Some common use cases
@@ -131,10 +131,10 @@ Query query = fluentJdbc.query();
 Connection connection = ...
 Query query = fluentJdbc.queryOn(connection)...
 ```
-######Creating a custom connection provider - eg spring JdbcOperations/JdbcTemplate######
+######Creating a custom connection provider - eg spring JdbcTemplate######
 ```java
 ConnectionProvider provider = query -> {
-	jdbcOperations.execute(connection -> {
+	jdbcTemplate.execute(connection -> {
 		query.receive(connection);
    	});
 }
