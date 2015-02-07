@@ -21,20 +21,11 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
     // This connectionProvider will never close a Connection. Needs to be handled in "provide".
     private final ConnectionProvider connectionProvider;
 
-    /**
-     * Constructs TransactionalConnectionProvider based on a DataSource.
-     * @param dataSource Non-transactionaware DataSource
-     */
     StandaloneTxConnectionProvider(DataSource dataSource) {
         Preconditions.checkNotNull(dataSource, "dataSource");
         this.connectionProvider = q -> q.receive(dataSource.getConnection());
     }
 
-    /**
-     * Constructs TransactionalConnectionProvider based on ConnectionProvider. Warning: the ConnectionProvider 
-     * implementation must keep the Connection open after providing it to the query (closing would disrupt transaction management)
-     * @param connectionProvider an implementation that must keep the connection open after providing it to the Query
-     */
     public StandaloneTxConnectionProvider(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
     }

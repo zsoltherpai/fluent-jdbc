@@ -28,24 +28,39 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkPres
  * </pre>
  */
 public class StandaloneFluentJdbcModule extends AbstractModule {
-    private final DataSource dataSource;
+    private final StandaloneTxConnectionProvider connectionProvider;
     private final FluentJdbcBuilder fluentJdbcBuilder;
 
     public StandaloneFluentJdbcModule(
             FluentJdbcBuilder fluentJdbcBuilder, DataSource dataSource
     ) {
         Preconditions.checkNotNull(fluentJdbcBuilder, "fluentJdbcBuilder");
-        Preconditions.checkNotNull(fluentJdbcBuilder, "dataSource");
+        Preconditions.checkNotNull(dataSource, "dataSource");
         this.fluentJdbcBuilder = fluentJdbcBuilder;
-        this.dataSource = dataSource;
+        this.connectionProvider = new StandaloneTxConnectionProvider(dataSource);
     }
+
+    /**
+     * Constructs StandaloneFluentJdbcModule based on a custom ConnectionProvider. Warning: the ConnectionProvider
+     * implementation must keep the Connection open after providing it to the query (closing would disrupt transaction management)
+     * @param fluentJdbcBuilder Fluent-Jdbc configuration
+     * @param connectionProvider an implementation that must keep the connection open after providing it to the Query
+     */
+    public StandaloneFluentJdbcModule(
+            FluentJdbcBuilder fluentJdbcBuilder, ConnectionProvider connectionProvider
+    ) {
+        Preconditions.checkNotNull(fluentJdbcBuilder, "fluentJdbcBuilder");
+        Preconditions.checkNotNull(connectionProvider, "connectionProvider");
+        this.fluentJdbcBuilder = fluentJdbcBuilder;
+        this.connectionProvider = new StandaloneTxConnectionProvider(connectionProvider);
+    }
+    
 
     @Override
     protected void configure() {
-        StandaloneTxConnectionProvider cp = new StandaloneTxConnectionProvider(dataSource);
-        FluentJdbc fluentJdbc = fluentJdbcBuilder.connectionProvider(cp).build();
+        FluentJdbc fluentJdbc = fluentJdbcBuilder.connectionProvider(connectionProvider).build();
         bindFluentJdbc(fluentJdbc);
-        bindTransactionInterceptors(cp);
+        bindTransactionInterceptors(connectionProvider);
     }
 
     private void bindFluentJdbc(FluentJdbc fluentJdbc) {
