@@ -15,7 +15,7 @@ has no 3rd party dependencies.
 - automatic mapping of results to POJOs
 - named query parameters
 
-```
+```xml
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
