@@ -1,6 +1,8 @@
 package org.codejargon.fluentjdbc.internal.mappers;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -17,11 +19,13 @@ public class ObjectMapper<T> implements Mapper<T> {
     private final Map<Class, ObjectMapperRsExtractor> extractors;
     private final Class<T> type;
     private final Map<String, Field> fields;
+    private final Constructor<T> noargConstructor;
 
     public ObjectMapper(Class<T> type, Map<Class, ObjectMapperRsExtractor> extractors) {
         this.extractors = extractors;
         this.type = type;
         this.fields = discoverFields(type);
+        noargConstructor = noargConstructor();
     }
 
     private Map<String, Field> discoverFields(Class<T> aType) throws SecurityException {
@@ -80,13 +84,27 @@ public class ObjectMapper<T> implements Mapper<T> {
 
     private T newInstance() throws IllegalArgumentException {
         try {
-            return type.newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
+            return (T) noargConstructor.newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
             throw new FluentJdbcException(
-                    String.format("Cannot instantiate %s with default constructor", type.getName()),
+                    String.format("Cannot instantiate %s with the no-arg constructor", type.getName()),
                     ex
             );
         }
+    }
+    
+    private Constructor<T> noargConstructor() {
+        try {
+            Constructor<T> constructor = type.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor;
+        } catch (NoSuchMethodException ex) {
+            throw new FluentJdbcException(
+                    String.format("Cannot find no-arg constructor in %s", type.getName()),
+                    ex
+            );
+        }
+
     }
 
     private String fieldName(ResultSetMetaData metadata, int i) throws SQLException {

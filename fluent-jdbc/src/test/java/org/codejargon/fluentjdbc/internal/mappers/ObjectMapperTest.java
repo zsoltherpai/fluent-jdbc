@@ -113,6 +113,11 @@ public class ObjectMapperTest {
         Instant instantColumn;
         Instant instantNullColumn;
 
+        private Dummy() {
+            
+            
+        }
+        
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
