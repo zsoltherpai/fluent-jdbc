@@ -6,6 +6,7 @@ import java.sql.SQLException;
 /**
  * Fluent-Jdbc queries receive the connections through this interface. No need to implement it for integrations.
  */
+@FunctionalInterface
 public interface QueryConnectionReceiver {
     void receive(Connection connection) throws SQLException;
 }

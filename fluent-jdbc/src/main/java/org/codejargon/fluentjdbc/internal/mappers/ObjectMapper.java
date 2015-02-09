@@ -84,7 +84,7 @@ public class ObjectMapper<T> implements Mapper<T> {
 
     private T newInstance() throws IllegalArgumentException {
         try {
-            return (T) noargConstructor.newInstance();
+            return noargConstructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
             throw new FluentJdbcException(
                     String.format("Cannot instantiate %s with the no-arg constructor", type.getName()),

@@ -7,6 +7,7 @@ import java.sql.SQLException;
  * Maps a row in a ResultSet to an object
  * @param <T> target object
  */
+@FunctionalInterface
 public interface Mapper<T> {
     /**
      *

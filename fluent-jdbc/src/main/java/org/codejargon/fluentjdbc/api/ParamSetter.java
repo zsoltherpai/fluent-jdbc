@@ -8,6 +8,7 @@ import java.sql.SQLException;
  *
  * Support for java.time is implemented by Fluent-Jdbc by default
  */
+@FunctionalInterface
 public interface ParamSetter<T> {
     void set(T param, PreparedStatement statement, Integer index) throws SQLException;
 }

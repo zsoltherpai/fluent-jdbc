@@ -7,6 +7,7 @@ import java.sql.SQLException;
  * <p>Plug-in for supporting custom types in ObjectMappers</p>
  * @see org.codejargon.fluentjdbc.api.mapper.ObjectMappers
  */
+@FunctionalInterface
 public interface ObjectMapperRsExtractor<T> {
     /**
      * Extracts an object from a ResultSet and converts it to the object of target class.

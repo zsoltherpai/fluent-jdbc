@@ -47,6 +47,7 @@ import java.sql.SQLException;
  * </pre>
  *
  */
+@FunctionalInterface
 public interface ConnectionProvider {
     void provide(QueryConnectionReceiver query) throws SQLException;
 }
