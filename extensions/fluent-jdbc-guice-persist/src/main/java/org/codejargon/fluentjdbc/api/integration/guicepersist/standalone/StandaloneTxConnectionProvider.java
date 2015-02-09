@@ -37,7 +37,7 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
             query.receive(current.get());
             // TransactionInterceptor will call removeActiveTransactionConnection() to close the connection
         } else {
-            try(Connection connection = fetchNewConnection()) {
+            try (Connection connection = fetchNewConnection()) {
                 query.receive(connection);
             }
         }
@@ -57,15 +57,11 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         }
     }
 
-    void commitActiveTransaction(Optional<Exception> ignoredException) {
+    void commitActiveTransaction() {
         try {
             currentTxConnection.get().get().commit();
         } catch (SQLException e) {
-            if (!ignoredException.isPresent()) {
-                throw new FluentJdbcSqlException("Error committing transaction", e);
-            } else {
-                // todo logging of e
-            }
+            throw new FluentJdbcSqlException("Error committing transaction", e);
         }
     }
 
@@ -73,15 +69,15 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         try {
             currentTxConnection.get().get().rollback();
         } catch (SQLException e) {
-            // todo logging of e
+            throw new FluentJdbcSqlException("Error rolling back transaction", e);
         }
     }
 
     void removeActiveTransactionConnection() {
-        if(currentTxConnection.get().isPresent()) {
+        if (currentTxConnection.get().isPresent()) {
             try {
                 currentTxConnection.get().get().close();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // todo logging of e
             }
             currentTxConnection.set(Optional.empty());

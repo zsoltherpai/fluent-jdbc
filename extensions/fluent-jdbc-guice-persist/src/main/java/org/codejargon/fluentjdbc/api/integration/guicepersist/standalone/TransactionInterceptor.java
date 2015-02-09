@@ -3,12 +3,8 @@ package org.codejargon.fluentjdbc.api.integration.guicepersist.standalone;
 import com.google.inject.persist.Transactional;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import org.codejargon.fluentjdbc.internal.support.Lists;
+import org.codejargon.fluentjdbc.internal.support.Select;
 
 class TransactionInterceptor implements MethodInterceptor {
     private final StandaloneTxConnectionProvider standaloneTxConnectionProvider;
@@ -20,11 +16,7 @@ class TransactionInterceptor implements MethodInterceptor {
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         Boolean newTransactionStarted = startNewTransactionIfNecessary();
         try {
-            Object result = methodInvocation.proceed();
-            if (newTransactionStarted) {
-                standaloneTxConnectionProvider.commitActiveTransaction(Optional.empty());
-            }
-            return result;
+            return invokeMethodAndCommitIfNecessary(methodInvocation, newTransactionStarted);
         } catch (Exception e) {
             rollbackOrCommit(methodInvocation, e);
             throw e;
@@ -35,46 +27,53 @@ class TransactionInterceptor implements MethodInterceptor {
         }
     }
 
+    private Object invokeMethodAndCommitIfNecessary(MethodInvocation methodInvocation, Boolean newTransactionStarted) throws Throwable {
+        Object result = methodInvocation.proceed();
+        if (newTransactionStarted) {
+            standaloneTxConnectionProvider.commitActiveTransaction();
+        }
+        return result;
+    }
+
     private Boolean startNewTransactionIfNecessary() {
+        final Boolean newTransactionStarted;
         if (!standaloneTxConnectionProvider.hasActiveTransaction()) {
             standaloneTxConnectionProvider.startNewTransaction();
-            return true;
+            newTransactionStarted = true;
         } else {
-            return false;
+            newTransactionStarted = false;
         }
+        return newTransactionStarted;
     }
 
     private void rollbackOrCommit(MethodInvocation methodInvocation, Exception e) {
         if (rollbackNecessary(e, transactional(methodInvocation))) {
             standaloneTxConnectionProvider.rollbackActiveTransaction();
         } else {
-            standaloneTxConnectionProvider.commitActiveTransaction(Optional.of(e));
+            standaloneTxConnectionProvider.commitActiveTransaction();
         }
     }
-
-
 
     private Transactional transactional(MethodInvocation methodInvocation) {
-        Method method = methodInvocation.getMethod();
-        Class<?> targetClass = methodInvocation.getThis().getClass();
-        Transactional transactional = method.getAnnotation(Transactional.class);
-        if (null == transactional) {
-            transactional = targetClass.getAnnotation(Transactional.class);
-        }
-        if (null == transactional) {
-            transactional = DefaultTransactionalDummy.class.getAnnotation(Transactional.class);
-        }
-        return transactional;
+        return Select.firstNonNull(
+                () -> methodInvocation.getMethod().getAnnotation(Transactional.class),
+                () -> methodInvocation.getThis().getClass().getAnnotation(Transactional.class),
+                this::defaultTransactional
+        );
     }
-
+    
     private boolean rollbackNecessary(Exception cause, Transactional transactional) {
-        return !has(transactional.rollbackOn(), cause).isEmpty() && has(transactional.ignore(), cause).isEmpty();
+        return has(transactional.rollbackOn(), cause) && !has(transactional.ignore(), cause);
     }
 
-    private List<Class<? extends Exception>> has(Class<? extends Exception>[] exceptions, Exception cause) {
-        return Arrays.asList(exceptions).stream().filter(e -> e.isInstance(cause)).collect(Collectors.toList());
+    private Boolean has(Class<? extends Exception>[] exceptions, Exception cause) {
+        return Lists.copyOf(exceptions).stream().filter(e -> e.isInstance(cause)).findAny().isPresent();
     }
 
+    private Transactional defaultTransactional() {
+        return DefaultTransactionalDummy.class.getAnnotation(Transactional.class);
+    }
+    
     @Transactional
     private static class DefaultTransactionalDummy {
         private DefaultTransactionalDummy() {
