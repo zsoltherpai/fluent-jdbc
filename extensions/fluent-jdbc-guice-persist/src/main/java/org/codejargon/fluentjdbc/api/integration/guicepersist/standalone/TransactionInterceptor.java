@@ -3,8 +3,8 @@ package org.codejargon.fluentjdbc.api.integration.guicepersist.standalone;
 import com.google.inject.persist.Transactional;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.codejargon.fluentjdbc.internal.support.FindFirst;
 import org.codejargon.fluentjdbc.internal.support.Lists;
-import org.codejargon.fluentjdbc.internal.support.Select;
 
 class TransactionInterceptor implements MethodInterceptor {
     private final StandaloneTxConnectionProvider standaloneTxConnectionProvider;
@@ -55,13 +55,16 @@ class TransactionInterceptor implements MethodInterceptor {
     }
 
     private Transactional transactional(MethodInvocation methodInvocation) {
-        return Select.firstNonNull(
-                () -> methodInvocation.getMethod().getAnnotation(Transactional.class),
-                () -> methodInvocation.getThis().getClass().getAnnotation(Transactional.class),
-                this::defaultTransactional
-        );
+        return FindFirst
+                .fromLazy(
+                        () -> methodInvocation.getMethod().getAnnotation(Transactional.class),
+                        () -> methodInvocation.getThis().getClass().getAnnotation(Transactional.class),
+                        this::defaultTransactional
+                )
+                .whichIsNotNull()
+                .get();
     }
-    
+
     private boolean rollbackNecessary(Exception cause, Transactional transactional) {
         return has(transactional.rollbackOn(), cause) && !has(transactional.ignore(), cause);
     }
@@ -73,7 +76,7 @@ class TransactionInterceptor implements MethodInterceptor {
     private Transactional defaultTransactional() {
         return DefaultTransactionalDummy.class.getAnnotation(Transactional.class);
     }
-    
+
     @Transactional
     private static class DefaultTransactionalDummy {
         private DefaultTransactionalDummy() {
