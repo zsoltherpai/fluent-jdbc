@@ -1,7 +1,6 @@
 package org.codejargon.fluentjdbc.internal.support;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -12,15 +11,15 @@ public class FindFirst<T> {
     private static final Predicate notNull = e -> e != null;
     private static final Predicate<Optional> isPresent = Optional::isPresent;
 
-    private Optional<List<T>> elements;
-    private Optional<Iterable<Supplier<T>>> elementSuppliers;
+    private Optional<Iterable<T>> elements;
+    private Optional<Iterable<Supplier<T>>> elementsLazy;
 
     public FindFirst(
-            Optional<List<T>> elements,
-            Optional<Iterable<Supplier<T>>> elementSuppliers
+            Optional<Iterable<T>> elements,
+            Optional<Iterable<Supplier<T>>> elementsLazy
     ) {
         this.elements = elements;
-        this.elementSuppliers = elementSuppliers;
+        this.elementsLazy = elementsLazy;
     }
 
 
@@ -29,7 +28,7 @@ public class FindFirst<T> {
         return from(Arrays.asList(elements));
     }
 
-    public static <T> FindFirst<T> from(List<T> elements) {
+    public static <T> FindFirst<T> from(Iterable<T> elements) {
         return new FindFirst<>(Optional.of(elements), Optional.empty());
     }
 
@@ -58,13 +57,11 @@ public class FindFirst<T> {
 
     private Stream<T> stream() {
         return elements.isPresent() ?
-                elements.get().stream() :
-                stream(elementSuppliers.get()).map(Supplier::get);
+                iterableLazy(elements.get()) :
+                iterableLazy(elementsLazy.get()).map(Supplier::get);
     }
 
-    private static <T> Stream<T> stream(Iterable<T> iterable) {
+    private static <T> Stream<T> iterableLazy(Iterable<T> iterable) {
         return StreamSupport.stream(iterable.spliterator(), false);
     }
-
-
 }
