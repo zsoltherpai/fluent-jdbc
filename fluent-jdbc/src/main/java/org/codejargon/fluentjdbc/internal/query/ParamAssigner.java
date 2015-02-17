@@ -11,11 +11,11 @@ import org.codejargon.fluentjdbc.api.ParamSetter;
 import org.codejargon.fluentjdbc.internal.support.Sets;
 import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 
-public class ParamAssigner {
+class ParamAssigner {
     private final Map<Class, ParamSetter> paramSetters;
     private Set<String> paramTypeLookupFailsOnDriver = Sets.empty();
 
-    public ParamAssigner(Map<Class, ParamSetter> paramSetters) {
+    ParamAssigner(Map<Class, ParamSetter> paramSetters) {
         this.paramSetters = paramSetters;
     }
 
