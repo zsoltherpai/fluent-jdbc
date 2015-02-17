@@ -20,30 +20,14 @@ class DefaultParamSetters {
     }
 
     private static void javaTime(Map<Class, ParamSetter> ss) {
-        reg(ss, Instant.class, (param, ps, i) -> {
-            ps.setTimestamp(i, timestamp(param));
-        });
-        reg(ss, OffsetDateTime.class, (param, ps, i) -> {
-            ps.setTimestamp(i, timestamp(param.toInstant()));
-        });
-        reg(ss, ZonedDateTime.class, (param, ps, i) -> {
-            ps.setTimestamp(i, timestamp(param.toInstant()));
-        });
-        reg(ss, LocalDate.class, (param, ps, i) -> {
-            ps.setDate(i, java.sql.Date.valueOf(param));
-        });
-        reg(ss, LocalTime.class, (param, ps, i) -> {
-            ps.setTime(i, java.sql.Time.valueOf(param));
-        });
-        reg(ss, LocalDateTime.class, (param, ps, i) -> {
-            ps.setTimestamp(i, java.sql.Timestamp.valueOf(param));
-        });
-        reg(ss, Year.class, (param, ps, i) -> {
-            ps.setDate(i, java.sql.Date.valueOf(LocalDate.of(param.getValue(), Month.JANUARY, 1)));
-        });
-        reg(ss, YearMonth.class, (param, ps, i) -> {
-            ps.setDate(i, java.sql.Date.valueOf(LocalDate.of(param.getYear(), param.getMonth(), 1)));
-        });
+        reg(ss, Instant.class, (param, ps, i) -> ps.setTimestamp(i, timestamp(param)));
+        reg(ss, OffsetDateTime.class, (param, ps, i) -> ps.setTimestamp(i, timestamp(param.toInstant())));
+        reg(ss, ZonedDateTime.class, (param, ps, i) -> ps.setTimestamp(i, timestamp(param.toInstant())));
+        reg(ss, LocalDate.class, (param, ps, i) -> ps.setDate(i, java.sql.Date.valueOf(param)));
+        reg(ss, LocalTime.class, (param, ps, i) -> ps.setTime(i, java.sql.Time.valueOf(param)));
+        reg(ss, LocalDateTime.class, (param, ps, i) -> ps.setTimestamp(i, java.sql.Timestamp.valueOf(param)));
+        reg(ss, Year.class, (param, ps, i) -> ps.setDate(i, java.sql.Date.valueOf(LocalDate.of(param.getValue(), Month.JANUARY, 1))));
+        reg(ss, YearMonth.class, (param, ps, i) -> ps.setDate(i, java.sql.Date.valueOf(LocalDate.of(param.getYear(), param.getMonth(), 1))));
     }
 
     private static void javaDate(Map<Class, ParamSetter> ss) {

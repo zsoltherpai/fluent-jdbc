@@ -59,7 +59,7 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     private List<UpdateResult> positional(Connection connection) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, sql)) {
             Batch batch = new Batch();
             while (params.get().hasNext()) {
                 assignParamAndRunBatchWhenNeeded(statement, batch, params.get().next());
@@ -72,7 +72,7 @@ class BatchQueryInternal implements BatchQuery {
 
     private List<UpdateResult> named(Connection connection) throws SQLException {
         NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
-        try (PreparedStatement statement = query.preparedStatementBatch(connection, namedTransformedSql)) {
+        try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql)) {
             Batch batch = new Batch();
             while (namedParams.get().hasNext()) {
                 SqlAndParams sqlAndParams = SqlAndParamsForNamed.create(namedTransformedSql, namedParams.get().next());

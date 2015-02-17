@@ -20,7 +20,7 @@ public class QueryInternal implements Query {
 
     final ConnectionProvider connectionProvider;
     final QueryConfig config;
-    private final PreparedStatementFactory preparedStatementFactory;
+    final PreparedStatementFactory preparedStatementFactory;
 
     public QueryInternal(
             ConnectionProvider connectionProvider,
@@ -61,19 +61,6 @@ public class QueryInternal implements Query {
         return e.isPresent() ? new FluentJdbcSqlException(message, e.get()) : new FluentJdbcException(message);
     }
 
-    PreparedStatement preparedStatement(
-            Connection con,
-            SingleQuerySpecification querySpec
-    ) throws SQLException {
-        return preparedStatementFactory.createSingle(con, querySpec);
-    }
-
-    PreparedStatement preparedStatementBatch(
-            Connection con,
-            NamedTransformedSql namedTransformedSql
-    ) throws SQLException {
-        return preparedStatementFactory.createBatch(con, namedTransformedSql);
-    }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
         preparedStatementFactory.assignParams(statement, params);

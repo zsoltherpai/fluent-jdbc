@@ -23,6 +23,10 @@ class PreparedStatementFactory {
         assignParams(statement, sqlAndParams.params());
         return statement;
     }
+
+    PreparedStatement createBatch(Connection con, String sql) throws SQLException {
+        return con.prepareStatement(sql);
+    }
     
     PreparedStatement createBatch(Connection con, NamedTransformedSql namedTransformedSql) throws SQLException {
         return con.prepareStatement(namedTransformedSql.sql());
