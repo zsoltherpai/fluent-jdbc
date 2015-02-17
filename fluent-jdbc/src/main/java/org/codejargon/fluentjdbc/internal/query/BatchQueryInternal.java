@@ -1,7 +1,7 @@
 package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.query.BatchQuery;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.TransformedSql;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 import org.codejargon.fluentjdbc.internal.support.Ints;
 import org.codejargon.fluentjdbc.api.query.UpdateResult;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedSqlAndParams;
@@ -71,11 +71,11 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     private List<UpdateResult> named(Connection connection) throws SQLException {
-        TransformedSql transformedSql = query.config.transformedSql(sql);
-        try (PreparedStatement statement = connection.prepareStatement(transformedSql.sql())) {
+        NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
+        try (PreparedStatement statement = query.preparedStatementBatch(connection, namedTransformedSql)) {
             Batch batch = new Batch();
             while (namedParams.get().hasNext()) {
-                SqlAndParams sqlAndParams = NamedSqlAndParams.sqlAndParams(transformedSql, namedParams.get().next());
+                SqlAndParams sqlAndParams = NamedSqlAndParams.sqlAndParams(namedTransformedSql, namedParams.get().next());
                 assignParamAndRunBatchWhenNeeded(statement, batch, sqlAndParams.params());
             }
             runBatch(statement, batch);
@@ -93,9 +93,11 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     private void runBatch(PreparedStatement statement, Batch batch) throws SQLException {
-        List<Integer> updateds = Ints.asList(statement.executeBatch());
         batch.newResults(
-                updateds.stream().map(i -> (long) i).map(UpdateResultInternal::new).collect(Collectors.toList())
+                Ints.asList(statement.executeBatch()).stream()
+                        .map(i -> (long) i)
+                        .map(UpdateResultInternal::new)
+                        .collect(Collectors.toList())
         );
     }
     

@@ -1,6 +1,7 @@
 package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,22 +16,23 @@ class PreparedStatementFactory {
         this.config = config;
     }
 
-    PreparedStatement create(
-            Connection con,
-            SingleQuerySpecification querySpec
-    ) throws SQLException {
+    PreparedStatement createSingle(Connection con, SingleQuerySpecification querySpec) throws SQLException {
         SqlAndParams sqlAndParams = querySpec.sqlAndParams(config);
         PreparedStatement statement = con.prepareStatement(sqlAndParams.sql());
-        queryCustomization(statement, querySpec);
+        singleQueryCustomization(statement, querySpec);
         assignParams(statement, sqlAndParams.params());
         return statement;
+    }
+    
+    PreparedStatement createBatch(Connection con, NamedTransformedSql namedTransformedSql) throws SQLException {
+        return con.prepareStatement(namedTransformedSql.sql());
     }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
         config.paramAssigner.assignParams(statement, params);
     }
 
-    private void queryCustomization(PreparedStatement statement, SingleQuerySpecification querySpec) throws SQLException {
+    private void singleQueryCustomization(PreparedStatement statement, SingleQuerySpecification querySpec) throws SQLException {
         if(querySpec.select.isPresent()) {
             selectCustomization(statement, querySpec);
         }

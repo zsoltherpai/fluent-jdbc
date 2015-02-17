@@ -13,15 +13,13 @@ import org.codejargon.fluentjdbc.api.query.Query;
 import org.codejargon.fluentjdbc.internal.query.ParamAssigner;
 import org.codejargon.fluentjdbc.internal.query.QueryConfig;
 import org.codejargon.fluentjdbc.internal.query.QueryInternal;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.TransformedSql;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
 public class FluentJdbcInternal implements FluentJdbc {
 
     private final Optional<ConnectionProvider> connectionProvider;
-    private final ParamAssigner paramAssigner;
-    private final Optional<Integer> defaultFetchSize;
-    private final Map<String, TransformedSql> namedParamSqlCache;
+    private final QueryConfig queryConfig;
 
     public FluentJdbcInternal(
             Optional<ConnectionProvider> connectionProvider, 
@@ -29,11 +27,10 @@ public class FluentJdbcInternal implements FluentJdbc {
             Optional<Integer> defaultFetchSize
     ) {
         this.connectionProvider = connectionProvider;
-        this.paramAssigner = new ParamAssigner(
+        queryConfig = new QueryConfig(
+                defaultFetchSize, 
                 Maps.merge(DefaultParamSetters.setters(), paramSetters)
         );
-        this.defaultFetchSize = defaultFetchSize;
-        namedParamSqlCache = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -41,7 +38,7 @@ public class FluentJdbcInternal implements FluentJdbc {
         if (!connectionProvider.isPresent()) {
             throw new FluentJdbcException("ConnectionProvider is not set.");
         }
-        return new QueryInternal(connectionProvider.get(), queryConfig());
+        return new QueryInternal(connectionProvider.get(), queryConfig);
     }
 
 
@@ -50,7 +47,7 @@ public class FluentJdbcInternal implements FluentJdbc {
     public Query queryOn(Connection connection) {
         return new QueryInternal(
                 query -> query.receive(connection), 
-                queryConfig()
+                queryConfig
         );
     }
 
@@ -58,7 +55,4 @@ public class FluentJdbcInternal implements FluentJdbc {
         return connectionProvider;
     }
 
-    private QueryConfig queryConfig() {
-        return new QueryConfig(paramAssigner, namedParamSqlCache, defaultFetchSize);
-    }
 }

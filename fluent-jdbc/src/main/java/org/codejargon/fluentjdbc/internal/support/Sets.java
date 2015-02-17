@@ -22,9 +22,4 @@ public class Sets {
         merged.addAll(set2);
         return Collections.unmodifiableSet(merged);
     }
-
-    public static void main(String[] args) {
-        Set<String> strs = empty();
-        System.out.println(strs.size());
-    }
 }

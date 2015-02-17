@@ -32,7 +32,7 @@ import org.codejargon.fluentjdbc.internal.support.Preconditions;
  *
  * Class has been slightly simplified for FluentJdbc (dropped declaredParams, paramSource, introduced FluentJdbc-specific namedParams)
  */
-public abstract class NamedParameterUtils {
+abstract class NamedParameterUtils {
 
     /**
      * Set of characters that qualify as parameter separators,
@@ -64,7 +64,7 @@ public abstract class NamedParameterUtils {
      * @param sql the SQL statement
      * @return the parsed statement, represented as ParsedSql instance
      */
-    public static ParsedSql parseSqlStatement(final String sql) {
+    static ParsedSql parseSqlStatement(final String sql) {
         Preconditions.checkNotNull(sql, "SQL must not be null");
 
         Set<String> namedParameters = new HashSet<String>();
@@ -240,7 +240,7 @@ public abstract class NamedParameterUtils {
      * @return the SQL statement with substituted parameters
      * @see #parseSqlStatement
      */
-    public static String substituteNamedParameters(ParsedSql parsedSql) {
+    static String substituteNamedParameters(ParsedSql parsedSql) {
         String originalSql = parsedSql.getOriginalSql();
         StringBuilder actualSql = new StringBuilder();
         List<String> paramNames = parsedSql.getParameterNames();
@@ -264,7 +264,7 @@ public abstract class NamedParameterUtils {
      * be built into the value array in the form of SqlParameterValue objects.
      * @return the array of values
      */
-    public static Object[] buildValueArray(ParsedSql parsedSql, Map<String, Object> namedParams) {
+    static Object[] buildValueArray(ParsedSql parsedSql, Map<String, Object> namedParams) {
         Object[] paramArray = new Object[parsedSql.getTotalParameterCount()];
         if (parsedSql.getNamedParameterCount() > 0 && parsedSql.getUnnamedParameterCount() > 0) {
             throw new FluentJdbcException(

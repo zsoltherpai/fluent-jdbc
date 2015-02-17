@@ -1,15 +1,15 @@
 package org.codejargon.fluentjdbc.internal.query.namedparameter;
 
-public class TransformedSql {
+public class NamedTransformedSql {
     private final String transformedSql;
     private final ParsedSql parsedSql;
 
-    public static TransformedSql forSql(String sql) {
+    public static NamedTransformedSql forSql(String sql) {
         ParsedSql parsedSql = NamedParameterUtils.parseSqlStatement(sql);
-        return new TransformedSql(NamedParameterUtils.substituteNamedParameters(parsedSql), parsedSql);
+        return new NamedTransformedSql(NamedParameterUtils.substituteNamedParameters(parsedSql), parsedSql);
     }
 
-    TransformedSql(String transformedSql, ParsedSql parsedSql) {
+    NamedTransformedSql(String transformedSql, ParsedSql parsedSql) {
         this.transformedSql = transformedSql;
         this.parsedSql = parsedSql;
     }
@@ -18,11 +18,11 @@ public class TransformedSql {
         return transformedSql;
     }
 
-    public ParsedSql parsedSql() {
+    ParsedSql parsedSql() {
         return parsedSql;
     }
 
-    public Integer unnamedParameterCount() {
+    Integer unnamedParameterCount() {
         return parsedSql.getUnnamedParameterCount();
     }
 }

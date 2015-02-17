@@ -52,7 +52,7 @@ class ParsedSql {
     /**
      * Return the SQL statement that is being parsed.
      */
-    public String getOriginalSql() {
+    String getOriginalSql() {
         return this.originalSql;
     }
 
@@ -113,7 +113,7 @@ class ParsedSql {
     /**
      * Return the count of all of the unnamed parameters in the SQL statement.
      */
-    public int getUnnamedParameterCount() {
+    int getUnnamedParameterCount() {
         return this.unnamedParameterCount;
     }
 

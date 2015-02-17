@@ -14,6 +14,7 @@ import org.codejargon.fluentjdbc.api.query.Query;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
 import org.codejargon.fluentjdbc.api.query.UpdateQuery;
 import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 
 public class QueryInternal implements Query {
 
@@ -64,7 +65,14 @@ public class QueryInternal implements Query {
             Connection con,
             SingleQuerySpecification querySpec
     ) throws SQLException {
-        return preparedStatementFactory.create(con, querySpec);
+        return preparedStatementFactory.createSingle(con, querySpec);
+    }
+
+    PreparedStatement preparedStatementBatch(
+            Connection con,
+            NamedTransformedSql namedTransformedSql
+    ) throws SQLException {
+        return preparedStatementFactory.createBatch(con, namedTransformedSql);
     }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {

@@ -1,28 +1,31 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.internal.query.namedparameter.TransformedSql;
+import org.codejargon.fluentjdbc.api.ParamSetter;
+import org.codejargon.fluentjdbc.internal.DefaultParamSetters;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
+import org.codejargon.fluentjdbc.internal.support.Maps;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class QueryConfig {
     final ParamAssigner paramAssigner;
-    final Map<String, TransformedSql> namedParamSqlCache;
+    final Map<String, NamedTransformedSql> namedParamSqlCache;
     final Optional<Integer> defaultFetchSize;
 
     public QueryConfig(
-            ParamAssigner paramAssigner, 
-            Map<String, TransformedSql> namedParamSqlCache, 
-            Optional<Integer> defaultFetchSize
+            Optional<Integer> defaultFetchSize,
+            Map<Class, ParamSetter> paramSetters
     ) {
-        this.paramAssigner = paramAssigner;
-        this.namedParamSqlCache = namedParamSqlCache;
+        this.paramAssigner = new ParamAssigner(paramSetters);
+        this.namedParamSqlCache = new ConcurrentHashMap<>();
         this.defaultFetchSize = defaultFetchSize;
     }
 
-    TransformedSql transformedSql(String sql) {
+    NamedTransformedSql namedTransformedSql(String sql) {
         if(!namedParamSqlCache.containsKey(sql)) {
-            namedParamSqlCache.put(sql, TransformedSql.forSql(sql));
+            namedParamSqlCache.put(sql, NamedTransformedSql.forSql(sql));
         }
         return namedParamSqlCache.get(sql);
     }

@@ -55,7 +55,7 @@ class SingleQuerySpecification {
     SqlAndParams sqlAndParams(QueryConfig config) {
         return namedParams.isEmpty() ?
                 new SqlAndParams(sql, params) :
-                NamedSqlAndParams.sqlAndParams(config.transformedSql(sql), namedParams);
+                NamedSqlAndParams.sqlAndParams(config.namedTransformedSql(sql), namedParams);
     }
     
     static class Select {

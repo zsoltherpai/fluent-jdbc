@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class NamedSqlAndParams {
-    public static SqlAndParams sqlAndParams(TransformedSql transformedSql, Map<String, Object> namedParams) {
+    public static SqlAndParams sqlAndParams(NamedTransformedSql namedTransformedSql, Map<String, Object> namedParams) {
         Preconditions.checkArgument(
-                transformedSql.unnamedParameterCount() == 0,
-                String.format("Querying with named parameters cannot be run with SQL statements containing positional parameters: %s", transformedSql.sql())
+                namedTransformedSql.unnamedParameterCount() == 0,
+                String.format("Querying with named parameters cannot be run with SQL statements containing positional parameters: %s", namedTransformedSql.sql())
         );
         return new SqlAndParams(
-                transformedSql.sql(),
-                params(transformedSql.parsedSql(), namedParams)
+                namedTransformedSql.sql(),
+                params(namedTransformedSql.parsedSql(), namedParams)
         );
     }
 
