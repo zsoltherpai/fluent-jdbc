@@ -18,18 +18,18 @@ class PreparedStatementFactory {
 
     PreparedStatement createSingle(Connection con, SingleQuerySpecification querySpec) throws SQLException {
         SqlAndParams sqlAndParams = querySpec.sqlAndParams(config);
-        PreparedStatement statement = con.prepareStatement(sqlAndParams.sql());
+        PreparedStatement statement = prepareStatement(con, sqlAndParams.sql());
         singleQueryCustomization(statement, querySpec);
         assignParams(statement, sqlAndParams.params());
         return statement;
     }
 
     PreparedStatement createBatch(Connection con, String sql) throws SQLException {
-        return con.prepareStatement(sql);
+        return prepareStatement(con, sql);
     }
-    
+
     PreparedStatement createBatch(Connection con, NamedTransformedSql namedTransformedSql) throws SQLException {
-        return con.prepareStatement(namedTransformedSql.sql());
+        return prepareStatement(con, namedTransformedSql.sql());
     }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
@@ -74,6 +74,10 @@ class PreparedStatementFactory {
                             statement.getConnection().getMetaData().getDriverName())
             );
         }
+    }
+
+    private PreparedStatement prepareStatement(Connection con, String sql) throws SQLException {
+        return con.prepareStatement(sql);
     }
 
 
