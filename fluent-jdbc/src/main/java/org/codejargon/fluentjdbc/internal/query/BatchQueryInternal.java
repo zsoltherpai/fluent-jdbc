@@ -4,7 +4,7 @@ import org.codejargon.fluentjdbc.api.query.BatchQuery;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 import org.codejargon.fluentjdbc.internal.support.Ints;
 import org.codejargon.fluentjdbc.api.query.UpdateResult;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedSqlAndParams;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
 import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
 import java.sql.Connection;
@@ -75,7 +75,7 @@ class BatchQueryInternal implements BatchQuery {
         try (PreparedStatement statement = query.preparedStatementBatch(connection, namedTransformedSql)) {
             Batch batch = new Batch();
             while (namedParams.get().hasNext()) {
-                SqlAndParams sqlAndParams = NamedSqlAndParams.sqlAndParams(namedTransformedSql, namedParams.get().next());
+                SqlAndParams sqlAndParams = SqlAndParamsForNamed.create(namedTransformedSql, namedParams.get().next());
                 assignParamAndRunBatchWhenNeeded(statement, batch, sqlAndParams.params());
             }
             runBatch(statement, batch);

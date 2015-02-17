@@ -1,6 +1,5 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.internal.DefaultParamSetters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;

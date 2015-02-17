@@ -1,7 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.ParamSetter;
-import org.codejargon.fluentjdbc.internal.DefaultParamSetters;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
@@ -18,7 +17,9 @@ public class QueryConfig {
             Optional<Integer> defaultFetchSize,
             Map<Class, ParamSetter> paramSetters
     ) {
-        this.paramAssigner = new ParamAssigner(paramSetters);
+        this.paramAssigner = new ParamAssigner(
+                Maps.merge(DefaultParamSetters.setters(), paramSetters)
+        );
         this.namedParamSqlCache = new ConcurrentHashMap<>();
         this.defaultFetchSize = defaultFetchSize;
     }

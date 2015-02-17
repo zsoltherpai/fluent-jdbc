@@ -15,17 +15,12 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotN
 
 class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
-    private final QueryInternal query;
-    private final String sql;
-    
     private Predicate filter = Predicates.alwaysTrue();
     private Optional<Integer> fetchSize = Optional.empty();
     private Optional<Long> maxRows = Optional.empty();
 
     SelectQueryInternal(String sql, QueryInternal query) {
-        super();
-        this.sql = sql;
-        this.query = query;
+        super(query, sql);
     }
 
     @Override
@@ -71,10 +66,8 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @Override
     @SuppressWarnings("unchecked")
     public <T> Optional<T> firstResult(Mapper<T> mapper) {
-        return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, querySpecs());
-                 ResultSet rs = ps.executeQuery();
-            ) {
+        return runQuery(ps -> {
+            try(ResultSet rs = ps.executeQuery()) {
                 Optional<T> result = Optional.empty();
                 while (rs.next() && !result.isPresent()) {
                     T candidate = mapper.map(rs);
@@ -84,7 +77,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                 }
                 return result;
             }
-        }, sql);
+        });
     }
 
     @Override
@@ -115,22 +108,23 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @Override
     @SuppressWarnings("unchecked")
     public <T> void iterateResult(Mapper<T> mapper, Consumer<T> consumer) {
-        query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, querySpecs());
-                 ResultSet rs = ps.executeQuery();
-            ) {
-                while (rs.next()) {
-                    T candidate = mapper.map(rs);
-                    if (filter.test(candidate)) {
-                        consumer.accept(candidate);
+        runQuery(
+                ps -> {
+                    try(ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            T candidate = mapper.map(rs);
+                            if (filter.test(candidate)) {
+                                consumer.accept(candidate);
+                            }
+                        }
                     }
+                    return null;
                 }
-            }
-            return null;
-        }, sql);
+        );
     }
 
-    private SingleQuerySpecification querySpecs() {
+    @Override
+    protected SingleQuerySpecification querySpecs() {
         return SingleQuerySpecification.forSelect(sql, params, namedParams, fetchSize, maxRows);
     }
 

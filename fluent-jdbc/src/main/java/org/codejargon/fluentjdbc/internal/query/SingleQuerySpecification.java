@@ -1,6 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedSqlAndParams;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ class SingleQuerySpecification {
     SqlAndParams sqlAndParams(QueryConfig config) {
         return namedParams.isEmpty() ?
                 new SqlAndParams(sql, params) :
-                NamedSqlAndParams.sqlAndParams(config.namedTransformedSql(sql), namedParams);
+                SqlAndParamsForNamed.create(config.namedTransformedSql(sql), namedParams);
     }
     
     static class Select {

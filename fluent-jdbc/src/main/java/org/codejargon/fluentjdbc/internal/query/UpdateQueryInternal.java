@@ -7,22 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
-    private final String sql;
-    private final QueryInternal query;
 
     public UpdateQueryInternal(String sql, QueryInternal query) {
-        super();
-        this.sql = sql;
-        this.query = query;
+        super(query, sql);
     }
 
     @Override
     public UpdateResult run() {
-        return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatement(connection, querySpecs())) {
-                return new UpdateResultInternal((long) ps.executeUpdate());
-            }
-        }, sql);
+        return runQuery(ps -> new UpdateResultInternal((long) ps.executeUpdate()));
     }
 
     @Override
@@ -43,7 +35,8 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
         return this;
     }
     
-    private SingleQuerySpecification querySpecs() {
+    @Override
+    protected SingleQuerySpecification querySpecs() {
         return SingleQuerySpecification.forUpdate(sql, params, namedParams);
     }
 }

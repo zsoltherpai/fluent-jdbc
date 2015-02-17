@@ -11,7 +11,6 @@ import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Query;
 import org.codejargon.fluentjdbc.internal.query.QueryConfig;
 import org.codejargon.fluentjdbc.internal.query.QueryInternal;
-import org.codejargon.fluentjdbc.internal.support.Maps;
 
 public class FluentJdbcInternal implements FluentJdbc {
 
@@ -24,10 +23,7 @@ public class FluentJdbcInternal implements FluentJdbc {
             Optional<Integer> defaultFetchSize
     ) {
         this.connectionProvider = connectionProvider;
-        queryConfig = new QueryConfig(
-                defaultFetchSize, 
-                Maps.merge(DefaultParamSetters.setters(), paramSetters)
-        );
+        queryConfig = new QueryConfig(defaultFetchSize, paramSetters);
     }
 
     @Override

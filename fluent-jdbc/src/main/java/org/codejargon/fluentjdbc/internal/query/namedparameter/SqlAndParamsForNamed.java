@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class NamedSqlAndParams {
-    public static SqlAndParams sqlAndParams(NamedTransformedSql namedTransformedSql, Map<String, Object> namedParams) {
+public abstract class SqlAndParamsForNamed {
+    public static SqlAndParams create(NamedTransformedSql namedTransformedSql, Map<String, Object> namedParams) {
         Preconditions.checkArgument(
                 namedTransformedSql.unnamedParameterCount() == 0,
                 String.format("Querying with named parameters cannot be run with SQL statements containing positional parameters: %s", namedTransformedSql.sql())

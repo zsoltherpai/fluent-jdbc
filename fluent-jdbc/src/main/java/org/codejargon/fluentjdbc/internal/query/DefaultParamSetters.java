@@ -1,4 +1,4 @@
-package org.codejargon.fluentjdbc.internal;
+package org.codejargon.fluentjdbc.internal.query;
 
 import java.time.*;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.codejargon.fluentjdbc.api.ParamSetter;
 
-public class DefaultParamSetters {
+class DefaultParamSetters {
 
     private static final Map<Class, ParamSetter> setters;
 
@@ -52,11 +52,11 @@ public class DefaultParamSetters {
         });
     }
 
-    public static Map<Class, ParamSetter> setters() {
+    static Map<Class, ParamSetter> setters() {
         return setters;
     }
 
-    static java.sql.Timestamp timestamp(Instant instant) {
+    private static java.sql.Timestamp timestamp(Instant instant) {
         return java.sql.Timestamp.from(instant);
     }
 

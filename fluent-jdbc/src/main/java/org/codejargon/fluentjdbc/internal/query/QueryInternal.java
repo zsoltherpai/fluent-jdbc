@@ -46,7 +46,7 @@ public class QueryInternal implements Query {
         return new BatchQueryInternal(sql, this);
     }
 
-    <T> T query(QueryRunner<T> runner, String sql) {
+    <T> T query(QueryRunnerConnection<T> runner, String sql) {
         try {
             QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
             connectionProvider.provide(receiver);
