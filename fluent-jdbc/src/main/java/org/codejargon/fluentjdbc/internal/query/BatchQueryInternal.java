@@ -12,6 +12,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.codejargon.fluentjdbc.internal.support.Consumers.sneaky;
+import static org.codejargon.fluentjdbc.internal.support.Iterables.streamOfIterator;
 
 class BatchQueryInternal implements BatchQuery {
     private final String sql;
@@ -60,12 +64,7 @@ class BatchQueryInternal implements BatchQuery {
 
     private List<UpdateResult> positional(Connection connection) throws SQLException {
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, sql)) {
-            Batch batch = new Batch();
-            while (params.get().hasNext()) {
-                assignParamAndRunBatchWhenNeeded(statement, batch, params.get().next());
-            }
-            runBatch(statement, batch);
-            return batch.results();
+            return runBatches(statement, streamOfIterator(params.get()));
         }
 
     }
@@ -73,23 +72,27 @@ class BatchQueryInternal implements BatchQuery {
     private List<UpdateResult> named(Connection connection) throws SQLException {
         NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql)) {
-            Batch batch = new Batch();
-            while (namedParams.get().hasNext()) {
-                SqlAndParams sqlAndParams = SqlAndParamsForNamed.create(namedTransformedSql, namedParams.get().next());
-                assignParamAndRunBatchWhenNeeded(statement, batch, sqlAndParams.params());
-            }
-            runBatch(statement, batch);
-            return batch.results();
+            return runBatches(
+                    statement, 
+                    streamOfIterator(namedParams.get()).map(namedParam -> SqlAndParamsForNamed.create(namedTransformedSql, namedParam).params())
+            );
         }
     }
-
-    private void assignParamAndRunBatchWhenNeeded(PreparedStatement statement, Batch batch, List<Object> params) throws SQLException {
-        query.assignParams(statement, params);
-        statement.addBatch();
-        batch.added();
-        if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
-            runBatch(statement, batch);
-        }
+    
+    private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<Object>> params) throws SQLException {
+        Batch batch = new Batch();
+        params.forEachOrdered(
+                sneaky(param -> {
+                    query.assignParams(ps, param);
+                    ps.addBatch();
+                    batch.added();
+                    if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
+                        runBatch(ps, batch);
+                    }
+                })
+        );
+        runBatch(ps, batch);
+        return batch.results();
     }
 
     private void runBatch(PreparedStatement statement, Batch batch) throws SQLException {
