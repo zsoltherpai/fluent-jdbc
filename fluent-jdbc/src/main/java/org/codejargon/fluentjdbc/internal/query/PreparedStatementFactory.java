@@ -28,10 +28,6 @@ class PreparedStatementFactory {
         return prepareStatement(con, sql);
     }
 
-    PreparedStatement createBatch(Connection con, NamedTransformedSql namedTransformedSql) throws SQLException {
-        return prepareStatement(con, namedTransformedSql.sql());
-    }
-
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
         config.paramAssigner.assignParams(statement, params);
     }

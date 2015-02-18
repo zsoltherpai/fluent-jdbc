@@ -77,12 +77,11 @@ class ParamAssigner {
     );
     
     private void assignNullWithoutSqlType(PreparedStatement statement, Integer index) throws FluentJdbcSqlException {
-        
         try {
             String driverName = driverName(statement);
-            if(hasPrefix(nullWithObject, driverName)) {
+            if(hasDriver(nullWithObject, driverName)) {
                 statement.setObject(index, null);
-            } else if(hasPrefix(nullWithVarchar, driverName)) {
+            } else if(hasDriver(nullWithVarchar, driverName)) {
                 statement.setNull(index, Types.VARCHAR);
             } else {
                 statement.setNull(index, Types.NULL);
@@ -96,12 +95,7 @@ class ParamAssigner {
         return statement.getConnection().getMetaData().getDriverName();
     }
 
-    private boolean hasPrefix(Set<String> driverPrefixes, String driver) {
-        for(String string : driverPrefixes) {
-            if(driver.startsWith(string)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean hasDriver(Set<String> driverPrefixes, String driver) {
+        return driverPrefixes.stream().filter(driver::startsWith).findAny().isPresent();
     }
 }

@@ -18,6 +18,7 @@ public class DummyTool {
         params.add(dummy.string);
         params.add(dummy.dateLocalDate);
         params.add(dummy.dateSqlDate);
+        params.add(dummy.nullString);
         return Lists.copyOf(params);
     }
 
@@ -27,6 +28,7 @@ public class DummyTool {
         params.put("string", dummy.string);
         params.put("dateLocalDate", dummy.dateLocalDate);
         params.put("dateSqlDate", dummy.dateSqlDate);
+        params.put("nullString", dummy.nullString);
         return Maps.copyOf(params);
     }
 

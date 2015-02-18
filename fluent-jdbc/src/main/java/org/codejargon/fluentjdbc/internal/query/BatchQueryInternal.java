@@ -71,7 +71,7 @@ class BatchQueryInternal implements BatchQuery {
 
     private List<UpdateResult> named(Connection connection) throws SQLException {
         NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
-        try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql)) {
+        try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
             return runBatches(
                     statement, 
                     streamOfIterator(namedParams.get()).map(namedParam -> SqlAndParamsForNamed.create(namedTransformedSql, namedParam).params())

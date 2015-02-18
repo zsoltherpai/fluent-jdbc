@@ -12,6 +12,7 @@ import java.util.Map;
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
 import org.codejargon.fluentjdbc.api.query.Mapper;
+import org.codejargon.fluentjdbc.internal.support.Arrs;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
 public class ObjectMapper<T> implements Mapper<T> {
@@ -32,10 +33,12 @@ public class ObjectMapper<T> implements Mapper<T> {
         Map<String, Field> allFields = new HashMap<>();
         Class inspectedClass = aType;
         while (inspectedClass != null) {
-            for (Field field : inspectedClass.getDeclaredFields()) {
-                field.setAccessible(true);
-                allFields.put(prepareFieldName(field.getName()), field);
-            }
+            Arrs.stream(inspectedClass.getDeclaredFields()).forEach(
+                    field -> {
+                        field.setAccessible(true);
+                        allFields.put(prepareFieldName(field.getName()), field);
+                    }
+            );
             inspectedClass = inspectedClass.getSuperclass();
         }
         return Maps.copyOf(allFields);
