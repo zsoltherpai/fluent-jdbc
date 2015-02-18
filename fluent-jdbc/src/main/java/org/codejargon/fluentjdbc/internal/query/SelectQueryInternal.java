@@ -124,8 +124,14 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
     @Override
     protected SingleQuerySpecification querySpecs() {
-        return SingleQuerySpecification.forSelect(sql, params, namedParams, fetchSize, maxRows);
+        return SingleQuerySpecification.forSelect(this);
     }
 
-
+    Optional<Integer> fetchSize() {
+        return fetchSize;
+    }
+    
+    Optional<Long> maxRows() {
+        return maxRows;
+    }
 }

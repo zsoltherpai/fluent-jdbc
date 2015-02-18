@@ -2,69 +2,41 @@ package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 class SingleQuerySpecification {
-    final String sql;
-    final List<Object> params;
-    final Map<String, Object> namedParams;
-    final Optional<Select> select;
+    final SingleQueryBase singleQueryBase;
+    final Optional<SelectQueryInternal> select;
 
     private SingleQuerySpecification (
-            String sql, 
-            List<Object> params, 
-            Map<String, Object> namedParams, 
-            Optional<Select> select
+            SingleQueryBase singleQueryBase,
+            Optional<SelectQueryInternal> select
     ) {
-        this.sql = sql;
-        this.params = params;
-        this.namedParams = namedParams;
+        this.singleQueryBase = singleQueryBase;
         this.select = select;
     }
 
     static SingleQuerySpecification forSelect(
-            String sql,
-            List<Object> params,
-            Map<String, Object> namedParams,
-            Optional<Integer> selectFetchSize,
-            Optional<Long> maxRows
+            SelectQueryInternal selectQueryInternal
     ) {
         return new SingleQuerySpecification(
-                sql, 
-                params, 
-                namedParams, 
-                Optional.of(new Select(selectFetchSize, maxRows))
+                selectQueryInternal,
+                Optional.of(selectQueryInternal)
         );
     }
 
     static SingleQuerySpecification forUpdate(
-            String sql,
-            List<Object> params,
-            Map<String, Object> namedParams
+            SingleQueryBase singleQueryBase
     ) {
         return new SingleQuerySpecification(
-                sql, 
-                params, 
-                namedParams, 
-                Optional.<Select>empty()
+                singleQueryBase,
+                Optional.<SelectQueryInternal>empty()
         );
     }
 
     SqlAndParams sqlAndParams(QueryConfig config) {
-        return namedParams.isEmpty() ?
-                new SqlAndParams(sql, params) :
-                SqlAndParamsForNamed.create(config.namedTransformedSql(sql), namedParams);
-    }
-    
-    static class Select {
-        final Optional<Integer> fetchSize;
-        final Optional<Long> maxRows;
-
-        Select(Optional<Integer> fetchSize, Optional<Long> maxRows) {
-            this.fetchSize = fetchSize;
-            this.maxRows = maxRows;
-        }
+        return singleQueryBase.namedParams.isEmpty() ?
+                new SqlAndParams(singleQueryBase.sql, singleQueryBase.params) :
+                SqlAndParamsForNamed.create(config.namedTransformedSql(singleQueryBase.sql), singleQueryBase.namedParams);
     }
 }

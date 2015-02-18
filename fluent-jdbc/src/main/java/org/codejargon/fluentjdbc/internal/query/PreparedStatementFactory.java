@@ -38,8 +38,8 @@ class PreparedStatementFactory {
     }
 
     private void selectCustomization(PreparedStatement statement, SingleQuerySpecification querySpec) throws SQLException {
-        selectFetchSize(statement, querySpec.select.get().fetchSize);
-        maxResults(statement, querySpec.select.get().maxRows);
+        selectFetchSize(statement, querySpec.select.get().fetchSize());
+        maxResults(statement, querySpec.select.get().maxRows());
     }
 
     private void selectFetchSize(PreparedStatement statement, Optional<Integer> selectFetchSize) throws SQLException {
