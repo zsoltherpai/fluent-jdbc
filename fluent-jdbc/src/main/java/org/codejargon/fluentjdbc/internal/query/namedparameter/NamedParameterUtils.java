@@ -67,9 +67,9 @@ abstract class NamedParameterUtils {
     static ParsedSql parseSqlStatement(final String sql) {
         Preconditions.checkNotNull(sql, "SQL must not be null");
 
-        Set<String> namedParameters = new HashSet<String>();
+        Set<String> namedParameters = new HashSet<>();
         String sqlToUse = sql;
-        List<ParameterHolder> parameterList = new ArrayList<ParameterHolder>();
+        List<ParameterHolder> parameterList = new ArrayList<>();
 
         char[] statement = sql.toCharArray();
         int namedParameterCount = 0;
@@ -79,7 +79,7 @@ abstract class NamedParameterUtils {
         int escapes = 0;
         int i = 0;
         while (i < statement.length) {
-            int skipToPosition = i;
+            int skipToPosition;
             while (i < statement.length) {
                 skipToPosition = skipCommentsAndQuotes(statement, i);
                 if (i == skipToPosition) {
@@ -100,7 +100,6 @@ abstract class NamedParameterUtils {
                     i = i + 2;
                     continue;
                 }
-                String parameter = null;
                 if (j < statement.length && c == ':' && statement[j] == '{') {
                     // :{x} style parameter
                     while (j < statement.length && !('}' == statement[j])) {
@@ -115,7 +114,7 @@ abstract class NamedParameterUtils {
                                 "Non-terminated named parameter declaration at position " + i + " in statement: " + sql);
                     }
                     if (j - i > 3) {
-                        parameter = sql.substring(i + 2, j);
+                        String parameter = sql.substring(i + 2, j);
                         namedParameterCount = addNewNamedParameter(namedParameters, namedParameterCount, parameter);
                         totalParameterCount = addNamedParameter(parameterList, totalParameterCount, escapes, i, j + 1, parameter);
                     }
@@ -126,7 +125,7 @@ abstract class NamedParameterUtils {
                         j++;
                     }
                     if (j - i > 1) {
-                        parameter = sql.substring(i + 1, j);
+                        String parameter = sql.substring(i + 1, j);
                         namedParameterCount = addNewNamedParameter(namedParameters, namedParameterCount, parameter);
                         totalParameterCount = addNamedParameter(parameterList, totalParameterCount, escapes, i, j, parameter);
                     }
