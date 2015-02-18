@@ -13,10 +13,6 @@ public class Sets {
         return (Set<T>) emptySet;
     }
 
-    public static <T> Set<T> immutableOf(T[] values) {
-        return values.length > 0 ? Collections.unmodifiableSet(new HashSet<>(Arrays.asList(values))) : empty();
-    }
-
     public static <T> Set<T> merge(Set<T> set1, Set<T> set2) {
         Set<T> merged = new HashSet<>(set1);
         merged.addAll(set2);

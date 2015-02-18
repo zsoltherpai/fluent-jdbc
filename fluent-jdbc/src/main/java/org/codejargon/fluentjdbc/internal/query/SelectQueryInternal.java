@@ -1,14 +1,13 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import java.sql.PreparedStatement;
+import org.codejargon.fluentjdbc.api.query.Mapper;
+import org.codejargon.fluentjdbc.api.query.SelectQuery;
+import org.codejargon.fluentjdbc.internal.support.Predicates;
+
 import java.sql.ResultSet;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import org.codejargon.fluentjdbc.api.query.Mapper;
-import org.codejargon.fluentjdbc.internal.support.Predicates;
-import org.codejargon.fluentjdbc.api.query.SelectQuery;
 
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;

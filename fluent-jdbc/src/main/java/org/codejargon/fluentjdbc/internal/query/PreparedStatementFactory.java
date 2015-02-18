@@ -1,7 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

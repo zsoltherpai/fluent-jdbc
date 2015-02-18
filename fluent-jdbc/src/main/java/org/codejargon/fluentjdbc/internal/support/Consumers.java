@@ -1,7 +1,5 @@
 package org.codejargon.fluentjdbc.internal.support;
 
-import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class Consumers {

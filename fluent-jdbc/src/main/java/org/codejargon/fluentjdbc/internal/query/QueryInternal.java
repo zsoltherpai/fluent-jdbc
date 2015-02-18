@@ -1,11 +1,5 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
@@ -14,7 +8,11 @@ import org.codejargon.fluentjdbc.api.query.Query;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
 import org.codejargon.fluentjdbc.api.query.UpdateQuery;
 import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 
 public class QueryInternal implements Query {
 

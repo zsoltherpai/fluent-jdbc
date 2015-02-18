@@ -55,5 +55,6 @@ public class DummyTool {
         assertThat(actual.string, is(equalTo(expected.string)));
         assertThat(actual.dateLocalDate, is(equalTo(expected.dateLocalDate)));
         assertThat(actual.dateSqlDate.toLocalDate(), is(equalTo(expected.dateSqlDate.toLocalDate())));
+        assertThat(actual.nullString, is(equalTo(expected.nullString)));
     }
 }
