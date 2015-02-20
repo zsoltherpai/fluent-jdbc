@@ -28,8 +28,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki)
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 0.9.1 released - support for guice (standalone jdbc tx module and integration to JPA)
-* 0.9 released - support for select query customization (maxRows, defaultFetchSize, fetchSize)
+* 0.9.2 released - no-arg constructor of ObjectMappers POJOs no longer needs to be public, performance tweaks
 
 #####Code examples#####
 Some common use cases
