@@ -26,7 +26,7 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         this.connectionProvider = q -> q.receive(dataSource.getConnection());
     }
 
-    public StandaloneTxConnectionProvider(ConnectionProvider connectionProvider) {
+    StandaloneTxConnectionProvider(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
     }
 
