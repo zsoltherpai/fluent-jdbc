@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.codejargon.fluentjdbc.internal.support.Consumers.sneaky;
+import static org.codejargon.fluentjdbc.internal.support.Sneaky.consumer;
 import static org.codejargon.fluentjdbc.internal.support.Iterables.streamOfIterator;
 
 class BatchQueryInternal implements BatchQuery {
@@ -82,7 +82,7 @@ class BatchQueryInternal implements BatchQuery {
     private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<Object>> params) throws SQLException {
         Batch batch = new Batch();
         params.forEachOrdered(
-                sneaky(param -> {
+                consumer(param -> {
                     query.assignParams(ps, param);
                     ps.addBatch();
                     batch.added();
