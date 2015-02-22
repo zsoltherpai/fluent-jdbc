@@ -105,7 +105,7 @@ class BatchQueryInternal implements BatchQuery {
     }
     
     private static class Batch {
-        private int batchesAdded = 0;
+        private long batchesAdded = 0L;
         private final List<UpdateResult> updateResults = new ArrayList<>();
         
         private void added() {
