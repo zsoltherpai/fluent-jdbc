@@ -73,23 +73,26 @@ class BatchQueryInternal implements BatchQuery {
         NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
             return runBatches(
-                    statement, 
-                    streamOfIterator(namedParams.get()).map(namedParam -> SqlAndParamsForNamed.create(namedTransformedSql, namedParam).params())
+                    statement,
+                    streamOfIterator(namedParams.get())
+                            .map(namedParam -> SqlAndParamsForNamed.create(namedTransformedSql, namedParam).params())
             );
         }
     }
-    
+
     private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<Object>> params) throws SQLException {
         Batch batch = new Batch();
         params.forEachOrdered(
-                consumer(param -> {
-                    query.assignParams(ps, param);
-                    ps.addBatch();
-                    batch.added();
-                    if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
-                        runBatch(ps, batch);
-                    }
-                })
+                consumer(
+                        param -> {
+                            query.assignParams(ps, param);
+                            ps.addBatch();
+                            batch.added();
+                            if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
+                                runBatch(ps, batch);
+                            }
+                        }
+                )
         );
         runBatch(ps, batch);
         return batch.results();
@@ -103,19 +106,19 @@ class BatchQueryInternal implements BatchQuery {
                         .collect(Collectors.toList())
         );
     }
-    
+
     private static class Batch {
         private long batchesAdded = 0L;
         private final List<UpdateResult> updateResults = new ArrayList<>();
-        
+
         private void added() {
             ++batchesAdded;
         }
-        
+
         private void newResults(List<UpdateResult> newResults) {
             updateResults.addAll(newResults);
         }
-        
+
         private List<UpdateResult> results() {
             return Collections.unmodifiableList(updateResults);
         }
