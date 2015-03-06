@@ -9,14 +9,15 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static java.util.Optional.empty;
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
 
 class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
     private Predicate filter = Predicates.alwaysTrue();
-    private Optional<Integer> fetchSize = Optional.empty();
-    private Optional<Long> maxRows = Optional.empty();
+    private Optional<Integer> fetchSize = empty();
+    private Optional<Long> maxRows = empty();
 
     SelectQueryInternal(String sql, QueryInternal query) {
         super(query, sql);
@@ -67,7 +68,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     public <T> Optional<T> firstResult(Mapper<T> mapper) {
         return runQuery(ps -> {
             try(ResultSet rs = ps.executeQuery()) {
-                Optional<T> result = Optional.empty();
+                Optional<T> result = empty();
                 while (rs.next() && !result.isPresent()) {
                     T candidate = mapper.map(rs);
                     if (filter.test(candidate)) {
@@ -84,7 +85,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     public <T> T singleResult(Mapper<T> mapper) {
         Optional<T> firstResult = firstResult(mapper);
         if(!firstResult.isPresent()) {
-            throw query.queryException(sql, Optional.of("At least one result expected"), Optional.empty());
+            throw query.queryException(sql, Optional.of("At least one result expected"), empty());
         }
         return firstResult.get();
     }

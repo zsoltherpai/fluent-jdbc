@@ -14,15 +14,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.empty;
 import static org.codejargon.fluentjdbc.internal.support.Sneaky.consumer;
 import static org.codejargon.fluentjdbc.internal.support.Iterables.streamOfIterator;
 
 class BatchQueryInternal implements BatchQuery {
     private final String sql;
     private final QueryInternal query;
-    private Optional<Iterator<List<Object>>> params = Optional.empty();
-    private Optional<Iterator<Map<String, Object>>> namedParams = Optional.empty();
-    private Optional<Integer> batchSize = Optional.empty();
+    private Optional<Iterator<List<Object>>> params = empty();
+    private Optional<Iterator<Map<String, Object>>> namedParams = empty();
+    private Optional<Integer> batchSize = empty();
 
     public BatchQueryInternal(String sql, QueryInternal query) {
         this.sql = sql;
