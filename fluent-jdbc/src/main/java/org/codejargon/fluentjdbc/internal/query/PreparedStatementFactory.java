@@ -5,6 +5,7 @@ import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,14 +18,14 @@ class PreparedStatementFactory {
 
     PreparedStatement createSingle(Connection con, SingleQuerySpecification querySpec) throws SQLException {
         SqlAndParams sqlAndParams = querySpec.sqlAndParams(config);
-        PreparedStatement statement = prepareStatement(con, sqlAndParams.sql());
+        PreparedStatement statement = prepareStatement(con, sqlAndParams.sql(), querySpec.fetchGenerated);
         singleQueryCustomization(statement, querySpec);
         assignParams(statement, sqlAndParams.params());
         return statement;
     }
 
     PreparedStatement createBatch(Connection con, String sql) throws SQLException {
-        return prepareStatement(con, sql);
+        return prepareStatement(con, sql, false);
     }
 
     void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
@@ -71,8 +72,10 @@ class PreparedStatementFactory {
         }
     }
 
-    private PreparedStatement prepareStatement(Connection con, String sql) throws SQLException {
-        return con.prepareStatement(sql);
+    private PreparedStatement prepareStatement(Connection con, String sql, Boolean fetchGenerated) throws SQLException {
+        return fetchGenerated ?
+                con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) :
+                con.prepareStatement(sql);
     }
 
 

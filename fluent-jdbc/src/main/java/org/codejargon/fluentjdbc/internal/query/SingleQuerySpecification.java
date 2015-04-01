@@ -7,13 +7,16 @@ import java.util.Optional;
 class SingleQuerySpecification {
     final SingleQueryBase singleQueryBase;
     final Optional<SelectQueryInternal> select;
+    final Boolean fetchGenerated;
 
     private SingleQuerySpecification (
             SingleQueryBase singleQueryBase,
-            Optional<SelectQueryInternal> select
+            Optional<SelectQueryInternal> select,
+            Boolean fetchGenerated
     ) {
         this.singleQueryBase = singleQueryBase;
         this.select = select;
+        this.fetchGenerated = fetchGenerated;
     }
 
     static SingleQuerySpecification forSelect(
@@ -21,16 +24,19 @@ class SingleQuerySpecification {
     ) {
         return new SingleQuerySpecification(
                 selectQueryInternal,
-                Optional.of(selectQueryInternal)
+                Optional.of(selectQueryInternal),
+                false
         );
     }
 
     static SingleQuerySpecification forUpdate(
-            SingleQueryBase singleQueryBase
+            SingleQueryBase singleQueryBase,
+            Boolean fetchGenerated
     ) {
         return new SingleQuerySpecification(
                 singleQueryBase,
-                Optional.<SelectQueryInternal>empty()
+                Optional.<SelectQueryInternal>empty(),
+                fetchGenerated
         );
     }
 
