@@ -4,7 +4,6 @@ import org.codejargon.fluentjdbc.api.mapper.Mappers;
 import org.codejargon.fluentjdbc.api.query.UpdateResult;
 import org.codejargon.fluentjdbc.api.query.UpdateResultGenKeys;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,11 +57,12 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
     }
 
     private void verifyQuerying(Boolean withGenerated) throws SQLException {
-        ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
-        if(!withGenerated) {
-            verify(connection).prepareStatement(queryCaptor.capture());
-            assertThat(queryCaptor.getValue(), is(equalTo(sql)));
+        if(withGenerated) {
+            verify(connection).prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        } else {
+            verify(connection).prepareStatement(sql);
         }
+
         verify(preparedStatement).setObject(1, param1);
         verify(preparedStatement).setObject(2, param2);
         verify(preparedStatement).executeUpdate();
