@@ -14,7 +14,7 @@ standalone or complement higher level of abstractions like JPA or others.
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
 </dependency>
 ```
 Note: requires java 8
@@ -23,7 +23,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 0.9.2 released - no-arg constructor of ObjectMappers POJOs no longer needs to be public, performance tweaks
+* 0.9.3 released - support for fetching generated keys on insert/updates
 
 #####Code examples#####
 Some common use cases
