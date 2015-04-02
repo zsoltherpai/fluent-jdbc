@@ -1,17 +1,20 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import org.codejargon.fluentjdbc.api.mapper.Mappers;
 import org.codejargon.fluentjdbc.api.query.UpdateResult;
+import org.codejargon.fluentjdbc.api.query.UpdateResultGenKeys;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class FluentJdbcUpdateTest extends UpdateTestBase {
     static Long expectedUpdatedRows = 5L;
@@ -21,7 +24,7 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
         when(preparedStatement.executeUpdate()).thenReturn(expectedUpdatedRows.intValue());
         UpdateResult updateResult = query.update(sql).params(param1, param2).run();
         assertThat(updateResult.affectedRows(), is(equalTo(expectedUpdatedRows)));
-        verifyQuerying();
+        verifyQuerying(false);
         verify(preparedStatement).executeUpdate();
     }
 
@@ -30,16 +33,39 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
         when(connection.prepareStatement(any(String.class))).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(expectedUpdatedRows.intValue());
         query.update(sqlWithNamedParams).namedParams(namedParams()).run();
-        verifyQuerying();
+        verifyQuerying(false);
     }
 
-    private void verifyQuerying() throws SQLException {
+    @Test
+    public void updateAndFetchGeneratedKeys() throws SQLException {
+        Long generatedKey = 5L;
+        ResultSet genKeyRs = mock(ResultSet.class);
+        when(genKeyRs.next()).thenReturn(true).thenReturn(false);
+        when(genKeyRs.getLong(1)).thenReturn(generatedKey);
+        when(preparedStatement.getGeneratedKeys()).thenReturn(genKeyRs);
+        when(connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)).thenReturn(preparedStatement);
+
+        UpdateResultGenKeys result = query.update(sql).params(param1, param2).runFetchGenKeys(Mappers.singleLong());
+        assertThat(result.generatedKeys().size(), is(1));
+        assertThat(result.generatedKeys().get(0), is(equalTo(generatedKey)));
+
+        /// verify query
+        verifyQuerying(true);
+        verify(preparedStatement).getGeneratedKeys();
+        verify(genKeyRs, times(2)).next();
+        verify(genKeyRs).getLong(1);
+
+    }
+
+    private void verifyQuerying(Boolean withGenerated) throws SQLException {
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
-        verify(connection).prepareStatement(queryCaptor.capture());
+        if(!withGenerated) {
+            verify(connection).prepareStatement(queryCaptor.capture());
+            assertThat(queryCaptor.getValue(), is(equalTo(sql)));
+        }
         verify(preparedStatement).setObject(1, param1);
         verify(preparedStatement).setObject(2, param2);
         verify(preparedStatement).executeUpdate();
         verify(preparedStatement).close();
-        assertThat(queryCaptor.getValue(), is(equalTo(sql)));
     }
 }

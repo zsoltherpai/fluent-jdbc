@@ -45,7 +45,7 @@ public interface UpdateQuery {
      * @param <T> type of a single key or an object containing multiple keys
      * @return result of the update including generated keys
      */
-    <T> UpdateResultGeneratedKeys<T> runAndFetchGenerated(Mapper<T> generatedKeyMapper);
+    <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> generatedKeyMapper);
 
 
 }

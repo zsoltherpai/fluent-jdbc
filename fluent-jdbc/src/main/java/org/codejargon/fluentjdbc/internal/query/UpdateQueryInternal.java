@@ -3,13 +3,11 @@ package org.codejargon.fluentjdbc.internal.query;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.api.query.UpdateQuery;
 import org.codejargon.fluentjdbc.api.query.UpdateResult;
-import org.codejargon.fluentjdbc.api.query.UpdateResultGeneratedKeys;
-import org.codejargon.fluentjdbc.internal.support.Lists;
+import org.codejargon.fluentjdbc.api.query.UpdateResultGenKeys;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,9 +28,10 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     }
 
     @Override
-    public <T> UpdateResultGeneratedKeys<T> runAndFetchGenerated(Mapper<T> mapper) {
-        return runQuery(SingleQuerySpecification.forUpdate(this, true),
-                ps -> new UpdateResultGeneratedKeysInternal<>(
+    public <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> mapper) {
+        return runQuery(
+                SingleQuerySpecification.forUpdate(this, true),
+                ps -> new UpdateResultGenKeysInternal<>(
                         (long) ps.executeUpdate(),
                         generatedKeys(ps, mapper))
         );
