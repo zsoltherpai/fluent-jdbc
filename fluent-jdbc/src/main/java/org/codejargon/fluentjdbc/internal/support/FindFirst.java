@@ -57,11 +57,8 @@ public class FindFirst<T> {
 
     private Stream<T> stream() {
         return elements.isPresent() ?
-                iterableLazy(elements.get()) :
-                iterableLazy(elementsLazy.get()).map(Supplier::get);
+                Iterables.stream(elements.get()) :
+                Iterables.stream(elementsLazy.get()).map(Supplier::get);
     }
 
-    private static <T> Stream<T> iterableLazy(Iterable<T> iterable) {
-        return StreamSupport.stream(iterable.spliterator(), false);
-    }
 }

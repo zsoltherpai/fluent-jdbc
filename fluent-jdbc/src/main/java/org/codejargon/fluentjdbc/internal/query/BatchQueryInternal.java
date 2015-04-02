@@ -14,15 +14,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.codejargon.fluentjdbc.internal.support.Consumers.sneaky;
+import static java.util.Optional.empty;
+import static org.codejargon.fluentjdbc.internal.support.Sneaky.consumer;
 import static org.codejargon.fluentjdbc.internal.support.Iterables.streamOfIterator;
 
 class BatchQueryInternal implements BatchQuery {
     private final String sql;
     private final QueryInternal query;
-    private Optional<Iterator<List<Object>>> params = Optional.empty();
-    private Optional<Iterator<Map<String, Object>>> namedParams = Optional.empty();
-    private Optional<Integer> batchSize = Optional.empty();
+    private Optional<Iterator<List<Object>>> params = empty();
+    private Optional<Iterator<Map<String, Object>>> namedParams = empty();
+    private Optional<Integer> batchSize = empty();
 
     public BatchQueryInternal(String sql, QueryInternal query) {
         this.sql = sql;
@@ -73,23 +74,26 @@ class BatchQueryInternal implements BatchQuery {
         NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
             return runBatches(
-                    statement, 
-                    streamOfIterator(namedParams.get()).map(namedParam -> SqlAndParamsForNamed.create(namedTransformedSql, namedParam).params())
+                    statement,
+                    streamOfIterator(namedParams.get())
+                            .map(namedParam -> SqlAndParamsForNamed.create(namedTransformedSql, namedParam).params())
             );
         }
     }
-    
+
     private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<Object>> params) throws SQLException {
         Batch batch = new Batch();
         params.forEachOrdered(
-                sneaky(param -> {
-                    query.assignParams(ps, param);
-                    ps.addBatch();
-                    batch.added();
-                    if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
-                        runBatch(ps, batch);
-                    }
-                })
+                consumer(
+                        param -> {
+                            query.assignParams(ps, param);
+                            ps.addBatch();
+                            batch.added();
+                            if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
+                                runBatch(ps, batch);
+                            }
+                        }
+                )
         );
         runBatch(ps, batch);
         return batch.results();
@@ -103,19 +107,19 @@ class BatchQueryInternal implements BatchQuery {
                         .collect(Collectors.toList())
         );
     }
-    
+
     private static class Batch {
-        private int batchesAdded = 0;
+        private long batchesAdded = 0L;
         private final List<UpdateResult> updateResults = new ArrayList<>();
-        
+
         private void added() {
             ++batchesAdded;
         }
-        
+
         private void newResults(List<UpdateResult> newResults) {
             updateResults.addAll(newResults);
         }
-        
+
         private List<UpdateResult> results() {
             return Collections.unmodifiableList(updateResults);
         }

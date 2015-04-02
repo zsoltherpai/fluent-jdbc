@@ -2,24 +2,24 @@ package org.codejargon.fluentjdbc.internal.support;
 
 import java.util.function.Consumer;
 
-public class Consumers {
+public class Sneaky {
     @FunctionalInterface
-    public static interface ConsumerCheckException<T>{
+    public static interface SneakyConsumer<T>{
         void accept(T elem) throws Exception;
     }
 
-    public static <T> Consumer<T> sneaky(ConsumerCheckException<T> c) {
+    public static <T> Consumer<T> consumer(SneakyConsumer<T> c) {
         return elem -> {
             try {
                 c.accept(elem);
             } catch (Exception ex) {
-                Consumers.<RuntimeException>sneakyException(ex);
+                Sneaky.<RuntimeException>sneakyException(ex);
             }
         };
     }
     
     @SuppressWarnings("unchecked")
-    private static <T extends Throwable> T sneakyException(Throwable t) throws T {
+    private static <T extends Throwable> void sneakyException(Throwable t) throws T {
         throw (T) t;
     }
 }

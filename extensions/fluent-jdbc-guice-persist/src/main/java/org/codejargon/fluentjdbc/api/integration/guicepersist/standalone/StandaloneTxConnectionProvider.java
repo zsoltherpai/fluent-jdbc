@@ -26,7 +26,7 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         this.connectionProvider = q -> q.receive(dataSource.getConnection());
     }
 
-    public StandaloneTxConnectionProvider(ConnectionProvider connectionProvider) {
+    StandaloneTxConnectionProvider(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
     }
 
@@ -77,8 +77,8 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         if (currentTxConnection.get().isPresent()) {
             try {
                 currentTxConnection.get().get().close();
-            } catch (Exception e) {
-                // todo logging of e
+            } catch (SQLException e) {
+                throw new FluentJdbcSqlException("Error closing connection after transaction commit.", e);
             }
             currentTxConnection.set(Optional.empty());
         }

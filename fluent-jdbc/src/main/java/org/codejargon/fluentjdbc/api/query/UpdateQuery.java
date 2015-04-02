@@ -32,9 +32,20 @@ public interface UpdateQuery {
     UpdateQuery namedParams(Map<String, Object> namedParams);
 
     /**
-     * Runs the update query and returns the result of it (eg affected rows)
+     * Runs the update query
      *
      * @return result of the update (eg affected rows)
      */
     UpdateResult run();
+
+    /**
+     * Runs the update query and fetches the generated keys
+     *
+     * @param generatedKeyMapper maps generated key(s) to an object
+     * @param <T> type of a single key or an object containing multiple keys
+     * @return result of the update including generated keys
+     */
+    <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> generatedKeyMapper);
+
+
 }

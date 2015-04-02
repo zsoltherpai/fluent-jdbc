@@ -31,17 +31,13 @@ abstract class SingleQueryBase {
         this.namedParams.putAll(namedParams);
     }
 
-    protected <T> T runQuery(QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
+    protected <T> T runQuery(
+            SingleQuerySpecification specs,
+            QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, querySpecs())) {
+            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, specs)) {
                 return queryRunnerPreparedStatement.run(ps);
             }
         }, sql);
     }
-    
-    protected abstract SingleQuerySpecification querySpecs();
-    
-    
-    
-    
 }

@@ -7,7 +7,7 @@ import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Query;
 
 /**
- * Creates fluent Query API baded on FluentJdbc's configuration. Thread-safe.
+ * Creates fluent Query API based on FluentJdbc's configuration. Thread-safe.
  * 
  * @see org.codejargon.fluentjdbc.api.FluentJdbcBuilder
  */
