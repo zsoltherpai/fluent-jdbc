@@ -44,7 +44,7 @@ public class FluentJdbcUpdateTest extends UpdateTestBase {
         when(preparedStatement.getGeneratedKeys()).thenReturn(genKeyRs);
         when(connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)).thenReturn(preparedStatement);
 
-        UpdateResultGenKeys result = query.update(sql).params(param1, param2).runFetchGenKeys(Mappers.singleLong());
+        UpdateResultGenKeys<Long> result = query.update(sql).params(param1, param2).runFetchGenKeys(Mappers.singleLong());
         assertThat(result.generatedKeys().size(), is(1));
         assertThat(result.generatedKeys().get(0), is(equalTo(generatedKey)));
 
