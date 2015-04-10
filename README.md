@@ -140,4 +140,5 @@ or by the ConnectionProvider implementation) are transaction managed. Some concr
 - Extracting the underlying connection from a JPA session
 - Getting transaction-managed connection from a transaction-managed Connection callback.
 - There is an extension library for Guice Persist: fluentjdbc-guice-persist, which supports standalone transaction management (without JPA or other tech)
+
 Refer to the [full documentation](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation) for more details and code examples.
