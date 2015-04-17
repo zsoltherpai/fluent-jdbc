@@ -2,6 +2,8 @@ package org.codejargon.fluentjdbc.api.mapper;
 
 import org.codejargon.fluentjdbc.api.query.Mapper;
 
+import java.math.BigDecimal;
+
 /**
  * <p>A set of common mappers for convenience.</p>
  * @see org.codejargon.fluentjdbc.api.mapper.ObjectMappers
@@ -10,6 +12,7 @@ public abstract class Mappers {
     private static final Mapper<Integer> singleInteger = (rs) -> rs.getInt(1);
     private static final Mapper<Long> singleLong = (rs) -> rs.getLong(1);
     private static final Mapper<String> singleString = (rs) -> rs.getString(1);
+    private static final Mapper<BigDecimal> singleBigDecimal = (rs) -> rs.getBigDecimal(1);
 
     /**
      * Maps the first Integer column.
@@ -33,5 +36,13 @@ public abstract class Mappers {
      */
     public static Mapper<String> singleString() {
         return singleString;
+    }
+
+    /**
+     * Maps the first BigDecimal column
+     * @return first BigDecimal column
+     */
+    public static Mapper<BigDecimal> singleBigDecimal() {
+        return singleBigDecimal;
     }
 }
