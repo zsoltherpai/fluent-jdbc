@@ -6,27 +6,29 @@ import org.codejargon.fluentjdbc.api.integration.guicepersist.jpa.JpaTestInitial
 import org.codejargon.fluentjdbc.integration.IntegrationTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.experimental.categories.Category;
+import org.junit.experimental.categories.Category
+
+import java.sql.Connection;
 
 @Category(IntegrationTest.class)
 public class EclipseLinkTest extends TransactionTestRoutine {
-    private static JpaTestInitialization jpaTestInitialization;
+    private static JpaTestInitialization jpaTestInitialization
     
     @BeforeClass
     public static void init() {
         jpaTestInitialization = new JpaTestInitialization(
                 "EclipseLink", 
-                em -> em.unwrap(java.sql.Connection.class)
-        );
+                { em -> em.unwrap(Connection.class) }
+        )
     }
 
     @AfterClass
     public static void stopJpa() {
-        jpaTestInitialization.stop();
+        jpaTestInitialization.stop()
     }
 
     @Override
     protected Injector injector() {
-        return jpaTestInitialization.injector();
+        return jpaTestInitialization.injector()
     }
 }
