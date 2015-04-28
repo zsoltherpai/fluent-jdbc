@@ -53,37 +53,37 @@ class HSQLIntegrationTest extends IntegrationTestRoutine {
 
         @Override
         public PrintWriter getLogWriter() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException()
         }
 
         @Override
         public void setLogWriter(PrintWriter out) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException()
         }
 
         @Override
         public void setLoginTimeout(int seconds) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException()
         }
 
         @Override
         public int getLoginTimeout() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException()
         }
 
         @Override
         public Logger getParentLogger() {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException()
         }
 
         @Override
         public <T> T unwrap(Class<T> iface) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException()
         }
 
         @Override
         public boolean isWrapperFor(Class<?> iface) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException()
         }
     }
 }
