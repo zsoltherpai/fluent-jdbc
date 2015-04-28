@@ -1,20 +1,9 @@
-package org.codejargon.fluentjdbc.internal.query;
+package org.codejargon.fluentjdbc.internal.query
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner
-import spock.lang.Specification;
+import spock.lang.Specification
 
-import java.math.BigDecimal;
-import java.sql.*;
-import java.time.*;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
+import java.sql.*
+import java.time.*
 
 class ParamAssignerTest extends Specification {
     static final def localDateTime = LocalDateTime.of(2015, Month.MARCH, 5, 12, 5)
