@@ -1,4 +1,4 @@
 package org.codejargon.fluentjdbc.integration;
 
-public interface IntegrationTest {
+interface IntegrationTest {
 }
