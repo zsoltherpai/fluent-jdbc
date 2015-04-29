@@ -1,10 +1,13 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
 import org.codejargon.fluentjdbc.internal.support.Predicates;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -67,7 +70,6 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @SuppressWarnings("unchecked")
     public <T> Optional<T> firstResult(Mapper<T> mapper) {
         return runQuery(
-                querySpecs(),
                 ps -> {
                     try (ResultSet rs = ps.executeQuery()) {
                         Optional<T> result = empty();
@@ -111,7 +113,6 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     @SuppressWarnings("unchecked")
     public <T> void iterateResult(Mapper<T> mapper, Consumer<T> consumer) {
         runQuery(
-                querySpecs(),
                 ps -> {
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {
@@ -126,15 +127,39 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
         );
     }
 
-    private SingleQuerySpecification querySpecs() {
-        return SingleQuerySpecification.forSelect(this);
+
+    @Override
+    void customizeQuery(PreparedStatement statement, QueryConfig config) throws SQLException {
+        selectFetchSize(statement, config);
+        maxResults(statement);
     }
 
-    Optional<Integer> fetchSize() {
-        return fetchSize;
+    private void selectFetchSize(PreparedStatement statement, QueryConfig config) throws SQLException {
+        Optional<Integer> activeFetchSize = config.fetchSize(fetchSize);
+        if (activeFetchSize.isPresent()) {
+            statement.setFetchSize(activeFetchSize.get());
+        }
     }
 
-    Optional<Long> maxRows() {
-        return maxRows;
+    private void maxResults(PreparedStatement statement) throws SQLException {
+        if(maxRows.isPresent()) {
+            if(maxRows.get() > Integer.MAX_VALUE) {
+                setLargeMaxRows(statement);
+            } else {
+                statement.setMaxRows((int) maxRows.get().longValue());
+            }
+        }
+    }
+
+    private void setLargeMaxRows(PreparedStatement statement) throws SQLException {
+        try {
+            statement.setLargeMaxRows(maxRows.get());
+        } catch(SQLException e) {
+            throw new FluentJdbcException(
+                    String.format(
+                            "The JDBC driver %s doesn't support setLargeMaxRows(). Set max results <= Integer.MAX_VALUE",
+                            statement.getConnection().getMetaData().getDriverName())
+            );
+        }
     }
 }

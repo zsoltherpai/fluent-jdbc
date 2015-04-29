@@ -23,13 +23,13 @@ import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
 /**
  * Helper methods for named parameter parsing.
- *
+ * <p>
  * <p>Only intended for internal use within Spring's JDBC framework.
  *
  * @author Thomas Risberg
  * @author Juergen Hoeller
  * @since 2.0
- *
+ * <p>
  * Class has been slightly simplified for FluentJdbc (dropped declaredParams, paramSource, introduced FluentJdbc-specific namedParams)
  */
 abstract class NamedParameterUtils {
@@ -39,19 +39,19 @@ abstract class NamedParameterUtils {
      * indicating that a parameter name in a SQL String has ended.
      */
     private static final char[] PARAMETER_SEPARATORS =
-            new char[] {'"', '\'', ':', '&', ',', ';', '(', ')', '|', '=', '+', '-', '*', '%', '/', '\\', '<', '>', '^'};
+            new char[]{'"', '\'', ':', '&', ',', ';', '(', ')', '|', '=', '+', '-', '*', '%', '/', '\\', '<', '>', '^'};
 
     /**
      * Set of characters that qualify as comment or quotes starting characters.
      */
     private static final String[] START_SKIP =
-            new String[] {"'", "\"", "--", "/*"};
+            new String[]{"'", "\"", "--", "/*"};
 
     /**
      * Set of characters that at are the corresponding comment or quotes ending characters.
      */
     private static final String[] STOP_SKIP =
-            new String[] {"'", "\"", "\n", "*/"};
+            new String[]{"'", "\"", "\n", "*/"};
 
 
     //-------------------------------------------------------------------------
@@ -61,6 +61,7 @@ abstract class NamedParameterUtils {
     /**
      * Parse the SQL statement and locate any placeholders or named parameters.
      * Named parameters are substituted for a JDBC placeholder.
+     *
      * @param sql the SQL statement
      * @return the parsed statement, represented as ParsedSql instance
      */
@@ -84,8 +85,7 @@ abstract class NamedParameterUtils {
                 skipToPosition = skipCommentsAndQuotes(statement, i);
                 if (i == skipToPosition) {
                     break;
-                }
-                else {
+                } else {
                     i = skipToPosition;
                 }
             }
@@ -119,8 +119,7 @@ abstract class NamedParameterUtils {
                         totalParameterCount = addNamedParameter(parameterList, totalParameterCount, escapes, i, j + 1, parameter);
                     }
                     j++;
-                }
-                else {
+                } else {
                     while (j < statement.length && !isParameterSeparator(statement[j])) {
                         j++;
                     }
@@ -131,8 +130,7 @@ abstract class NamedParameterUtils {
                     }
                 }
                 i = j - 1;
-            }
-            else {
+            } else {
                 if (c == '\\') {
                     int j = i + 1;
                     if (j < statement.length && statement[j] == ':') {
@@ -178,8 +176,9 @@ abstract class NamedParameterUtils {
 
     /**
      * Skip over comments and quoted names present in an SQL statement
+     *
      * @param statement character array containing SQL statement
-     * @param position current position of statement
+     * @param position  current position of statement
      * @return next position to process after any comments or quotes are skipped
      */
     private static int skipCommentsAndQuotes(char[] statement, int position) {
@@ -235,6 +234,7 @@ abstract class NamedParameterUtils {
      * be used for a select list. Select lists should be limited to 100 or fewer elements.
      * A larger number of elements is not guaranteed to be supported by the database and
      * is strictly vendor-dependent.
+     *
      * @param parsedSql the parsed representation of the SQL statement
      * @return the SQL statement with substituted parameters
      * @see #parseSqlStatement
@@ -258,9 +258,10 @@ abstract class NamedParameterUtils {
 
     /**
      * Convert a Map of named parameter values to a corresponding array.
+     *
      * @param parsedSql the parsed SQL statement
-     * (may be {@code null}). If specified, the parameter metadata will
-     * be built into the value array in the form of SqlParameterValue objects.
+     *                  (may be {@code null}). If specified, the parameter metadata will
+     *                  be built into the value array in the form of SqlParameterValue objects.
      * @return the array of values
      */
     static Object[] buildValueArray(ParsedSql parsedSql, Map<String, Object> namedParams) {
@@ -275,11 +276,10 @@ abstract class NamedParameterUtils {
         List<String> paramNames = parsedSql.getParameterNames();
         for (int i = 0; i < paramNames.size(); i++) {
             String paramName = paramNames.get(i);
-                if(!namedParams.containsKey(paramName)) {
-                    throw new FluentJdbcException(String.format("Named parameter not set: %s", paramName));
-                }
-                Object value = namedParams.get(paramName);
-                paramArray[i] = value;
+            if (!namedParams.containsKey(paramName)) {
+                throw new FluentJdbcException(String.format("Named parameter not set: %s", paramName));
+            }
+            paramArray[i] = namedParams.get(paramName);
         }
         return paramArray;
     }

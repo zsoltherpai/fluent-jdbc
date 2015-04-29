@@ -1,8 +1,10 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
 import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 abstract class SingleQueryBase {
@@ -32,12 +34,19 @@ abstract class SingleQueryBase {
     }
 
     protected <T> T runQuery(
-            SingleQuerySpecification specs,
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, specs)) {
+            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, false)) {
                 return queryRunnerPreparedStatement.run(ps);
             }
         }, sql);
     }
+
+    SqlAndParams sqlAndParams(QueryConfig config) {
+        return namedParams.isEmpty() ?
+                new SqlAndParams(sql, params) :
+                SqlAndParamsForNamed.create(config.namedTransformedSql(sql), namedParams);
+    }
+
+    abstract void customizeQuery(PreparedStatement preparedStatement, QueryConfig config) throws SQLException;
 }

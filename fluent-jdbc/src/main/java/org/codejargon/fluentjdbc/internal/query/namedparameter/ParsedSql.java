@@ -32,7 +32,7 @@ class ParsedSql {
 
     private List<String> parameterNames = new ArrayList<String>();
 
-    private List<int[]> parameterIndexes = new ArrayList<int[]>();
+    private List<int[]> parameterIndexes = new ArrayList<>();
 
     private int namedParameterCount;
 

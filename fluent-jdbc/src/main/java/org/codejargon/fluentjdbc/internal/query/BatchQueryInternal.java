@@ -75,8 +75,9 @@ class BatchQueryInternal implements BatchQuery {
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
             return runBatches(
                     statement,
-                    streamOfIterator(namedParams.get())
-                            .map(namedParam -> SqlAndParamsForNamed.create(namedTransformedSql, namedParam).params())
+                    streamOfIterator(namedParams.get()).map(
+                            namedParam -> SqlAndParamsForNamed.params(namedTransformedSql.parsedSql(), namedParam)
+                    )
             );
         }
     }

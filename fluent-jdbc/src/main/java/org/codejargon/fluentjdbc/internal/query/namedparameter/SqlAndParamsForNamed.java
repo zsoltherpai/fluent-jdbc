@@ -19,7 +19,7 @@ public abstract class SqlAndParamsForNamed {
         );
     }
 
-    private static List<Object> params(ParsedSql parsedSql, Map<String, Object> namedParams) {
+    public static List<Object> params(ParsedSql parsedSql, Map<String, Object> namedParams) {
         return Arrays.asList(NamedParameterUtils.buildValueArray(parsedSql, namedParams));
     }
 }

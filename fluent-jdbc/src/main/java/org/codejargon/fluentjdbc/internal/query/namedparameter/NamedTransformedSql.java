@@ -18,7 +18,7 @@ public class NamedTransformedSql {
         return transformedSql;
     }
 
-    ParsedSql parsedSql() {
+    public ParsedSql parsedSql() {
         return parsedSql;
     }
 
