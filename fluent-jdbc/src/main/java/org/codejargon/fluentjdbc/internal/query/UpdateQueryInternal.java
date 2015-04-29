@@ -15,7 +15,7 @@ import java.util.Map;
 
 class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
 
-    public UpdateQueryInternal(String sql, QueryInternal query) {
+    UpdateQueryInternal(String sql, QueryInternal query) {
         super(query, sql);
     }
 
@@ -53,6 +53,11 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
         return this;
     }
 
+    @Override
+    void customizeQuery(PreparedStatement preparedStatement, QueryConfig config) {
+
+    }
+
     private <T> List<T> generatedKeys(PreparedStatement ps, Mapper<T> generatedKeyMapper) throws SQLException {
         try (ResultSet keySet = ps.getGeneratedKeys()) {
             List<T> keys = new ArrayList<>(1);
@@ -61,10 +66,5 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
             }
             return Collections.unmodifiableList(keys);
         }
-    }
-
-    @Override
-    void customizeQuery(PreparedStatement preparedStatement, QueryConfig config) {
-
     }
 }

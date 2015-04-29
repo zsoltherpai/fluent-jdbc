@@ -4,10 +4,10 @@ import org.codejargon.fluentjdbc.api.query.UpdateResultGenKeys;
 
 import java.util.List;
 
-public class UpdateResultGenKeysInternal<T> extends UpdateResultInternal implements UpdateResultGenKeys<T> {
+class UpdateResultGenKeysInternal<T> extends UpdateResultInternal implements UpdateResultGenKeys<T> {
     private final List<T> generatedKeys;
 
-    public UpdateResultGenKeysInternal(Long affectedRows, List<T> generatedKeys) {
+    UpdateResultGenKeysInternal(Long affectedRows, List<T> generatedKeys) {
         super(affectedRows);
         this.generatedKeys = generatedKeys;
     }

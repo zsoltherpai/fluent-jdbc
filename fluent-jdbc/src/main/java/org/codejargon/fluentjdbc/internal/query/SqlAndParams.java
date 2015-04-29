@@ -11,11 +11,11 @@ public class SqlAndParams {
         this.params = params;
     }
 
-    public String sql() {
+    String sql() {
         return sql;
     }
 
-    public List<Object> params() {
+    List<Object> params() {
         return params;
     }
 }
