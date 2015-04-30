@@ -8,8 +8,11 @@ import org.codejargon.fluentjdbc.internal.support.Preconditions;
 import javax.persistence.EntityManager;
 
 /**
- * <p>Binds FluentJdbc and Query relying on a JPA ConnectionExtractor.</p>
- * Example<br><br>
+ * <p>
+ *     Binds FluentJdbc and Query instances relying on a JPA ConnectionExtractor.
+ *  Requires an existing EntityManager binding.
+ * </p>
+ * <p>Example:<p/>
  * <pre>
  * FluentJdbcBuilder fluentJdbcBuilder = new FluentJdbcBuilder(); // ... configure if needed
  * JpaConnectionExtractor extractor = ... 
