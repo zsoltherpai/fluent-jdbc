@@ -12,7 +12,6 @@ class UpdateResultGenKeysInternal<T> extends UpdateResultInternal implements Upd
         this.generatedKeys = generatedKeys;
     }
 
-
     @Override
     public List<T> generatedKeys() {
         return generatedKeys;

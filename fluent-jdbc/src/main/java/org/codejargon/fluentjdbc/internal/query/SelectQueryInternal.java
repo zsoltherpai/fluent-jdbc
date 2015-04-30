@@ -127,7 +127,6 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
         );
     }
 
-
     @Override
     void customizeQuery(PreparedStatement statement, QueryConfig config) throws SQLException {
         selectFetchSize(statement, config);

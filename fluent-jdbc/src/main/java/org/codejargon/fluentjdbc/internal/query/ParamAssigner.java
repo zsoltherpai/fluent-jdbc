@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 class ParamAssigner {
-    private static final ParamSetter defaultParamSetter =
+    private static final ParamSetter objectParamSetter =
             (param, statement, index) -> statement.setObject(index, param);
     
     private final Map<Class, ParamSetter> paramSetters;
@@ -39,12 +39,13 @@ class ParamAssigner {
     }
 
     private void assignNull(PreparedStatement statement, Integer index) throws SQLException {
+        Integer sqlType;
         try {
-            Integer sqlType = statement.getParameterMetaData().getParameterType(index);
-            statement.setNull(index, sqlType);
+            sqlType = statement.getParameterMetaData().getParameterType(index);
         } catch(SQLException e) {
             throw new FluentJdbcSqlException("Can't access parameter metadata, JDBC 3.0 not supported by the driver.", e);
         }
+        statement.setNull(index, sqlType);
     }
 
     @SuppressWarnings("unchecked")
@@ -54,6 +55,6 @@ class ParamAssigner {
     
     private ParamSetter paramSetter(Object param) {
         ParamSetter customSetter = paramSetters.get(param.getClass());
-        return customSetter != null ? customSetter : defaultParamSetter;
+        return customSetter != null ? customSetter : objectParamSetter;
     }
 }

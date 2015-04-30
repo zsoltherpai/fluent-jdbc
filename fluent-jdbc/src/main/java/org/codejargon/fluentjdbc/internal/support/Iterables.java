@@ -13,7 +13,7 @@ public class Iterables {
         return () -> iterator;
     }
 
-    public static <T> Stream<T> streamOfIterator(Iterator<T> iterator) {
+    public static <T> Stream<T> stream(Iterator<T> iterator) {
         return stream(fromIterator(iterator));
     }
 }

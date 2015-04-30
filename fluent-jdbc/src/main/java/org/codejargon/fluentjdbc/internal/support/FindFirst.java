@@ -5,11 +5,9 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class FindFirst<T> {
     private static final Predicate notNull = e -> e != null;
-    private static final Predicate<Optional> isPresent = Optional::isPresent;
 
     private Optional<Iterable<T>> elements;
     private Optional<Iterable<Supplier<T>>> elementsLazy;
@@ -48,11 +46,6 @@ public class FindFirst<T> {
     @SuppressWarnings("unchecked")
     public Optional<T> whichIsNotNull() {
         return which(notNull);
-    }
-
-    @SuppressWarnings("unchecked")
-    public Optional<T> whichIsPresent() {
-        return which((Predicate) isPresent);
     }
 
     private Stream<T> stream() {

@@ -55,7 +55,9 @@ public class QueryInternal implements Query {
     }
 
     FluentJdbcException queryException(String sql, Optional<String> reason, Optional<SQLException> e) {
-        String message = String.format("Error running query" + (reason.isPresent() ? ": " + reason.get() : "") + ", %s", sql);
+        String message = String.format(
+                "Error running query" + (reason.isPresent() ? ": " + reason.get() : "") + ", %s", sql
+        );
         return e.isPresent() ? new FluentJdbcSqlException(message, e.get()) : new FluentJdbcException(message);
     }
 

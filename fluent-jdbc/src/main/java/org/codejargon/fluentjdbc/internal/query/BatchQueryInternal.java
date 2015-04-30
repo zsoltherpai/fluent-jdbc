@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.empty;
 import static org.codejargon.fluentjdbc.internal.support.Sneaky.consumer;
-import static org.codejargon.fluentjdbc.internal.support.Iterables.streamOfIterator;
+import static org.codejargon.fluentjdbc.internal.support.Iterables.stream;
 
 class BatchQueryInternal implements BatchQuery {
     private final String sql;
@@ -65,7 +65,7 @@ class BatchQueryInternal implements BatchQuery {
 
     private List<UpdateResult> positional(Connection connection) throws SQLException {
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, sql)) {
-            return runBatches(statement, streamOfIterator(params.get()));
+            return runBatches(statement, stream(params.get()));
         }
 
     }
@@ -75,7 +75,7 @@ class BatchQueryInternal implements BatchQuery {
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
             return runBatches(
                     statement,
-                    streamOfIterator(namedParams.get()).map(
+                    stream(namedParams.get()).map(
                             namedParam -> SqlAndParamsForNamed.params(namedTransformedSql.parsedSql(), namedParam)
                     )
             );
@@ -83,45 +83,50 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<Object>> params) throws SQLException {
-        Batch batch = new Batch();
-        params.forEachOrdered(
-                consumer(
-                        param -> {
-                            query.assignParams(ps, param);
-                            ps.addBatch();
-                            batch.added();
-                            if (batchSize.isPresent() && batch.batchesAdded % batchSize.get() == 0) {
-                                runBatch(ps, batch);
-                            }
-                        }
-                )
-        );
-        runBatch(ps, batch);
-        return batch.results();
+        BatchExecution batchExecution = new BatchExecution(ps);
+        params.forEachOrdered(consumer(batchExecution::add));
+        return batchExecution.results();
     }
 
-    private void runBatch(PreparedStatement statement, Batch batch) throws SQLException {
-        batch.newResults(
-                Ints.asList(statement.executeBatch()).stream()
-                        .map(i -> (long) i)
-                        .map(UpdateResultInternal::new)
-                        .collect(Collectors.toList())
-        );
-    }
-
-    private static class Batch {
-        private long batchesAdded = 0L;
+    private class BatchExecution {
+        private final PreparedStatement ps;
         private final List<UpdateResult> updateResults = new ArrayList<>();
+        private long totalBatchesAdded = 0L;
+        private boolean newAdded = false;
 
-        private void added() {
-            ++batchesAdded;
+
+        public BatchExecution(PreparedStatement ps) {
+            this.ps = ps;
         }
 
-        private void newResults(List<UpdateResult> newResults) {
-            updateResults.addAll(newResults);
+        public void add(List<Object> params) throws SQLException {
+            addParamsToBatch(params);
+            if (batchSize.isPresent() && totalBatchesAdded % batchSize.get() == 0) {
+                runBatch();
+            }
         }
 
-        private List<UpdateResult> results() {
+        private void addParamsToBatch(List<Object> params) throws SQLException {
+            query.assignParams(ps, params);
+            ps.addBatch();
+            ++totalBatchesAdded;
+            newAdded = true;
+        }
+
+        private void runBatch() throws SQLException {
+            updateResults.addAll(
+                    Ints.asList(ps.executeBatch()).stream()
+                            .map(i -> (long) i)
+                            .map(UpdateResultInternal::new)
+                            .collect(Collectors.toList())
+            );
+            newAdded = false;
+        }
+
+        private List<UpdateResult> results() throws SQLException {
+            if(newAdded) {
+                runBatch();
+            }
             return Collections.unmodifiableList(updateResults);
         }
     }
