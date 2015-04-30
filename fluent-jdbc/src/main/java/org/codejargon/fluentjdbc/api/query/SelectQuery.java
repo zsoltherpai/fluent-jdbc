@@ -12,7 +12,7 @@ import java.util.function.Predicate;
  */
 public interface SelectQuery {
     /**
-     * Adds positional query parameters. Can not be added if named parameters are already added.
+     * Adds positional query parameters.
      *
      * @param params additional query parameters
      * @return this
@@ -20,7 +20,7 @@ public interface SelectQuery {
     SelectQuery params(List<Object> params);
 
     /**
-     * Adds positional query parameters. Can not be added if named parameters are already added.
+     * Adds positional query parameters.
      *
      * @param params additional query parameters
      * @return this
@@ -28,7 +28,7 @@ public interface SelectQuery {
     SelectQuery params(Object... params);
 
     /**
-     * Adds named query paramaters. Can not be added if positional parameters are already added.
+     * Adds named query paramaters.
      *
      * @param namedParams additional named query parameters
      * @return this
@@ -46,9 +46,9 @@ public interface SelectQuery {
     <T> SelectQuery filter(Predicate<T> predicate);
 
     /**
-     * Sets fetch size of select statements - the number of rows returned with one network roundtrip.
+     * Sets fetch size of select statements - the number of rows returned in a single network round-trip.
      * FluentJdbc configured default or vendor default is used if not set. Note that vendor defaults 
-     * may be different, eg MySQL default is 0 (no limit) which may lead to memory issues, Oracle DB's default 
+     * may be different. Eg MySQL default is 0 (no limit) which may lead to memory issues, Oracle DB's default
      * is 10 which may result in poor performance with large ResultSets.
      * @param rows Number of rows fetched by a select statement.
      * @return this

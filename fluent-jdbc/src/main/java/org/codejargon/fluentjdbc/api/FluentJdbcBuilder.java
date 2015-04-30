@@ -12,7 +12,7 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgu
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
 
 /**
- * Configures and builds a FluentJdbc instance.
+ * Configures and builds a FluentJdbc instance
  * 
  * @see org.codejargon.fluentjdbc.api.FluentJdbc
  */
@@ -27,7 +27,7 @@ public class FluentJdbcBuilder {
 
     /**
      * Sets the ConnectionProvider for FluentJdbc. Queries created by fluentJdbc.query() will use
-     * Connections returned by this provider.
+     * Connections returned by this provider
      *
      * @param connectionProvider ConnectionProvider implementation
      * @return this
@@ -39,7 +39,7 @@ public class FluentJdbcBuilder {
     }
 
     /**
-     * ParamSetters add support for accepting parameters of custom types in all queries (select/update/insert/batch).
+     * ParamSetters add support for accepting parameters of custom types in all queries (select/update/insert/batch)
      * These setters can also override types supported by FluentJdbc out of the box (JDBC-supported types, 
      * java.util.Date, java.time)
      * @param paramSetters Map of parameter class / ParamSetters pairs.
@@ -52,11 +52,11 @@ public class FluentJdbcBuilder {
     }
 
     /**
-     * Sets default fetch size of select statements - the number of rows returned with one network roundtrip.
+     * Sets default fetch size of select statements - the number of rows returned with one network roundtrip
      * Vendor default is used if not set. Note that vendor defaults may be different, eg MySQL default 
      * is 0 (no limit) which may lead to memory issues, Oracle DB's default is 10 which may result in poor 
      * performance with large ResultSets.
-     * @param rows Number of rows fetched by a select statement by default.
+     * @param rows Number of rows fetched by a select statement by default
      * @return this
      */
     public FluentJdbcBuilder defaultFetchSize(Integer rows) {
@@ -67,7 +67,7 @@ public class FluentJdbcBuilder {
     }
 
     /**
-     * Returns a FluentJdbc instance configured by the builder.
+     * Returns a FluentJdbc instance configured by the builder
      * @return FluentJdbc instance
      */
     public FluentJdbc build() {

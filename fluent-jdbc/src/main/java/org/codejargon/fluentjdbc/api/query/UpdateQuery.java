@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Update or insert Query for a SQL statement. An UpdateQuery is mutable, non-threadsafe.
+ * Update or insert Query for a SQL statement. An UpdateQuery is mutable.
  */
 public interface UpdateQuery {
     /**
-     * Adds positional query parameters. Can not be added if named parameters are already specified.
+     * Adds positional query parameters
      *
      * @param params additional query parameters
      * @return this
@@ -16,7 +16,7 @@ public interface UpdateQuery {
     UpdateQuery params(List<Object> params);
 
     /**
-     * Adds positional query parameters. Can not provided if named parameters are already specified.
+     * Adds positional query parameters
      *
      * @param params additional query parameters
      * @return this
@@ -24,7 +24,7 @@ public interface UpdateQuery {
     UpdateQuery params(Object... params);
 
     /**
-     * Adds named query paramaters. Can not be added if positional parameters are already added.
+     * Adds named query paramaters
      *
      * @param namedParams additional named query parameters
      * @return this

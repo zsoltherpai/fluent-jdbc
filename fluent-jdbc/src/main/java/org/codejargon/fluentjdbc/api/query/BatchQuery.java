@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Batch insert or update query for a SQL statement. A BatchQuery is mutable, non-threadsafe.
+ * Batch insert or update query for a SQL statement. Is a mutable object.
  */
 public interface BatchQuery {
     /**

@@ -3,7 +3,7 @@ package org.codejargon.fluentjdbc.api.query;
 import java.util.List;
 
 /**
- * Result of update including generated keys.
+ * Result of an update / insert including generated keys
  * @param <T> Type of generated key(s) for a single row inserted
  */
 public interface UpdateResultGenKeys<T> extends UpdateResult {
