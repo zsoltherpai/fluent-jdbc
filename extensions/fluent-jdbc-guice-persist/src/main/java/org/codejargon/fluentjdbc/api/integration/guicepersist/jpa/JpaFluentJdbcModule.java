@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
  *     Binds FluentJdbc and Query instances relying on a JPA ConnectionExtractor.
  *  Requires an existing EntityManager binding.
  * </p>
- * <p>Example:<p/>
+ * <p>Example:</p>
  * <pre>
  * FluentJdbcBuilder fluentJdbcBuilder = new FluentJdbcBuilder(); // ... configure if needed
  * JpaConnectionExtractor extractor = ... 
