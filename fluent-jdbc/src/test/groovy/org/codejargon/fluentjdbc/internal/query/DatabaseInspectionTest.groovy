@@ -28,7 +28,7 @@ class DatabaseInspectionTest extends Specification {
         given:
         metaData.getJDBCMajorVersion() >> expectedVersion
         when:
-        int resultVersion = query.databaseInspection().accessDbMetaData(
+        int resultVersion = query.databaseInspection().accessMetaData(
                 {meta -> return meta.getJDBCMajorVersion()}
         );
         then:
@@ -44,7 +44,7 @@ class DatabaseInspectionTest extends Specification {
         metaData.getTables(null, null, null, null) >> resultset
         when:
         def results = query.databaseInspection()
-                .selectFromDbMetaData({meta -> return meta.getTables(null, null, null, null)})
+                .selectFromMetaData({meta -> return meta.getTables(null, null, null, null)})
                 .listResult({rs -> rs.getString(rsIndex)})
         then:
         results.size() == tableNames.size()

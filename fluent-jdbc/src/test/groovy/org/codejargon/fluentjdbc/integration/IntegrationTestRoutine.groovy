@@ -5,8 +5,8 @@ import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionP
 import org.codejargon.fluentjdbc.api.mapper.Mappers
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers
 import org.codejargon.fluentjdbc.api.query.Query
+import org.codejargon.fluentjdbc.integration.testdata.Dummies
 import org.codejargon.fluentjdbc.integration.testdata.Dummy
-import org.codejargon.fluentjdbc.integration.testdata.DummyTool
 import org.codejargon.fluentjdbc.internal.support.Maps
 import org.junit.After
 import org.junit.Before
@@ -14,10 +14,11 @@ import spock.lang.Specification
 
 import javax.sql.DataSource
 import java.sql.Connection
+import java.sql.ResultSet
 
 import static org.codejargon.fluentjdbc.integration.testdata.Dummies.getDummy1
 import static org.codejargon.fluentjdbc.integration.testdata.Dummies.getDummy2
-import static org.codejargon.fluentjdbc.integration.testdata.DummyTool.assertDummy
+import static org.codejargon.fluentjdbc.integration.testdata.Dummies.assertDummy
 import static org.codejargon.fluentjdbc.integration.testdata.TestQuery.*
 
 abstract class IntegrationTestRoutine extends Specification {
@@ -62,7 +63,7 @@ abstract class IntegrationTestRoutine extends Specification {
         when:
         query
                 .batch(insertSqlPositional)
-                .params(DummyTool.batchParams(dummy1, dummy2))
+                .params(Dummies.batchParams(dummy1, dummy2))
                 .run()
         then:
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
@@ -73,7 +74,7 @@ abstract class IntegrationTestRoutine extends Specification {
         when:
         query
                 .batch(insertSqlNamed)
-                .namedParams(DummyTool.namedBatchParams(dummy1, dummy2))
+                .namedParams(Dummies.namedBatchParams(dummy1, dummy2))
                 .run()
         then:
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
@@ -84,13 +85,40 @@ abstract class IntegrationTestRoutine extends Specification {
         when:
         query
                 .batch(insertSqlNamed)
-                .namedParams(DummyTool.namedBatchParams(dummy1, dummy2))
+                .namedParams(Dummies.namedBatchParams(dummy1, dummy2))
                 .run()
         then:
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
         dummies.size() == 2
         List<Dummy> partialDummies = fluentJdbc.query().select(selectAllSql).maxRows(1L).listResult(dummyMapper)
         partialDummies.size() == 1
+    }
+
+    def "Database inspection with access"() {
+        when:
+        boolean foundTable = query.databaseInspection().accessMetaData({
+                    meta ->
+                        ResultSet rs = meta.getTables(null, null, null, null)
+                        while(rs.next()) {
+                            if("DUMMY".equals(rs.getString(3))) {
+                                return true;
+                            }
+                        }
+                        return false;
+                }
+        )
+        then:
+        foundTable
+    }
+
+    def "Database inspection with select"() {
+        when:
+        List<String> tables = query.databaseInspection().selectFromMetaData({
+            meta ->
+                meta.getTables(null, null, null, null)
+        }).listResult({ rs -> return rs.getString(3) })
+        then:
+        tables.contains("DUMMY")
     }
     
     protected static void createTestTable(Connection connection) {

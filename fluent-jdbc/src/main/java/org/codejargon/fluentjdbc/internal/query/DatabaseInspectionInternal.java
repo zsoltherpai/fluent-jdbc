@@ -13,7 +13,7 @@ class DatabaseInspectionInternal implements DatabaseInspection {
     }
 
     @Override
-    public <T> T accessDbMetaData(MetaDataAccess<T> access) {
+    public <T> T accessMetaData(MetaDataAccess<T> access) {
         return query.query(
                 connection -> access.access(connection.getMetaData()),
                 "JDBC Database Inspection"
@@ -21,7 +21,7 @@ class DatabaseInspectionInternal implements DatabaseInspection {
     }
 
     @Override
-    public MetaDataSelect selectFromDbMetaData(MetaDataResultSet select) {
+    public MetaDataSelect selectFromMetaData(MetaDataResultSet select) {
         return new MetaDataSelectInternal(query, select);
     }
 }
