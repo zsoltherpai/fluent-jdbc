@@ -50,6 +50,7 @@ class DatabaseInspectionTest extends Specification {
         results.size() == tableNames.size()
         results.get(0) == tableNames.get(0)
         results.get(1) == tableNames.get(1)
+        1 * resultset.close()
     }
 
 
