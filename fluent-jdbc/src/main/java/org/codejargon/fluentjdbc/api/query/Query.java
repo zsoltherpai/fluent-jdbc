@@ -1,5 +1,7 @@
 package org.codejargon.fluentjdbc.api.query;
 
+import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
+
 /**
  * <p>FluentJdbc Query API to create select, update/insert, and batch update/insert queries.</p>
  * @see org.codejargon.fluentjdbc.api.integration.ConnectionProvider
@@ -28,4 +30,11 @@ public interface Query {
      * @return Batch update or insert query for the SQL statement
      */
     BatchQuery batch(String sql);
+
+    /**
+     * Inspection of the database (tables, columns, etc..)
+     *
+     * @return databaseInspection
+     */
+    DatabaseInspection databaseInspection();
 }

@@ -50,8 +50,6 @@ class FluentJdbcSelectTest  extends Specification {
         }
     }
 
-
-    @Test
     def "Select into list with filtering"() {
         given:
         mockSelectData()

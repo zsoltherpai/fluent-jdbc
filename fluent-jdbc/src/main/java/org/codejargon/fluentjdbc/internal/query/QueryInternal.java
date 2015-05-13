@@ -3,10 +3,8 @@ package org.codejargon.fluentjdbc.internal.query;
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
-import org.codejargon.fluentjdbc.api.query.BatchQuery;
-import org.codejargon.fluentjdbc.api.query.Query;
-import org.codejargon.fluentjdbc.api.query.SelectQuery;
-import org.codejargon.fluentjdbc.api.query.UpdateQuery;
+import org.codejargon.fluentjdbc.api.query.*;
+import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
 import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
 
 import java.sql.PreparedStatement;
@@ -42,6 +40,11 @@ public class QueryInternal implements Query {
     @Override
     public BatchQuery batch(String sql) {
         return new BatchQueryInternal(sql, this);
+    }
+
+    @Override
+    public DatabaseInspection databaseInspection() {
+        return new DatabaseInspectionInternal(this);
     }
 
     <T> T query(QueryRunnerConnection<T> runner, String sql) {
