@@ -14,7 +14,7 @@ standalone or complement higher level of abstractions like JPA or others.
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.5</version>
 </dependency>
 ```
 Note: requires java 8
@@ -23,7 +23,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 0.9.3 released - support for fetching generated keys on insert/updates
+* 0.9.5 released - database schema inspection API
 
 #####Code examples#####
 Some common use cases
@@ -134,11 +134,10 @@ ConnectionProvider provider = query -> {
 }
 ```
 ######Transactions######
-Queries through the Query API are executed in transactions if the connections provided (either directly
-or by the ConnectionProvider implementation) are transaction managed. Some concrete examples:
+Queries through the Query API are executed in transactions if the connections provided to FluentJdbc are transaction managed. Some concrete examples:
 - Using a transaction-aware DataSource (eg JEE DataSources, Spring's TransactionAwareDataSourceProxy)
-- Extracting the underlying connection from a JPA session
-- Getting transaction-managed connection from a transaction-managed Connection callback.
-- There is an extension library for Guice Persist: fluentjdbc-guice-persist, which supports standalone transaction management (without JPA or other tech)
+- Underlying connection from a JPA session
+- Transaction-managed connection from a transaction-managed Connection callback.
+- fluentjdbc-guice-persist, an extension library for Guice Persist which supports standalone transaction management (without JPA or other tech)
 
 Refer to the [full documentation](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation) for more details and code examples.
