@@ -20,6 +20,7 @@ standalone or complement higher level of abstractions like JPA or others.
 Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
+
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
