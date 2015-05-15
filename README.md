@@ -48,7 +48,7 @@ Mapper<Customer> can be implemented manually
 ```java
 resultSet -> new Customer(resultSet.getString("NAME"), resultSet.getString("ADDRESS"));
 ```
-or mapping can be performed automatically to a java bean
+or mapping can be performed automatically to a java object
 ```java
 objectMappers.forClass(Customer.class);
 ```
