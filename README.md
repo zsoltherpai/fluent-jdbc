@@ -126,13 +126,9 @@ Query query = fluentJdbc.query();
 Connection connection = ...
 Query query = fluentJdbc.queryOn(connection)...
 ```
-######Creating a custom connection provider - eg spring JdbcTemplate######
+######Creating a custom connection provider - eg relying on a connection callback (spring JdbcTemplate)######
 ```java
-ConnectionProvider provider = query -> {
-	jdbcTemplate.execute(connection -> {
-		query.receive(connection);
-   	});
-}
+ConnectionProvider provider = query -> jdbcTemplate.execute(query::receive);
 ```
 ######Transactions######
 Queries through the Query API are executed in transactions if the connections provided to FluentJdbc are transaction managed. Some concrete examples:
