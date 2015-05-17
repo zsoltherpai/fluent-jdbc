@@ -20,6 +20,7 @@ standalone or complement higher level of abstractions like JPA or others.
 Note: requires java 8
 
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
+
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
@@ -47,7 +48,7 @@ Mapper<Customer> can be implemented manually
 ```java
 resultSet -> new Customer(resultSet.getString("NAME"), resultSet.getString("ADDRESS"));
 ```
-or mapping can be performed automatically to a java bean
+or mapping can be performed automatically to a java object
 ```java
 objectMappers.forClass(Customer.class);
 ```
