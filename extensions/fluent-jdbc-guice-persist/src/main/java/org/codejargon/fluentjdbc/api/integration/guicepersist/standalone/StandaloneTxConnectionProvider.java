@@ -95,7 +95,7 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         private Optional<Connection> connection = Optional.empty();
 
         @Override
-        public void receive(Connection connection) throws SQLException {
+        public void receive(Connection connection) {
             this.connection = Optional.of(connection);
         }
 

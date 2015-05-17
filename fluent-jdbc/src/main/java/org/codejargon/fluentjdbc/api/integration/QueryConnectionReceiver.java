@@ -9,5 +9,5 @@ import java.sql.SQLException;
  */
 @FunctionalInterface
 public interface QueryConnectionReceiver {
-    void receive(Connection connection) throws SQLException;
+    void receive(Connection connection);
 }
