@@ -47,11 +47,11 @@ public class ObjectMappers {
         }
 
         /**
-         * Sets converters to support custom (non-JDBC) fields.
+         * Sets extractors to support custom (non-JDBC) fields.
          * @param extractors Map of field class / ResultSet extractors
          * @return this
          */
-        public Builder converters(Map<Class, ObjectMapperRsExtractor> extractors) {
+        public Builder extractors(Map<Class, ObjectMapperRsExtractor> extractors) {
             this.extractors = Maps.copyOf(extractors);
             return this;
         }
