@@ -120,11 +120,13 @@ FluentJdbc fluentJdbc = new FluentJdbcBuilder()
 	.connectionProvider(new DataSourceConnectionProvider(dataSource))
         .build();
 Query query = fluentJdbc.query();
+// ... use the query API for queries (thread-safe, reentrant)
 ```
 ######Querying with a specific connection object######
 ```java
 Connection connection = ...
-Query query = fluentJdbc.queryOn(connection)...
+Query query = fluentJdbc.queryOn(connection);
+...
 ```
 ######Creating a custom connection provider - eg relying on a connection callback (spring JdbcTemplate)######
 ```java
