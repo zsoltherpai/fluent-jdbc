@@ -14,7 +14,7 @@ standalone or complement higher level of abstractions like JPA or others.
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9.5</version>
+    <version>0.9.6</version>
 </dependency>
 ```
 Note: requires java 8
@@ -24,7 +24,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 0.9.5 released - database schema inspection API
+* 0.9.6 released
 
 #####Code examples#####
 Some common use cases
