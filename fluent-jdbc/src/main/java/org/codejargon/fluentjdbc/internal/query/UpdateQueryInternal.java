@@ -31,7 +31,8 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
         return runQuery(
                 ps -> new UpdateResultGenKeysInternal<>(
                         (long) ps.executeUpdate(),
-                        generatedKeys(ps, mapper))
+                        generatedKeys(ps, mapper)),
+                true
         );
     }
 
