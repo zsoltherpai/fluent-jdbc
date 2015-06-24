@@ -35,8 +35,14 @@ abstract class SingleQueryBase {
 
     protected <T> T runQuery(
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
+        return runQuery(queryRunnerPreparedStatement, false);
+    }
+
+    protected <T> T runQuery(
+            QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement,
+            boolean fetchGenerated) {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, false)) {
+            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, fetchGenerated)) {
                 return queryRunnerPreparedStatement.run(ps);
             }
         }, sql);
