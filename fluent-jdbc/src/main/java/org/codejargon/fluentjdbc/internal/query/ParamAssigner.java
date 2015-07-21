@@ -18,7 +18,7 @@ class ParamAssigner {
         this.paramSetters = paramSetters;
     }
 
-    void assignParams(PreparedStatement statement, List<Object> params) {
+    void assignParams(PreparedStatement statement, List<?> params) {
         int i = 1;
         for (Object param : params) {
             assignParam(statement, i, param);

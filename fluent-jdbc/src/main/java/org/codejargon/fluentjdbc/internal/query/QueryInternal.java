@@ -65,7 +65,7 @@ public class QueryInternal implements Query {
     }
 
 
-    void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
+    void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
         preparedStatementFactory.assignParams(statement, params);
     }
 }

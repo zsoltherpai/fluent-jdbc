@@ -13,7 +13,7 @@ public interface UpdateQuery {
      * @param params additional query parameters
      * @return this
      */
-    UpdateQuery params(List<Object> params);
+    UpdateQuery params(List<?> params);
 
     /**
      * Adds positional query parameters
@@ -29,7 +29,7 @@ public interface UpdateQuery {
      * @param namedParams additional named query parameters
      * @return this
      */
-    UpdateQuery namedParams(Map<String, Object> namedParams);
+    UpdateQuery namedParams(Map<String, ?> namedParams);
 
     /**
      * Runs the update query

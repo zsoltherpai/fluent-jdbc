@@ -17,7 +17,7 @@ public interface SelectQuery {
      * @param params additional query parameters
      * @return this
      */
-    SelectQuery params(List<Object> params);
+    SelectQuery params(List<?> params);
 
     /**
      * Adds positional query parameters.
@@ -33,7 +33,7 @@ public interface SelectQuery {
      * @param namedParams additional named query parameters
      * @return this
      */
-    SelectQuery namedParams(Map<String, Object> namedParams);
+    SelectQuery namedParams(Map<String, ?> namedParams);
 
 
     /**

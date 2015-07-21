@@ -21,8 +21,8 @@ import static org.codejargon.fluentjdbc.internal.support.Iterables.stream;
 class BatchQueryInternal implements BatchQuery {
     private final String sql;
     private final QueryInternal query;
-    private Optional<Iterator<List<Object>>> params = empty();
-    private Optional<Iterator<Map<String, Object>>> namedParams = empty();
+    private Optional<Iterator<List<?>>> params = empty();
+    private Optional<Iterator<Map<String, ?>>> namedParams = empty();
     private Optional<Integer> batchSize = empty();
 
     public BatchQueryInternal(String sql, QueryInternal query) {
@@ -31,7 +31,7 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
-    public BatchQuery params(Iterator<List<Object>> params) {
+    public BatchQuery params(Iterator<List<?>> params) {
         Preconditions.checkNotNull(params, "params");
         Preconditions.checkArgument(!namedParams.isPresent(), "Positional parameters can't be set if named parameters are already set.");
         this.params = Optional.of(params);
@@ -39,7 +39,7 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
-    public BatchQuery namedParams(Iterator<Map<String, Object>> namedParams) {
+    public BatchQuery namedParams(Iterator<Map<String, ?>> namedParams) {
         Preconditions.checkNotNull(namedParams, "namedParams");
         Preconditions.checkArgument(!params.isPresent(), "Named parameters can't be set if positional parameters are already set.");
         this.namedParams = Optional.of(namedParams);
@@ -82,7 +82,7 @@ class BatchQueryInternal implements BatchQuery {
         }
     }
 
-    private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<Object>> params) throws SQLException {
+    private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<?>> params) throws SQLException {
         BatchExecution batchExecution = new BatchExecution(ps);
         params.forEachOrdered(consumer(batchExecution::add));
         return batchExecution.results();
@@ -99,14 +99,14 @@ class BatchQueryInternal implements BatchQuery {
             this.ps = ps;
         }
 
-        public void add(List<Object> params) throws SQLException {
+        public void add(List<?> params) throws SQLException {
             addParamsToBatch(params);
             if (batchSize.isPresent() && totalBatchesAdded % batchSize.get() == 0) {
                 runBatch();
             }
         }
 
-        private void addParamsToBatch(List<Object> params) throws SQLException {
+        private void addParamsToBatch(List<?> params) throws SQLException {
             query.assignParams(ps, params);
             ps.addBatch();
             ++totalBatchesAdded;

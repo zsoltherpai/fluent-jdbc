@@ -264,7 +264,7 @@ abstract class NamedParameterUtils {
      *                  be built into the value array in the form of SqlParameterValue objects.
      * @return the array of values
      */
-    static Object[] buildValueArray(ParsedSql parsedSql, Map<String, Object> namedParams) {
+    static Object[] buildValueArray(ParsedSql parsedSql, Map<String, ?> namedParams) {
         Object[] paramArray = new Object[parsedSql.getTotalParameterCount()];
         if (parsedSql.getNamedParameterCount() > 0 && parsedSql.getUnnamedParameterCount() > 0) {
             throw new FluentJdbcException(

@@ -36,7 +36,7 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     }
 
     @Override
-    public UpdateQuery params(List<Object> params) {
+    public UpdateQuery params(List<?> params) {
         addParameters(params);
         return this;
     }
@@ -48,7 +48,7 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     }
 
     @Override
-    public UpdateQuery namedParams(Map<String, Object> namedParams) {
+    public UpdateQuery namedParams(Map<String, ?> namedParams) {
         addNamedParameters(namedParams);
         return this;
     }

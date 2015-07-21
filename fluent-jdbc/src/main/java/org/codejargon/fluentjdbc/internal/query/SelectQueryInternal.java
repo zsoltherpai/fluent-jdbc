@@ -49,7 +49,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
-    public SelectQuery params(List<Object> params) {
+    public SelectQuery params(List<?> params) {
         addParameters(params);
         return this;
     }
@@ -61,7 +61,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
-    public SelectQuery namedParams(Map<String, Object> namedParams) {
+    public SelectQuery namedParams(Map<String, ?> namedParams) {
         addNamedParameters(namedParams);
         return this;
     }

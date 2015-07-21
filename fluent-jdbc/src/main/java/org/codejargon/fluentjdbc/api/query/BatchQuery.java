@@ -13,14 +13,14 @@ public interface BatchQuery {
      * @param params Parameters used by the batch update
      * @return this
      */
-    BatchQuery params(Iterator<List<Object>> params);
+    BatchQuery params(Iterator<List<?>> params);
 
     /**
      *
      * @param params Parameters used by the batch update
      * @return this
      */
-    BatchQuery namedParams(Iterator<Map<String, Object>> params);
+    BatchQuery namedParams(Iterator<Map<String, ?>> params);
 
     /**
      * Sets size of a batch

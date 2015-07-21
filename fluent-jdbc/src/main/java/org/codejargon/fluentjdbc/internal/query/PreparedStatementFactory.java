@@ -25,7 +25,7 @@ class PreparedStatementFactory {
         return prepareStatement(con, sql, false);
     }
 
-    void assignParams(PreparedStatement statement, List<Object> params) throws SQLException {
+    void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
         config.paramAssigner.assignParams(statement, params);
     }
 

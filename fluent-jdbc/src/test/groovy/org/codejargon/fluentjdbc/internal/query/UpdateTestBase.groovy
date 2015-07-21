@@ -33,7 +33,7 @@ public abstract class UpdateTestBase extends Specification {
         query = fluentJdbc.query()
     }
 
-    protected Map<String, Object> namedParams() {
+    protected Map<String, ?> namedParams() {
         return ["param1": param1, "param2": param2]
     }
 }
