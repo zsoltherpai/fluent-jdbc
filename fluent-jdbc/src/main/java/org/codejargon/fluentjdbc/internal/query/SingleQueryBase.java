@@ -27,7 +27,7 @@ abstract class SingleQueryBase {
         addParameters(Arrays.asList(params));
     }
 
-    protected void addNamedParameters(Map<String, Object> namedParams) {
+    protected void addNamedParameters(Map<String, ?> namedParams) {
         Preconditions.checkArgument(params.isEmpty(), "Can not add named parameters if positional parameters are set.");
         Preconditions.checkArgument(!namedParams.isEmpty(), "Can not set empty named parameters");
         this.namedParams.putAll(namedParams);
@@ -38,7 +38,12 @@ abstract class SingleQueryBase {
         return runQuery(queryRunnerPreparedStatement, false);
     }
 
-    protected <T> T runQuery(
+    protected <T> T runQueryAndFetch(
+            QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
+        return runQuery(queryRunnerPreparedStatement, true);
+    }
+
+    private <T> T runQuery(
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement,
             boolean fetchGenerated) {
         return query.query(connection -> {
