@@ -111,7 +111,7 @@ public class ObjectMapper<T> implements Mapper<T> {
     }
 
     private String fieldName(ResultSetMetaData metadata, int i) throws SQLException {
-        return prepareFieldName(metadata.getColumnName(i));
+        return prepareFieldName(metadata.getColumnLabel(i));
     }
 
     private String prepareFieldName(String fieldName) {

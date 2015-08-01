@@ -22,7 +22,9 @@ import static org.codejargon.fluentjdbc.integration.testdata.Dummies.assertDummy
 import static org.codejargon.fluentjdbc.integration.testdata.TestQuery.*
 
 abstract class IntegrationTestRoutine extends Specification {
-    private static final def dummyMapper = ObjectMappers.builder().build().forClass(Dummy.class);
+    private static final def objectMappers = ObjectMappers.builder().build();
+    private static final def dummyMapper = objectMappers.forClass(Dummy.class);
+    private static final def dummyAliasMapper = objectMappers.forClass(DummyAlias.class);
 
     protected FluentJdbc fluentJdbc
     protected Query query
@@ -69,6 +71,20 @@ abstract class IntegrationTestRoutine extends Specification {
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
         verifyBatchResults(dummies)
     }
+
+
+    def "ObjectMappers supports SQL AS"() {
+        when:
+        query
+                .batch(insertSqlPositional)
+                .params(Dummies.batchParams(dummy1))
+                .run()
+        List<DummyAlias> dummies = fluentJdbc.query().select("SELECT ID AS ID_ALIAS FROM DUMMY").listResult(dummyAliasMapper)
+        then:
+        dummies.get(0).idAlias == dummy1.id
+
+    }
+
 
     def "Batch insert with named parameters"() {
         when:
@@ -138,5 +154,9 @@ abstract class IntegrationTestRoutine extends Specification {
         assertDummy(dummyIndex.get(dummy1.id), dummy1)
         assert dummyIndex.containsKey(dummy2.id)
         assertDummy(dummyIndex.get(dummy2.id), dummy2)
+    }
+
+    static class DummyAlias {
+        String idAlias
     }
 }
