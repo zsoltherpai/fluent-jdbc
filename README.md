@@ -118,7 +118,7 @@ UpdateResultGenKeys<Long> result = query
 	.update("INSERT INTO CUSTOMER(NAME) VALUES(:name)")
 	.namedParams(namedParams)
     .runFetchGenKeys(Mappers.singleLong());
-Long generatedKey = result.generatedKeys().get(0);
+Long id = result.generatedKeys().get(0);
 ```
 ######Creating FluentJdbc with DataSource as connection provider######
 ```java
