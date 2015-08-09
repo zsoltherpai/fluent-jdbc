@@ -112,7 +112,14 @@ List<Customer> customers = query
 	.maxRows(345L)
 	.listResult(customerMapper);
 ```
-
+######Fetching generated key of an insert or updates######
+```java
+UpdateResultGenKeys<Long> result = query
+	.update("INSERT INTO CUSTOMER(NAME) VALUES(:name)")
+	.namedParams(namedParams)
+    .runFetchGenKeys(Mappers.singleLong());
+Long generatedKey = result.generatedKeys().get(0);
+```
 ######Creating FluentJdbc with DataSource as connection provider######
 ```java
 DataSource dataSource = ...
