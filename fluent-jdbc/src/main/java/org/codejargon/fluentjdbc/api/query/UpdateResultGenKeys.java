@@ -1,6 +1,7 @@
 package org.codejargon.fluentjdbc.api.query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Result of an update / insert including generated keys
@@ -11,4 +12,5 @@ public interface UpdateResultGenKeys<T> extends UpdateResult {
      * @return generated key(s) for each row inserted by the statement
      */
     List<T> generatedKeys();
+    Optional<T> firstKey();
 }
