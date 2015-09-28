@@ -14,7 +14,7 @@ standalone or complement higher level of abstractions like JPA or others.
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9.8</version>
+    <version>0.9.9</version>
 </dependency>
 ```
 Note: requires java 8
@@ -24,7 +24,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 0.9.8 released
+* 0.9.9 released - note that license has been changed from MIT to Apache 2.0
 
 #####Code examples#####
 Some common use cases
@@ -140,10 +140,21 @@ Query query = fluentJdbc.queryOn(connection);
 ConnectionProvider provider = query -> jdbcTemplate.execute(query::receive);
 ```
 ######Transactions######
-Queries through the Query API are executed in transactions if the connections provided to FluentJdbc are transaction managed. Some concrete examples:
-- Using a transaction-aware DataSource (eg JEE DataSources, Spring's TransactionAwareDataSourceProxy)
-- Underlying connection from a JPA session
-- Transaction-managed connection from a transaction-managed Connection callback.
-- fluentjdbc-guice-persist, an extension library for Guice Persist which supports standalone transaction management (without JPA or other tech)
+```java
+query.transaction().in(
+	() -> {
+		query
+        	.update("UPDATE CUSTOMER SET NAME = ?, ADDRESS = ?")
+        	.params("John Doe", "Dallas")
+        	.run();
+		// ... other queries, method calls, etc..
+	}
+)
+```
+Any queries executed by FluentJdbc within this callback will join this transaction - as long as they're in the same thread,
+and based on the same ConnectionProvider (DataSource). 
+
+Connections / transactions to multiple DataSources - through multiple FluentJdbc setups/instances - are supported.
+
 
 Refer to the [full documentation](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation) for more details and code examples.
