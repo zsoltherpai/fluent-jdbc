@@ -7,6 +7,7 @@ import org.codejargon.fluentjdbc.api.query.*;
 import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
 import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -43,6 +44,11 @@ public class QueryInternal implements Query {
     }
 
     @Override
+    public Transaction transaction() {
+        return new TransactionInternal(this);
+    }
+
+    @Override
     public DatabaseInspection databaseInspection() {
         return new DatabaseInspectionInternal(this);
     }
@@ -50,7 +56,12 @@ public class QueryInternal implements Query {
     <T> T query(QueryRunnerConnection<T> runner, String sql) {
         try {
             QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
-            connectionProvider.provide(receiver);
+            Optional<Connection> transactionedConnection = TransactionInternal.transactionedConnection(connectionProvider);
+            if (!transactionedConnection.isPresent()) {
+                connectionProvider.provide(receiver);
+            } else {
+                receiver.receive(transactionedConnection.get());
+            }
             return receiver.returnValue();
         } catch (SQLException e) {
             throw queryException(sql, Optional.empty(), Optional.of(e));

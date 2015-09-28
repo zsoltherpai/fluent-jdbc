@@ -19,8 +19,6 @@ class FluentJdbcUpdateTest extends UpdateTestBase {
         interaction {
             verifyQuerying()
         }
-
-
     }
 
     def "Update with named parameters"() {

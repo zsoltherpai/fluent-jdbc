@@ -2,6 +2,7 @@ package org.codejargon.fluentjdbc.internal.query
 
 import org.codejargon.fluentjdbc.api.FluentJdbc
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder
+import org.codejargon.fluentjdbc.api.integration.ConnectionProvider
 import org.codejargon.fluentjdbc.api.query.Query
 import org.junit.Before
 import spock.lang.Specification
@@ -18,6 +19,8 @@ public abstract class UpdateTestBase extends Specification {
 
     protected def connection = Mock(Connection)
     protected def preparedStatement = Mock(PreparedStatement)
+    protected ConnectionProvider connectionProvider
+    protected def connectionProvided = 0;
 
     protected FluentJdbc fluentJdbc
     protected Query query
@@ -25,11 +28,11 @@ public abstract class UpdateTestBase extends Specification {
     @Before
     def setupBase() throws SQLException {
         connection.prepareStatement(sql) >> preparedStatement
-        fluentJdbc = new FluentJdbcBuilder().connectionProvider(
-                { q ->
-                    q.receive(connection);
-                }
-        ).build()
+        connectionProvider = { q ->
+            connectionProvided++
+            q.receive(connection)
+        }
+        fluentJdbc = new FluentJdbcBuilder().connectionProvider(connectionProvider).build()
         query = fluentJdbc.query()
     }
 

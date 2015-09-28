@@ -18,7 +18,7 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         }
     };
 
-    // This connectionProvider will never close a Connection. Needs to be handled in "provide".
+
     private final ConnectionProvider connectionProvider;
 
     StandaloneTxConnectionProvider(DataSource dataSource) {
@@ -26,6 +26,7 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         this.connectionProvider = q -> q.receive(dataSource.getConnection());
     }
 
+    // This connectionProvider will never close a Connection. Handled in provide().
     StandaloneTxConnectionProvider(ConnectionProvider connectionProvider) {
         this.connectionProvider = connectionProvider;
     }
@@ -35,7 +36,7 @@ class StandaloneTxConnectionProvider implements ConnectionProvider {
         Optional<Connection> current = currentTxConnection.get();
         if (current.isPresent()) {
             query.receive(current.get());
-            // TransactionInterceptor will call removeActiveTransactionConnection() to close the connection
+            // the interceptor will close the connection
         } else {
             try (Connection connection = fetchNewConnection()) {
                 query.receive(connection);

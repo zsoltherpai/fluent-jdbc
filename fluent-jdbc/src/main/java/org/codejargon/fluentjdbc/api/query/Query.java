@@ -31,6 +31,8 @@ public interface Query {
      */
     BatchQuery batch(String sql);
 
+    Transaction transaction();
+
     /**
      * Inspection of the database (tables, columns, etc..)
      *

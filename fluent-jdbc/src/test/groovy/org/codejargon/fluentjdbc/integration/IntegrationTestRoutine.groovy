@@ -1,6 +1,8 @@
 package org.codejargon.fluentjdbc.integration
+
 import org.codejargon.fluentjdbc.api.FluentJdbc
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder
+import org.codejargon.fluentjdbc.api.FluentJdbcException
 import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionProvider
 import org.codejargon.fluentjdbc.api.mapper.Mappers
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers
@@ -39,7 +41,7 @@ abstract class IntegrationTestRoutine extends Specification {
         query = fluentJdbc.query()
         removeContentAndVerify()
     }
-    
+
     @After
     public void cleanUpDb() {
         removeContentAndVerify()
@@ -110,18 +112,42 @@ abstract class IntegrationTestRoutine extends Specification {
         partialDummies.size() == 1
     }
 
+    def "Transaction committed"() {
+        when:
+        query.transaction().in({ ->
+            query.update(insertSqlPositional).params(dummy1.params()).run()
+            query.update(insertSqlPositional).params(dummy2.params()).run()
+        });
+        then:
+        List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
+        dummies.size() == 2
+    }
+
+    def "Transaction rolled back"() {
+        when:
+        query.transaction().in({ ->
+            query.update(insertSqlPositional).params(dummy1.params()).run()
+            throwException()
+            query.update(insertSqlPositional).params(dummy2.params()).run()
+        });
+        then:
+        thrown(FluentJdbcException)
+        List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
+        dummies.size() == 0
+    }
+
     def "Database inspection with access"() {
         when:
         boolean foundTable = query.databaseInspection().accessMetaData({
-                    meta ->
-                        ResultSet rs = meta.getTables(null, null, null, null)
-                        while(rs.next()) {
-                            if("DUMMY".equals(rs.getString(3))) {
-                                return true;
-                            }
-                        }
-                        return false;
+            meta ->
+                ResultSet rs = meta.getTables(null, null, null, null)
+                while (rs.next()) {
+                    if ("DUMMY".equals(rs.getString(3))) {
+                        return true;
+                    }
                 }
+                return false;
+        }
         )
         then:
         foundTable
@@ -136,7 +162,7 @@ abstract class IntegrationTestRoutine extends Specification {
         then:
         tables.contains("DUMMY")
     }
-    
+
     protected static void createTestTable(Connection connection) {
         new FluentJdbcBuilder().build().queryOn(connection).update(createDummyTable).run()
     }
@@ -149,11 +175,15 @@ abstract class IntegrationTestRoutine extends Specification {
 
     void verifyBatchResults(List<Dummy> dummies) {
         assert dummies.size() == 2
-        Map<String, Dummy> dummyIndex = Maps.uniqueIndex(dummies, { d -> d.id})
+        Map<String, Dummy> dummyIndex = Maps.uniqueIndex(dummies, { d -> d.id })
         assert dummyIndex.containsKey(dummy1.id)
         assertDummy(dummyIndex.get(dummy1.id), dummy1)
         assert dummyIndex.containsKey(dummy2.id)
         assertDummy(dummyIndex.get(dummy2.id), dummy2)
+    }
+
+    def throwException() {
+        throw new RuntimeException("roll me back")
     }
 
     static class DummyAlias {
