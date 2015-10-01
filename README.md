@@ -1,6 +1,6 @@
 ####About FluentJdbc####
 FluentJdbc provides a functional, fluent API for executing native SQL queries without any of the JDBC boiler-plate. Every
-operation is a well-readable, single statement.
+operation is a single, well-readable statement.
 
 Some of the features:
 * easy integration to a project (DataSource and other alternatives)
