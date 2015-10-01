@@ -39,7 +39,7 @@ FluentJdbc fluentJdbc = new FluentJdbcBuilder()
 Query query = fluentJdbc.query();
 // ... use the Query interface for queries (thread-safe, reentrant)
 ```
-Note: using a DataSource is the most common, there are alternatives shown on the[wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
+Note: using a DataSource is the most common, there are alternatives shown on the [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
 ######Update or insert queries######
 ```java
 query
