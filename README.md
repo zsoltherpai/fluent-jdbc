@@ -26,9 +26,7 @@ Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 #####News#####
 * 0.9.9 released - note that license has been changed from MIT to Apache 2.0
 
-#####Code examples#####
-Some common use cases
-
+#####Code examples of common use cases#####
 ######Setting up FluentJdbc######
 ```java
 DataSource dataSource = ...
