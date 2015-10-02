@@ -3,7 +3,7 @@ FluentJdbc provides a functional, fluent API for executing native SQL queries wi
 operation is a single, well-readable statement.
 
 Some of the features:
-* easy integration to a project (DataSource and other alternatives)
+* easy integration to a project (through DataSource or other alternatives)
 * execution of select/insert/update/delete/alter/... statements as one-liners
 * parameter mapping (named, positional, supporting java.time, possibility to extend with custom types)
 * accessing generated keys of insert/update queries
@@ -33,9 +33,8 @@ Some common use cases
 ```java
 DataSource dataSource = ...
 FluentJdbc fluentJdbc = new FluentJdbcBuilder()
-	.connectionProvider(
-		new DataSourceConnectionProvider(dataSource)
-	).build();
+	.connectionProvider(new DataSourceConnectionProvider(dataSource))
+	.build();
 Query query = fluentJdbc.query();
 // ... use the Query interface for queries (thread-safe, reentrant)
 ```
@@ -152,7 +151,7 @@ query.transaction().in(
 	}
 )
 ```
-Any exception will cause rollback. Any other transactions - in the same thread, based on the same FluentJdbc/ConnectionProvider instance - started
-within will join the "main" transaction. It is possible to use multiple DataSources/transactions simultaneously.
+All queries executed in the block will be part of the transaction - in the same thread, based on the same FluentJdbc/ConnectionProvider.
+Exceptions cause rollback. It is possible to use multiple DataSources/transactions simultaneously.
 
 Refer to the [full documentation](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation) for more details and code examples.
