@@ -1,11 +1,10 @@
 ####About FluentJdbc####
-FluentJdbc provides a functional, fluent API for executing native SQL queries without any of the JDBC boiler-plate. Every
-operation is a single, well-readable statement.
+FluentJdbc is a fluent, functional API for native SQL querying over JDBC. Every SQL operation (read or write) is a single,
+well-readable statement.
 
-Some of the features:
-* easy integration to a project (through DataSource or other alternatives)
+Some of FluentJdbc's features:
 * execution of select/insert/update/delete/alter/... statements as one-liners
-* parameter mapping (named, positional, supporting java.time, possibility to extend with custom types)
+* parameter mapping (named, positional, supporting java.time, plugins for custom types)
 * accessing generated keys of insert/update queries
 * automatic result -> pojo mapping
 * transaction handling
@@ -36,7 +35,7 @@ FluentJdbc fluentJdbc = new FluentJdbcBuilder()
 Query query = fluentJdbc.query();
 // ... use the Query interface for queries (thread-safe, reentrant)
 ```
-Note: using a DataSource is the most common, there are alternatives shown on the [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
+Note: using a DataSource is the most common, there are other alternatives documented on the [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
 ######Update or insert queries######
 ```java
 query
@@ -58,7 +57,7 @@ resultSet -> new Customer(resultSet.getString("NAME"), resultSet.getString("ADDR
 ```
 or mapping can be performed automatically to a java object
 ```java
-ObjectMappers objectMappers = ObjectMappers.builder().build(); //generally one instance per app
+ObjectMappers objectMappers = ObjectMappers.builder().build(); //typically one instance per app
 ...
 Mapper<Customer> customerMapper = objectMappers.forClass(Customer.class);
 ```
@@ -132,10 +131,9 @@ Long id = result.generatedKeys().get(0);
 ```
 ######Querying using a specific connection object######
 ```java
-FluentJdbc fluentJdbc = ...
 Connection connection = ...
 Query query = fluentJdbc.queryOn(connection);
-...
+// do some querying...
 ```
 ######Transactions######
 ```java
@@ -145,11 +143,11 @@ query.transaction().in(
         	.update("UPDATE CUSTOMER SET NAME = ?, ADDRESS = ?")
         	.params("John Doe", "Dallas")
         	.run();
-		someOtherMethodAlsoDoingQueriesOrTransactions();
+		someOtherBusinessOperationAlsoNeedingTransactions();
 	}
 )
 ```
 All queries executed in the block will be part of the transaction - in the same thread, based on the same FluentJdbc/ConnectionProvider.
-Exceptions cause rollback. It is possible to use multiple DataSources/transactions simultaneously.
+Exceptions cause rollback. It is possible to use multiple transactions/datasources simultaneously.
 
 Refer to the [full documentation](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation) for more details and code examples.
