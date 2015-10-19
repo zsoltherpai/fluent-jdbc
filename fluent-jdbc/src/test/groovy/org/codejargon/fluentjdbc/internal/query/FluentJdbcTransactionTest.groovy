@@ -34,13 +34,17 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
                 }
         );
         then:
+        // checking original state, then check on first query
+        connection.getAutoCommit() >> true >> true >> false
         connectionProvided == 1
+        _ * connection.getAutoCommit();
         1 * connection.setAutoCommit(false)
         3 * preparedStatement.setObject(1, param1)
         3 * preparedStatement.setObject(2, param2)
         3 * preparedStatement.close()
         1 * connection.commit()
         0 * connection.rollback()
+        1 * connection.setAutoCommit(true)
         updateResult.affectedRows() == expectedUpdatedRows
     }
 
@@ -48,7 +52,7 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
         given:
         preparedStatement.executeUpdate() >> expectedUpdatedRows.intValue()
         when:
-        def updateResult = query.transaction().in(
+        query.transaction().in(
                 { ->
                     query.update(sql).params(param1, param2).run()
                     query.update(sql).params(param1, param2).run()
@@ -57,13 +61,27 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
                 }
         );
         then:
+        // checking original state, then check on first query
+        connection.getAutoCommit() >> true >> true >> false
+
         thrown(FluentJdbcException)
+        _ * connection.getAutoCommit();
         1 * connection.setAutoCommit(false)
         2 * preparedStatement.setObject(1, param1)
         2 * preparedStatement.setObject(2, param2)
         2 * preparedStatement.close()
         1 * connection.rollback()
         0 * connection.commit()
+        1 * connection.setAutoCommit(true);
+    }
+
+    def "Transactions are lazy"() {
+        given:
+        preparedStatement.executeUpdate() >> expectedUpdatedRows.intValue()
+        when:
+        query.transaction().inNoResult({ -> });
+        then:
+        0 * connection.setAutoCommit(false)
     }
 
     def throwException() {

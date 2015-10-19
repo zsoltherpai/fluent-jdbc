@@ -7,9 +7,7 @@ import org.codejargon.fluentjdbc.api.query.Transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 class TransactionInternal implements Transaction {
@@ -25,13 +23,9 @@ class TransactionInternal implements Transaction {
     public <T> T in(Supplier<T> operation) {
         Map<ConnectionProvider, Connection> cons = connections();
         Optional<Connection> transactionConnection = Optional.ofNullable(cons.get(queryInternal.connectionProvider));
-        final ResultHolder<T> resultHolder = new ResultHolder<>();
-        if(!transactionConnection.isPresent()) {
-            inNewTransaction(operation, resultHolder, cons);
-        } else {
-            resultHolder.set(operation.get());
-        }
-        return resultHolder.get();
+        return !transactionConnection.isPresent() ?
+                inNewTransaction(operation, cons) :
+                operation.get();
     }
 
     @Override
@@ -42,26 +36,29 @@ class TransactionInternal implements Transaction {
         });
     }
 
-    private <T> void inNewTransaction(Supplier<T> function, ResultHolder<T> resultHolder, Map<ConnectionProvider, Connection> cons) {
+    private <T> T inNewTransaction(Supplier<T> operation, Map<ConnectionProvider, Connection> cons) {
         try {
+            List<T> result = new ArrayList<>(1);
             queryInternal.connectionProvider.provide(
                     con -> {
+                        Boolean originalAutocommit = null;
                         try {
+                            originalAutocommit = con.getAutoCommit();
                             cons.put(queryInternal.connectionProvider, con);
-                            con.setAutoCommit(false);
                             try {
-                                resultHolder.set(function.get());
+                                result.add(operation.get());
                             } catch(Exception e) {
                                 con.rollback();
                                 throw new FluentJdbcException("Exception while executing transactioned operation. Rolling back.", e);
                             }
                             con.commit();
-                            con.setAutoCommit(true);
                         } catch(SQLException e) {
                             throw new FluentJdbcSqlException("Error executing transaction", e);
                         } finally {
                             try {
-                                con.setAutoCommit(true);
+                                if(originalAutocommit != null && originalAutocommit) {
+                                    con.setAutoCommit(true);
+                                }
                             } catch(SQLException e) {
                                 //
                             }
@@ -69,6 +66,7 @@ class TransactionInternal implements Transaction {
                         }
                     }
             );
+            return result.get(0);
         } catch(SQLException e) {
             // should not occur
             throw new FluentJdbcSqlException("Error executing transaction.", e);
@@ -91,24 +89,13 @@ class TransactionInternal implements Transaction {
         }
     }
 
-    static Optional<Connection> transactionedConnection(ConnectionProvider connectionProvider) {
-        return connections.get() != null ?
+    static Optional<Connection> transactionedConnection(ConnectionProvider connectionProvider) throws SQLException {
+        Optional<Connection> connection = connections.get() != null ?
                 Optional.ofNullable(connections.get().get(connectionProvider)) :
                 Optional.empty();
-    }
-
-    class ResultHolder<T> {
-        private boolean set = false;
-        private T result;
-        private void set(T res) {
-            result = res;
-            set = true;
+        if(connection.isPresent() && connection.get().getAutoCommit()) {
+            connection.get().setAutoCommit(false);
         }
-        private T get() {
-            if(!set) {
-                throw new FluentJdbcException("Transactioned operation result not set");
-            }
-            return result;
-        }
+        return connection;
     }
 }
