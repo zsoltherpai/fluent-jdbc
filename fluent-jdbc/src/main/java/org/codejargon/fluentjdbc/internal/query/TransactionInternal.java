@@ -4,7 +4,6 @@ import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Transaction;
-import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,12 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 class TransactionInternal implements Transaction {
-    private static ThreadLocal<Map<ConnectionProvider, Connection>> connections = new ThreadLocal<Map<ConnectionProvider, Connection>>() {
-        @Override
-        protected Map<ConnectionProvider, Connection> initialValue() {
-            return null;
-        }
-    };
+    private static ThreadLocal<Map<ConnectionProvider, Connection>> connections = new ThreadLocal<>();
 
     private QueryInternal queryInternal;
 
@@ -29,15 +23,15 @@ class TransactionInternal implements Transaction {
 
     @Override
     public <T> T in(Supplier<T> operation) {
+        Map<ConnectionProvider, Connection> cons = connections();
+        Optional<Connection> transactionConnection = Optional.ofNullable(cons.get(queryInternal.connectionProvider));
         final ResultHolder<T> resultHolder = new ResultHolder<>();
-        Optional<Connection> transactionConnection = transactionedConnection();
         if(!transactionConnection.isPresent()) {
-            inNewTransaction(operation, resultHolder);
+            inNewTransaction(operation, resultHolder, cons);
         } else {
             resultHolder.set(operation.get());
         }
-        Preconditions.checkArgument(resultHolder.set, "Internal error: result of transactioned operation not set.");
-        return resultHolder.result;
+        return resultHolder.get();
     }
 
     @Override
@@ -48,12 +42,12 @@ class TransactionInternal implements Transaction {
         });
     }
 
-    private <T> void inNewTransaction(Supplier<T> function, ResultHolder<T> resultHolder) {
+    private <T> void inNewTransaction(Supplier<T> function, ResultHolder<T> resultHolder, Map<ConnectionProvider, Connection> cons) {
         try {
             queryInternal.connectionProvider.provide(
                     con -> {
                         try {
-                            storeTransactionedConnection(con);
+                            cons.put(queryInternal.connectionProvider, con);
                             con.setAutoCommit(false);
                             try {
                                 resultHolder.set(function.get());
@@ -71,7 +65,7 @@ class TransactionInternal implements Transaction {
                             } catch(SQLException e) {
                                 //
                             }
-                            removeTransactionedConnection();
+                            removeTransactionedConnection(cons);
                         }
                     }
             );
@@ -81,20 +75,18 @@ class TransactionInternal implements Transaction {
         }
     }
 
-    private Optional<Connection> transactionedConnection() {
-        return transactionedConnection(queryInternal.connectionProvider);
-    }
-
-    private void storeTransactionedConnection(Connection con) {
-        if(connections.get() == null) {
-            connections.set(new HashMap<>(4));
+    private Map<ConnectionProvider, Connection> connections() {
+        Map<ConnectionProvider, Connection> cons = connections.get();
+        if(cons == null) {
+            cons = new HashMap<>(4);
+            connections.set(cons);
         }
-        connections.get().put(queryInternal.connectionProvider, con);
+        return cons;
     }
 
-    private void removeTransactionedConnection() {
-        connections.get().remove(queryInternal.connectionProvider);
-        if(connections.get().size() == 0) {
+    private void removeTransactionedConnection(Map<ConnectionProvider, Connection> cons) {
+        cons.remove(queryInternal.connectionProvider);
+        if(cons.size() == 0) {
             connections.set(null);
         }
     }
@@ -112,6 +104,11 @@ class TransactionInternal implements Transaction {
             result = res;
             set = true;
         }
-
+        private T get() {
+            if(!set) {
+                throw new FluentJdbcException("Transactioned operation result not set");
+            }
+            return result;
+        }
     }
 }
