@@ -84,8 +84,8 @@ class TransactionInternal implements Transaction {
 
     private void removeTransactionedConnection(Map<ConnectionProvider, Connection> cons) {
         cons.remove(queryInternal.connectionProvider);
-        if(cons.size() == 0) {
-            connections.set(null);
+        if(cons.isEmpty()) {
+            connections.remove();
         }
     }
 
