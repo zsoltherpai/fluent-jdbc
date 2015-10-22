@@ -23,7 +23,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 0.9.9 released - note that license has been changed from MIT to Apache 2.0
+* 1.0 released - transaction isolation levels, lazy transactions
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
