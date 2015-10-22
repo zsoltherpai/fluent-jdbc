@@ -1,8 +1,8 @@
 ####About FluentJdbc####
-FluentJdbc is a fluent, functional API for native SQL querying over JDBC. Every SQL operation (read or write) is a single,
-well-readable statement.
+FluentJdbc is a java library for executing native SQL queries as simply as possible: each SQL operation
+(read or write) is a single, readable statement - without any of the JDBC clutter.
 
-Some of FluentJdbc's features:
+Some of FluentJdbc's key features:
 * execution of select/insert/update/delete/alter/... statements as one-liners
 * parameter mapping (named, positional, supporting java.time, plugins for custom types)
 * accessing generated keys of insert/update queries
