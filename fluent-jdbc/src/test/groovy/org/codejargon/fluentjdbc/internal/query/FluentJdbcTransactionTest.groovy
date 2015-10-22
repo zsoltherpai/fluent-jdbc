@@ -1,6 +1,9 @@
 package org.codejargon.fluentjdbc.internal.query
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException
+import org.codejargon.fluentjdbc.api.query.Transaction
+
+import java.sql.Connection
 
 class FluentJdbcTransactionTest extends UpdateTestBase {
     def expectedUpdatedRows = 5L
@@ -82,6 +85,28 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
         query.transaction().inNoResult({ -> });
         then:
         0 * connection.setAutoCommit(false)
+    }
+
+    def "Transaction isolation"() {
+        given:
+        preparedStatement.executeUpdate() >> expectedUpdatedRows.intValue()
+        when:
+        def updateResult = query.transaction().isolation(Transaction.Isolation.REPEATABLE_READ).in(
+                { ->
+                    query.update(sql).params(param1, param2).run()
+                    query.update(sql).params(param1, param2).run()
+                    query.update(sql).params(param1, param2).run()
+                }
+        );
+        then:
+        // checking original state, then check on first query
+        connection.getAutoCommit() >> true >> true >> false
+        connectionProvided == 1
+        _ * connection.getAutoCommit()
+        1 * connection.setAutoCommit(false)
+        1 * connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ)
+        1 * connection.commit()
+        updateResult.affectedRows() == expectedUpdatedRows
     }
 
     def throwException() {
