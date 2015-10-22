@@ -13,7 +13,7 @@ Some of FluentJdbc's key features:
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9.9</version>
+    <version>1.0</version>
 </dependency>
 ```
 Note: requires java 8
