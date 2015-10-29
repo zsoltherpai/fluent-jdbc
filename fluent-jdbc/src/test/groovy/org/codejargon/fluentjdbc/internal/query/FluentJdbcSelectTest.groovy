@@ -173,6 +173,19 @@ class FluentJdbcSelectTest  extends Specification {
         1 * preparedStatement.setMaxRows(maxRows)
     }
 
+    def "Select with empty named parameters"() {
+        given:
+        String namedParamSql = "SELECT * FROM BAR"
+        connection.prepareStatement(_) >> preparedStatement
+        mockSelectData()
+        def namedParams = [:]
+        when:
+        query.select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
+        then:
+        true
+    }
+
+
     void assertSelectResult(List<Dummy> dummies) {
         assert dummies.size() == 3
         assert dummies.get(0).foo == result1

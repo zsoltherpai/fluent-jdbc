@@ -13,7 +13,7 @@ Some of FluentJdbc's key features:
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 Note: requires java 8
@@ -23,7 +23,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 1.0 released - transaction isolation levels, lazy transactions
+* 1.0.1 released - transaction isolation levels, lazy transactions
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
