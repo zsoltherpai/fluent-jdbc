@@ -1,8 +1,9 @@
 ####About FluentJdbc####
 FluentJdbc is a java library for operating with SQL queries conveniently. Every SQL operation is a single,
-readable api call without any of the JDBC clutter.
+readable api call without any of the JDBC clutter. It supports functionality most similar
+jdbc wrappers prevent or abstract away, more details below.
 
-Some of FluentJdbc's key features:
+FluentJdbc's key features:
 * functional, fluent API
 * execution of select/insert/update/delete/alter/... statements as one-liners
 * parameter mapping (named, positional, supports java.time, plugins for custom types)
@@ -10,6 +11,7 @@ Some of FluentJdbc's key features:
 * transaction handling
 * big data (scalable, streaming style of batch and select)
 * automatic result to pojo mapping
+* database inspection
 
 ```xml
 <dependency>
