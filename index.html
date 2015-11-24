@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>FluentJdbc by zsoltherpai</title>
+    <title>FluentJdbc</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -62,7 +62,7 @@ jdbc wrappers prevent or abstract away, more details below.</p>
 <a id="setting-up-fluentjdbc" class="anchor" href="#setting-up-fluentjdbc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up FluentJdbc</h6>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">DataSource</span> dataSource <span class="pl-k">=</span> <span class="pl-c1">...</span>
-<span class="pl-smi">FluentJdbc</span> fluentJdbc <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">FluentJdbcBuilder</span>()
+<span class="pl-smi">Fluent Jdbc</span> fluentJdbc <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">FluentJdbcBuilder</span>()
     .connectionProvider(dataSource)
     .build();
 <span class="pl-smi">Query</span> query <span class="pl-k">=</span> fluentJdbc<span class="pl-k">.</span>query();
