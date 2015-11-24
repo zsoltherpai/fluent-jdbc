@@ -15,10 +15,9 @@
       <h2 class="project-tagline">Java library for efficient native SQL querying (through JDBC)</h2>
       <a href="https://github.com/zsoltherpai/fluent-jdbc" class="btn">View on GitHub</a>
     </section>
-
     <section class="main-content">
-      <h4>
-<a id="about-fluentjdbc" class="anchor" href="#about-fluentjdbc" aria-hidden="true"><span class="octicon octicon-link"></span></a>About FluentJdbc</h4>
+      <h3>
+<a id="about-fluentjdbc" class="anchor" href="#about-fluentjdbc" aria-hidden="true"><span class="octicon octicon-link"></span></a>About FluentJdbc</h3>
 
 <p>FluentJdbc is a java library for operating with SQL queries conveniently. Every SQL operation is a single,
 readable api call without any of the JDBC clutter. It supports functionality that most similar
@@ -49,17 +48,17 @@ jdbc wrappers prevent or abstract away, more details below.</p>
 
 <p>Latest <a href="https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc">javadoc</a></p>
 
-<h5>
-<a id="news" class="anchor" href="#news" aria-hidden="true"><span class="octicon octicon-link"></span></a>News</h5>
+<h4>
+<a id="news" class="anchor" href="#news" aria-hidden="true"><span class="octicon octicon-link"></span></a>News</h4>
 
 <ul>
 <li>1.0.2 released - batching API improvements (accepting Stream and Iterable)</li>
 </ul>
 
-<h5>
-<a id="code-examples-of-common-use-cases" class="anchor" href="#code-examples-of-common-use-cases" aria-hidden="true"><span class="octicon octicon-link"></span></a>Code examples of common use cases</h5>
+<h4>
+<a id="code-examples-of-common-use-cases" class="anchor" href="#code-examples-of-common-use-cases" aria-hidden="true"><span class="octicon octicon-link"></span></a>Code examples of common use cases</h4>
 
-<h6>
+<h5>
 <a id="setting-up-fluentjdbc" class="anchor" href="#setting-up-fluentjdbc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up FluentJdbc</h6>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">DataSource</span> dataSource <span class="pl-k">=</span> <span class="pl-c1">...</span>
@@ -71,24 +70,24 @@ jdbc wrappers prevent or abstract away, more details below.</p>
 
 <p>Note: using a DataSource is the most common, there are other alternatives documented on the <a href="https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation">wiki</a></p>
 
-<h6>
-<a id="update-or-insert-queries" class="anchor" href="#update-or-insert-queries" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update or insert queries</h6>
+<h5>
+<a id="update-or-insert-queries" class="anchor" href="#update-or-insert-queries" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update or insert queries</h5>
 
 <div class="highlight highlight-source-java"><pre>query
     .update(<span class="pl-s"><span class="pl-pds">"</span>UPDATE CUSTOMER SET NAME = ?, ADDRESS = ?<span class="pl-pds">"</span></span>)
     .params(<span class="pl-s"><span class="pl-pds">"</span>John Doe<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Dallas<span class="pl-pds">"</span></span>)
     .run();</pre></div>
 
-<h6>
-<a id="query-for-a-list-of-results" class="anchor" href="#query-for-a-list-of-results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for a list of results</h6>
+<h5>
+<a id="query-for-a-list-of-results" class="anchor" href="#query-for-a-list-of-results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for a list of results</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">List&lt;<span class="pl-smi">Customer</span>&gt;</span> customers <span class="pl-k">=</span> query
     .select(<span class="pl-s"><span class="pl-pds">"</span>SELECT * FROM CUSTOMER WHERE NAME = ?<span class="pl-pds">"</span></span>)
     .params(<span class="pl-s"><span class="pl-pds">"</span>John Doe<span class="pl-pds">"</span></span>)
     .listResult(customerMapper);</pre></div>
 
-<h6>
-<a id="mapping-of-results" class="anchor" href="#mapping-of-results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mapping of results</h6>
+<h5>
+<a id="mapping-of-results" class="anchor" href="#mapping-of-results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mapping of results</h5>
 
 <p>Mapper can be implemented manually</p>
 
@@ -100,24 +99,24 @@ jdbc wrappers prevent or abstract away, more details below.</p>
 <span class="pl-c1">...</span>
 <span class="pl-k">Mapper&lt;<span class="pl-smi">Customer</span>&gt;</span> customerMapper <span class="pl-k">=</span> objectMappers<span class="pl-k">.</span>forClass(<span class="pl-smi">Customer</span><span class="pl-k">.</span>class);</pre></div>
 
-<h6>
-<a id="query-for-single-result" class="anchor" href="#query-for-single-result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for single result</h6>
+<h5>
+<a id="query-for-single-result" class="anchor" href="#query-for-single-result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for single result</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">Long</span> count <span class="pl-k">=</span> query
     .select(<span class="pl-s"><span class="pl-pds">"</span>SELECT COUNT(*) FROM CUSTOMER WHERE NAME = ?<span class="pl-pds">"</span></span>)
     .params(<span class="pl-s"><span class="pl-pds">"</span>John Doe<span class="pl-pds">"</span></span>)
     .singleResult(<span class="pl-smi">Mappers</span><span class="pl-k">.</span>singleLong);</pre></div>
 
-<h6>
-<a id="query-for-first-result" class="anchor" href="#query-for-first-result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for first result</h6>
+<h5>
+<a id="query-for-first-result" class="anchor" href="#query-for-first-result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for first result</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Optional&lt;<span class="pl-smi">Customer</span>&gt;</span> customer <span class="pl-k">=</span> query
     .select(<span class="pl-s"><span class="pl-pds">"</span>SELECT FROM CUSTOMER WHERE NAME = ?<span class="pl-pds">"</span></span>)
     .params(<span class="pl-s"><span class="pl-pds">"</span>John Doe<span class="pl-pds">"</span></span>)
     .firstResult(customerMapper);</pre></div>
 
-<h6>
-<a id="batch-insert-or-update" class="anchor" href="#batch-insert-or-update" aria-hidden="true"><span class="octicon octicon-link"></span></a>Batch insert or update</h6>
+<h5>
+<a id="batch-insert-or-update" class="anchor" href="#batch-insert-or-update" aria-hidden="true"><span class="octicon octicon-link"></span></a>Batch insert or update</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Iterator&lt;<span class="pl-k">List&lt;<span class="pl-smi">Object</span>&gt;</span>&gt;</span> params <span class="pl-k">=</span> <span class="pl-c1">...</span>; <span class="pl-c">// or Stream/Iterable</span>
 query
@@ -125,8 +124,8 @@ query
     .params(params)
     .run();</pre></div>
 
-<h6>
-<a id="named-parameters" class="anchor" href="#named-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Named parameters</h6>
+<h5>
+<a id="named-parameters" class="anchor" href="#named-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Named parameters</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Map&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Object</span>&gt;</span> namedParams <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-k">HashMap&lt;&gt;</span>();
 namedParams<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>John Doe<span class="pl-pds">"</span></span>);
@@ -137,16 +136,16 @@ query
     .namedParams(namedParams)
     .run();</pre></div>
 
-<h6>
-<a id="javatime-support-for-query-parameters" class="anchor" href="#javatime-support-for-query-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>java.time support for query parameters</h6>
+<h5>
+<a id="javatime-support-for-query-parameters" class="anchor" href="#javatime-support-for-query-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>java.time support for query parameters</h5>
 
 <div class="highlight highlight-source-java"><pre>query
     .update(<span class="pl-s"><span class="pl-pds">"</span>UPDATE CUSTOMER SET DEADLINE = ?, UPDATED = ?<span class="pl-pds">"</span></span>)
     .params(<span class="pl-smi">LocalDate</span><span class="pl-k">.</span>of(<span class="pl-c1">2015</span>, <span class="pl-smi">Month</span><span class="pl-c1"><span class="pl-k">.</span>MARCH</span>, <span class="pl-c1">5</span>), <span class="pl-smi">Instant</span><span class="pl-k">.</span>now())
     .run();</pre></div>
 
-<h6>
-<a id="iterating-a-large-resultset" class="anchor" href="#iterating-a-large-resultset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Iterating a large resultset</h6>
+<h5>
+<a id="iterating-a-large-resultset" class="anchor" href="#iterating-a-large-resultset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Iterating a large resultset</h5>
 
 <div class="highlight highlight-source-java"><pre>query
     .select(<span class="pl-s"><span class="pl-pds">"</span>SELECT * FROM CUSTOMER<span class="pl-pds">"</span></span>)
@@ -156,8 +155,8 @@ query
         }
     });</pre></div>
 
-<h6>
-<a id="query-for-a-list-of-limited-results" class="anchor" href="#query-for-a-list-of-limited-results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for a list of limited results</h6>
+<h5>
+<a id="query-for-a-list-of-limited-results" class="anchor" href="#query-for-a-list-of-limited-results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query for a list of limited results</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">List&lt;<span class="pl-smi">Customer</span>&gt;</span> customers <span class="pl-k">=</span> query
     .select(<span class="pl-s"><span class="pl-pds">"</span>SELECT * FROM CUSTOMER WHERE NAME = ?<span class="pl-pds">"</span></span>)
@@ -165,8 +164,8 @@ query
     .maxRows(<span class="pl-c1">345L</span>)
     .listResult(customerMapper);</pre></div>
 
-<h6>
-<a id="fetching-generated-key-of-an-insert-or-updates" class="anchor" href="#fetching-generated-key-of-an-insert-or-updates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fetching generated key of an insert or updates</h6>
+<h5>
+<a id="fetching-generated-key-of-an-insert-or-updates" class="anchor" href="#fetching-generated-key-of-an-insert-or-updates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fetching generated key of an insert or updates</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">UpdateResultGenKeys&lt;<span class="pl-smi">Long</span>&gt;</span> result <span class="pl-k">=</span> query
     .update(<span class="pl-s"><span class="pl-pds">"</span>INSERT INTO CUSTOMER(NAME) VALUES(:name)<span class="pl-pds">"</span></span>)
@@ -174,15 +173,15 @@ query
     .runFetchGenKeys(<span class="pl-smi">Mappers</span><span class="pl-k">.</span>singleLong());
 <span class="pl-smi">Long</span> id <span class="pl-k">=</span> result<span class="pl-k">.</span>generatedKeys()<span class="pl-k">.</span>get(<span class="pl-c1">0</span>);</pre></div>
 
-<h6>
-<a id="querying-using-a-specific-connection-object" class="anchor" href="#querying-using-a-specific-connection-object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Querying using a specific connection object</h6>
+<h5>
+<a id="querying-using-a-specific-connection-object" class="anchor" href="#querying-using-a-specific-connection-object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Querying using a specific connection object</h5>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-smi">Connection</span> connection <span class="pl-k">=</span> <span class="pl-c1">...</span>
 <span class="pl-smi">Query</span> query <span class="pl-k">=</span> fluentJdbc<span class="pl-k">.</span>queryOn(connection);
 <span class="pl-c">// do some querying...</span></pre></div>
 
-<h6>
-<a id="transactions" class="anchor" href="#transactions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Transactions</h6>
+<h5>
+<a id="transactions" class="anchor" href="#transactions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Transactions</h5>
 
 <div class="highlight highlight-source-java"><pre>query<span class="pl-k">.</span>transaction()<span class="pl-k">.</span>in(
     () <span class="pl-k">-</span><span class="pl-k">&gt;</span> {
