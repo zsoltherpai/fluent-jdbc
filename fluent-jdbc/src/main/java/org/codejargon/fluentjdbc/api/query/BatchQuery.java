@@ -3,6 +3,7 @@ package org.codejargon.fluentjdbc.api.query;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Batch insert or update query for a SQL statement. Is a mutable object.
@@ -27,6 +28,13 @@ public interface BatchQuery {
      * @param params Parameters used by the batch update
      * @return this
      */
+    BatchQuery params(Stream<List<?>> params);
+
+    /**
+     *
+     * @param params Parameters used by the batch update
+     * @return this
+     */
     BatchQuery namedParams(Iterator<Map<String, ?>> params);
 
     /**
@@ -35,6 +43,13 @@ public interface BatchQuery {
      * @return this
      */
     BatchQuery namedParams(Iterable<Map<String, ?>> params);
+
+    /**
+     *
+     * @param params Parameters used by the batch update
+     * @return this
+     */
+    BatchQuery namedParams(Stream<Map<String, ?>> params);
 
     /**
      * Sets size of a batch (database roundtrip)

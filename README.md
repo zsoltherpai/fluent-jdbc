@@ -82,7 +82,7 @@ Optional<Customer> customer = query
 
 ######Batch insert or update######
 ```java
-Iterator<List<Object>> params = ...; // or Iterable
+Iterator<List<Object>> params = ...; // or Stream/Iterable
 query
 	.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)
