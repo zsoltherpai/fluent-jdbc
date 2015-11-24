@@ -1,5 +1,5 @@
 ####About FluentJdbc####
-FluentJdbc is a java library for operating with SQL queries conveniently. Every SQL operation is a single,
+[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for operating with SQL queries conveniently. Every SQL operation is a single,
 readable api call without any of the JDBC clutter. It supports functionality most similar
 jdbc wrappers prevent or abstract away, more details below.
 
