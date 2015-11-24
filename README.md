@@ -27,7 +27,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 1.0.1 released - transaction isolation levels, lazy transactions
+* 1.0.2 released - batching API improvements (accepting Stream and Iterable)
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
