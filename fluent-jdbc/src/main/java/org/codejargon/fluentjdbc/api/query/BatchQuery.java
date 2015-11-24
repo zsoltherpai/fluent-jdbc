@@ -20,10 +20,24 @@ public interface BatchQuery {
      * @param params Parameters used by the batch update
      * @return this
      */
+    BatchQuery params(Iterable<List<?>> params);
+
+    /**
+     *
+     * @param params Parameters used by the batch update
+     * @return this
+     */
     BatchQuery namedParams(Iterator<Map<String, ?>> params);
 
     /**
-     * Sets size of a batch
+     *
+     * @param params Parameters used by the batch update
+     * @return this
+     */
+    BatchQuery namedParams(Iterable<Map<String, ?>> params);
+
+    /**
+     * Sets size of a batch (database roundtrip)
      * @param batchSize size of a batch
      * @return this
      */

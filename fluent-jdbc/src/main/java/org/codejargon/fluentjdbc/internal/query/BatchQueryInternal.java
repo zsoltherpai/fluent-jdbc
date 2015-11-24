@@ -39,11 +39,21 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
+    public BatchQuery params(Iterable<List<?>> params) {
+        return params(params.iterator());
+    }
+
+    @Override
     public BatchQuery namedParams(Iterator<Map<String, ?>> namedParams) {
         Preconditions.checkNotNull(namedParams, "namedParams");
         Preconditions.checkArgument(!params.isPresent(), "Named parameters can't be set if positional parameters are already set.");
         this.namedParams = Optional.of(namedParams);
         return this;
+    }
+
+    @Override
+    public BatchQuery namedParams(Iterable<Map<String, ?>> params) {
+        return namedParams(params.iterator());
     }
 
     @Override
@@ -120,6 +130,7 @@ class BatchQueryInternal implements BatchQuery {
                             .map(UpdateResultInternal::new)
                             .collect(Collectors.toList())
             );
+            ps.clearBatch();
             newAdded = false;
         }
 

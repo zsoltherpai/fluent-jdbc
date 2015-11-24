@@ -1,13 +1,15 @@
 ####About FluentJdbc####
-FluentJdbc is a java library for executing native SQL queries as simply as possible: each SQL operation
-(read or write) is a single, readable statement - without any of the JDBC clutter.
+FluentJdbc is a java library for operating with SQL queries conveniently. Every SQL operation is a single,
+readable api call without any of the JDBC clutter.
 
 Some of FluentJdbc's key features:
+* functional, fluent API
 * execution of select/insert/update/delete/alter/... statements as one-liners
-* parameter mapping (named, positional, supporting java.time, plugins for custom types)
+* parameter mapping (named, positional, supports java.time, plugins for custom types)
 * accessing generated keys of insert/update queries
-* automatic result -> pojo mapping
 * transaction handling
+* big data (scalable, streaming style of batch and select)
+* automatic result to pojo mapping
 
 ```xml
 <dependency>
@@ -78,7 +80,7 @@ Optional<Customer> customer = query
 
 ######Batch insert or update######
 ```java
-Iterator<List<Object>> params = ...;
+Iterator<List<Object>> params = ...; // or Iterable
 query
 	.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)
