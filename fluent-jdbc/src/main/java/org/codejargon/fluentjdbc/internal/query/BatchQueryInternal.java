@@ -19,6 +19,9 @@ import static org.codejargon.fluentjdbc.internal.support.Sneaky.consumer;
 import static org.codejargon.fluentjdbc.internal.support.Iterables.stream;
 
 class BatchQueryInternal implements BatchQuery {
+    private static final String namedSet = "Named parameters are already set.";
+    private static final String positionalSet = "Positional parameters are already set.";
+
     private final String sql;
     private final QueryInternal query;
     private Optional<Iterator<List<?>>> params = empty();
@@ -33,7 +36,8 @@ class BatchQueryInternal implements BatchQuery {
     @Override
     public BatchQuery params(Iterator<List<?>> params) {
         Preconditions.checkNotNull(params, "params");
-        Preconditions.checkArgument(!namedParams.isPresent(), "Positional parameters can't be set if named parameters are already set.");
+        Preconditions.checkArgument(!this.params.isPresent(), positionalSet);
+        Preconditions.checkArgument(!namedParams.isPresent(), namedSet);
         this.params = Optional.of(params);
         return this;
     }
@@ -51,7 +55,8 @@ class BatchQueryInternal implements BatchQuery {
     @Override
     public BatchQuery namedParams(Iterator<Map<String, ?>> namedParams) {
         Preconditions.checkNotNull(namedParams, "namedParams");
-        Preconditions.checkArgument(!params.isPresent(), "Named parameters can't be set if positional parameters are already set.");
+        Preconditions.checkArgument(!this.namedParams.isPresent(), namedSet);
+        Preconditions.checkArgument(!params.isPresent(), positionalSet);
         this.namedParams = Optional.of(namedParams);
         return this;
     }
