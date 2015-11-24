@@ -34,7 +34,7 @@ Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 ```java
 DataSource dataSource = ...
 FluentJdbc fluentJdbc = new FluentJdbcBuilder()
-	.connectionProvider(new DataSourceConnectionProvider(dataSource))
+	.connectionProvider(dataSource)
 	.build();
 Query query = fluentJdbc.query();
 // ... use the Query interface for queries (thread-safe, reentrant)
