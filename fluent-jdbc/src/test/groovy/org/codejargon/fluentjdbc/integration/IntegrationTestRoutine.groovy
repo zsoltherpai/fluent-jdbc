@@ -131,7 +131,7 @@ abstract class IntegrationTestRoutine extends Specification {
             query.update(insertSqlPositional).params(dummy2.params()).run()
         });
         then:
-        thrown(FluentJdbcException)
+        thrown(RollbackException)
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
         dummies.size() == 0
     }
@@ -183,10 +183,14 @@ abstract class IntegrationTestRoutine extends Specification {
     }
 
     def throwException() {
-        throw new RuntimeException("roll me back")
+        throw new RollbackException()
     }
 
     static class DummyAlias {
         String idAlias
     }
+}
+
+class RollbackException extends RuntimeException {
+
 }

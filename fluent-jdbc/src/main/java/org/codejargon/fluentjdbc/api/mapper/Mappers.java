@@ -13,6 +13,7 @@ public abstract class Mappers {
     private static final Mapper<Long> singleLong = (rs) -> rs.getLong(1);
     private static final Mapper<String> singleString = (rs) -> rs.getString(1);
     private static final Mapper<BigDecimal> singleBigDecimal = (rs) -> rs.getBigDecimal(1);
+    private static final Mapper<Boolean> singleBoolean = (rs) -> rs.getBoolean(1);
 
     /**
      * Maps the first Integer column.
@@ -44,5 +45,13 @@ public abstract class Mappers {
      */
     public static Mapper<BigDecimal> singleBigDecimal() {
         return singleBigDecimal;
+    }
+
+    /**
+     * Maps the first Boolean column
+     * @return first Boolean column
+     */
+    public static Mapper<Boolean> singleBoolean() {
+        return singleBoolean;
     }
 }

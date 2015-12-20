@@ -64,7 +64,7 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
         // checking original state, then check on first query
         connection.getAutoCommit() >> true >> true >> false
 
-        thrown(FluentJdbcException)
+        thrown(MyRuntimeException)
         _ * connection.getAutoCommit();
         1 * connection.setAutoCommit(false)
         2 * preparedStatement.setObject(1, param1)
@@ -85,6 +85,10 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
     }
 
     def throwException() {
-        throw new RuntimeException()
+        throw new MyRuntimeException()
     }
+}
+
+class MyRuntimeException extends RuntimeException {
+
 }

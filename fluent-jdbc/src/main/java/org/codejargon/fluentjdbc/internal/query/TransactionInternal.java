@@ -47,21 +47,15 @@ class TransactionInternal implements Transaction {
                             cons.put(queryInternal.connectionProvider, con);
                             try {
                                 result.add(operation.get());
-                            } catch(Exception e) {
+                            } catch(RuntimeException e) {
                                 con.rollback();
-                                throw new FluentJdbcException("Exception while executing transactioned operation. Rolling back.", e);
+                                throw e;
                             }
                             con.commit();
                         } catch(SQLException e) {
                             throw new FluentJdbcSqlException("Error executing transaction", e);
                         } finally {
-                            try {
-                                if(originalAutocommit != null && originalAutocommit) {
-                                    con.setAutoCommit(true);
-                                }
-                            } catch(SQLException e) {
-                                //
-                            }
+                            restoreOriginalAutocommit(con, originalAutocommit);
                             removeTransactionedConnection(cons);
                         }
                     }
@@ -86,6 +80,16 @@ class TransactionInternal implements Transaction {
         cons.remove(queryInternal.connectionProvider);
         if(cons.isEmpty()) {
             connections.remove();
+        }
+    }
+
+    private void restoreOriginalAutocommit(Connection con, Boolean originalAutocommit) {
+        try {
+            if(originalAutocommit != null && originalAutocommit) {
+                con.setAutoCommit(true);
+            }
+        } catch(SQLException e) {
+            //
         }
     }
 
