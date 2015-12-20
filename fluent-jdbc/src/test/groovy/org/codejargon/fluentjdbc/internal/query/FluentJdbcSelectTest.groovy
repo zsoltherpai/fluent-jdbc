@@ -144,19 +144,6 @@ class FluentJdbcSelectTest  extends Specification {
         1 * preparedStatement.setObject(3, param1)
     }
 
-    def "Select with missing named parameters fails"() {
-        given:
-        String namedParamSql = "SELECT * FROM BAR WHERE COL1 = :param1"
-        connection.prepareStatement(_) >> preparedStatement
-        mockSelectData()
-        def namedParams = [:]
-        when:
-        query.select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
-        then:
-        thrown(FluentJdbcException)
-    }
-
-
     def "Select with fetchSize specified"() throws SQLException {
         given:
         def fetchSize = 3
@@ -185,6 +172,19 @@ class FluentJdbcSelectTest  extends Specification {
         }
         1 * preparedStatement.setMaxRows(maxRows)
     }
+
+    def "Select with empty named parameters"() {
+        given:
+        String namedParamSql = "SELECT * FROM BAR"
+        connection.prepareStatement(_) >> preparedStatement
+        mockSelectData()
+        def namedParams = [:]
+        when:
+        query.select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper);
+        then:
+        true
+    }
+
 
     void assertSelectResult(List<Dummy> dummies) {
         assert dummies.size() == 3

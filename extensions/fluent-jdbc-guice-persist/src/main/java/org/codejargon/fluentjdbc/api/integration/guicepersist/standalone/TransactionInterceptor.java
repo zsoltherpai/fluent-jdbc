@@ -3,8 +3,11 @@ package org.codejargon.fluentjdbc.api.integration.guicepersist.standalone;
 import com.google.inject.persist.Transactional;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.codejargon.fluentjdbc.internal.support.FindFirst;
 import org.codejargon.fluentjdbc.internal.support.Lists;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
 
 class TransactionInterceptor implements MethodInterceptor {
     private final StandaloneTxConnectionProvider standaloneTxConnectionProvider;
@@ -55,14 +58,20 @@ class TransactionInterceptor implements MethodInterceptor {
     }
 
     private Transactional transactional(MethodInvocation methodInvocation) {
-        return FindFirst
-                .fromLazy(
-                        () -> methodInvocation.getMethod().getAnnotation(Transactional.class),
-                        () -> methodInvocation.getThis().getClass().getAnnotation(Transactional.class),
-                        this::defaultTransactional
-                )
-                .whichIsNotNull()
+        return suppliers(
+                () -> methodInvocation.getMethod().getAnnotation(Transactional.class),
+                () -> methodInvocation.getThis().getClass().getAnnotation(Transactional.class),
+                this::defaultTransactional
+        ).stream()
+                .map(Supplier::get)
+                .filter(transactional-> transactional != null)
+                .findFirst()
                 .get();
+    }
+
+    @SafeVarargs
+    private static <T> List<Supplier<T>> suppliers(Supplier<T>... suppliers) {
+        return Arrays.asList(suppliers);
     }
 
     private boolean rollbackNecessary(Exception cause, Transactional transactional) {

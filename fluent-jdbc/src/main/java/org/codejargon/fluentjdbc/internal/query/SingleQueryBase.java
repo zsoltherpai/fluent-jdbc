@@ -29,7 +29,6 @@ abstract class SingleQueryBase {
 
     protected void addNamedParameters(Map<String, ?> namedParams) {
         Preconditions.checkArgument(params.isEmpty(), "Can not add named parameters if positional parameters are set.");
-        Preconditions.checkArgument(!namedParams.isEmpty(), "Can not set empty named parameters");
         this.namedParams.putAll(namedParams);
     }
 

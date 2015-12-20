@@ -10,10 +10,10 @@ class FluentJdbcBatchTest extends UpdateTestBase {
     def "Batch update"() {
         given:
         int[] expectedUpdated = [1, 1]
-        Iterator<List<Object>> params = [
+        Iterable<List<Object>> params = [
                 [param1, param2],
                 [param3, param4]
-        ].iterator()
+        ]
         preparedStatement.executeBatch() >> expectedUpdated
         when:
         def updated = query.batch(sql).params(params).run()
@@ -28,11 +28,11 @@ class FluentJdbcBatchTest extends UpdateTestBase {
     def "Batch update with batch size specified"() {
         given:
         int[] expectedUpdated = [1, 1, 1]
-        Iterator<List<Object>> params = Arrays.<List<Object>>asList(
+        Iterable<List<Object>> params = Arrays.<List<Object>>asList(
                 Arrays.asList(param1, param2),
                 Arrays.asList(param3, param4),
                 Arrays.asList(param5, param6)
-        ).iterator()
+        )
         preparedStatement.executeBatch() >> [1, 1] >> [1]
         when:
         def updated = query.batch(sql).batchSize(2).params(params).run()
@@ -47,9 +47,9 @@ class FluentJdbcBatchTest extends UpdateTestBase {
     def "Batch update with named parameters"() {
         given:
         int[] expectedUpdated = [1];
-        Iterator<Map<String, Object>> namedParams = Arrays.<Map<String, Object>>asList(
+        Iterable<Map<String, Object>> namedParams = Arrays.<Map<String, Object>>asList(
                 namedParams()
-        ).iterator();
+        )
         connection.prepareStatement(sql) >> preparedStatement
         preparedStatement.executeBatch() >> expectedUpdated
         when:

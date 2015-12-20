@@ -1,9 +1,11 @@
 package org.codejargon.fluentjdbc.api;
 
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
+import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionProvider;
 import org.codejargon.fluentjdbc.internal.FluentJdbcInternal;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +38,10 @@ public class FluentJdbcBuilder {
         checkNotNull(connectionProvider, "connectionProvider");
         this.connectionProvider = Optional.of(connectionProvider);
         return this;
+    }
+
+    public FluentJdbcBuilder connectionProvider(DataSource dataSource) {
+        return connectionProvider(new DataSourceConnectionProvider(dataSource));
     }
 
     /**

@@ -1,19 +1,23 @@
 ####About FluentJdbc####
-FluentJdbc is a fluent, functional API for native SQL querying over JDBC. Every SQL operation (read or write) is a single,
-well-readable statement.
+[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for operating with SQL queries conveniently. Every SQL operation is a single,
+readable api call without any of the JDBC clutter. It supports functionality most similar
+jdbc wrappers prevent or abstract away, more details below.
 
-Some of FluentJdbc's features:
+FluentJdbc's key features:
+* functional, fluent API
 * execution of select/insert/update/delete/alter/... statements as one-liners
-* parameter mapping (named, positional, supporting java.time, plugins for custom types)
+* parameter mapping (named, positional, supports java.time, plugins for custom types)
 * accessing generated keys of insert/update queries
-* automatic result -> pojo mapping
 * transaction handling
+* big data (scalable, streaming style of batch and select)
+* automatic result to pojo mapping
+* database inspection
 
 ```xml
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>0.9.9</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 Note: requires java 8
@@ -23,14 +27,14 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 0.9.9 released - note that license has been changed from MIT to Apache 2.0
+* 1.0.2 released - batching API improvements (accepting Stream and Iterable)
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
 ```java
 DataSource dataSource = ...
 FluentJdbc fluentJdbc = new FluentJdbcBuilder()
-	.connectionProvider(new DataSourceConnectionProvider(dataSource))
+	.connectionProvider(dataSource)
 	.build();
 Query query = fluentJdbc.query();
 // ... use the Query interface for queries (thread-safe, reentrant)
@@ -78,7 +82,7 @@ Optional<Customer> customer = query
 
 ######Batch insert or update######
 ```java
-Iterator<List<Object>> params = ...;
+Iterator<List<Object>> params = ...; // or Stream/Iterable
 query
 	.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)

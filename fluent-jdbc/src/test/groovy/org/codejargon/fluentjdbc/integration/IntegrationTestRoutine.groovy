@@ -7,6 +7,7 @@ import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionP
 import org.codejargon.fluentjdbc.api.mapper.Mappers
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers
 import org.codejargon.fluentjdbc.api.query.Query
+import org.codejargon.fluentjdbc.api.query.Transaction
 import org.codejargon.fluentjdbc.integration.testdata.Dummies
 import org.codejargon.fluentjdbc.integration.testdata.Dummy
 import org.codejargon.fluentjdbc.internal.support.Maps
@@ -134,6 +135,17 @@ abstract class IntegrationTestRoutine extends Specification {
         thrown(RollbackException)
         List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
         dummies.size() == 0
+    }
+
+    def "Transaction isolation"() {
+        when:
+        query.transaction().isolation(Transaction.Isolation.REPEATABLE_READ).in({ ->
+            query.update(insertSqlPositional).params(dummy1.params()).run()
+            query.update(insertSqlPositional).params(dummy2.params()).run()
+        });
+        then:
+        List<Dummy> dummies = fluentJdbc.query().select(selectAllSql).listResult(dummyMapper)
+        dummies.size() == 2
     }
 
     def "Database inspection with access"() {

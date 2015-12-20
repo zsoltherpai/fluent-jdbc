@@ -13,10 +13,17 @@ import java.util.function.Supplier;
 class TransactionInternal implements Transaction {
     private static ThreadLocal<Map<ConnectionProvider, Connection>> connections = new ThreadLocal<>();
 
-    private QueryInternal queryInternal;
+    private final QueryInternal queryInternal;
+    private Optional<Isolation> isolation = Optional.empty();
 
     TransactionInternal(QueryInternal queryInternal) {
         this.queryInternal = queryInternal;
+    }
+
+    @Override
+    public Transaction isolation(Isolation isolation) {
+        this.isolation = Optional.of(isolation);
+        return this;
     }
 
     @Override
@@ -43,6 +50,7 @@ class TransactionInternal implements Transaction {
                     con -> {
                         Boolean originalAutocommit = null;
                         try {
+                            isolation(con);
                             originalAutocommit = con.getAutoCommit();
                             cons.put(queryInternal.connectionProvider, con);
                             try {
@@ -64,6 +72,12 @@ class TransactionInternal implements Transaction {
         } catch(SQLException e) {
             // should not occur
             throw new FluentJdbcSqlException("Error executing transaction.", e);
+        }
+    }
+
+    private void isolation(Connection con) throws SQLException {
+        if(isolation.isPresent()) {
+            con.setTransactionIsolation(isolation.get().jdbcIsolation());
         }
     }
 
