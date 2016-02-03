@@ -32,6 +32,10 @@ abstract class SingleQueryBase {
         this.namedParams.putAll(namedParams);
     }
 
+    protected void addNamedParameter(String name, Object parameter) {
+        this.namedParams.put(name, parameter);
+    }
+
     protected <T> T runQuery(
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
         return runQuery(queryRunnerPreparedStatement, false);

@@ -35,6 +35,15 @@ public interface SelectQuery {
      */
     SelectQuery namedParams(Map<String, ?> namedParams);
 
+    /**
+     * Adds a named query parameter
+     *
+     * @param name name of parameter
+     * @param parameter value of parameter
+     * @return this
+     */
+    SelectQuery namedParam(String name, Object parameter);
+
 
     /**
      * Sets a result filter. Only results accepted by this Predicate will be returned by SelectQuery.

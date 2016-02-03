@@ -32,6 +32,15 @@ public interface UpdateQuery {
     UpdateQuery namedParams(Map<String, ?> namedParams);
 
     /**
+     * Adds a named query parameter
+     *
+     * @param name name of parameter
+     * @param parameter value of parameter
+     * @return this
+     */
+    UpdateQuery namedParam(String name, Object parameter);
+
+    /**
      * Runs the update query
      *
      * @return result of the update (eg affected rows)

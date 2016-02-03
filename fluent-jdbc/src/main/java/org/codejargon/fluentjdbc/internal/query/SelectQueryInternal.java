@@ -67,6 +67,12 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
+    public SelectQuery namedParam(String name, Object parameter) {
+        addNamedParameter(name, parameter);
+        return this;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> Optional<T> firstResult(Mapper<T> mapper) {
         return runQuery(

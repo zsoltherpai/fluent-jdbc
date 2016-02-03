@@ -1,9 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.api.query.Mapper;
-import org.codejargon.fluentjdbc.api.query.UpdateQuery;
-import org.codejargon.fluentjdbc.api.query.UpdateResult;
-import org.codejargon.fluentjdbc.api.query.UpdateResultGenKeys;
+import org.codejargon.fluentjdbc.api.query.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,6 +49,13 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
         addNamedParameters(namedParams);
         return this;
     }
+
+    @Override
+    public UpdateQuery namedParam(String name, Object parameter) {
+        addNamedParameter(name, parameter);
+        return this;
+    }
+
 
     @Override
     void customizeQuery(PreparedStatement preparedStatement, QueryConfig config) {
