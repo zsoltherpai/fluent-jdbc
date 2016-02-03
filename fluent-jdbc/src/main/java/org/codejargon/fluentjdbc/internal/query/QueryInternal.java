@@ -54,17 +54,18 @@ public class QueryInternal implements Query {
     }
 
     <T> T query(QueryRunnerConnection<T> runner, String sql) {
+        long start = System.currentTimeMillis();
         try {
-            QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
-            Optional<Connection> transactionedConnection = TransactionInternal.transactionedConnection(connectionProvider);
-            if (!transactionedConnection.isPresent()) {
-                connectionProvider.provide(receiver);
-            } else {
-                receiver.receive(transactionedConnection.get());
-            }
-            return receiver.returnValue();
-        } catch (SQLException e) {
-            throw queryException(sql, Optional.empty(), Optional.of(e));
+            T result = executeQuery(runner, sql);
+            config.afterQueryListener.listen(
+                    new ExecutionDetailsInternal(sql, System.currentTimeMillis() - start, Optional.empty())
+            );
+            return result;
+        } catch (FluentJdbcSqlException e) {
+            config.afterQueryListener.listen(
+                    new ExecutionDetailsInternal(sql, System.currentTimeMillis() - start, Optional.of(e.sqlException()))
+            );
+            throw e;
         }
     }
 
@@ -78,5 +79,20 @@ public class QueryInternal implements Query {
 
     void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
         preparedStatementFactory.assignParams(statement, params);
+    }
+
+    private <T> T executeQuery(QueryRunnerConnection<T> runner, String sql) {
+        try {
+            QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
+            Optional<Connection> transactionedConnection = TransactionInternal.transactionedConnection(connectionProvider);
+            if (!transactionedConnection.isPresent()) {
+                connectionProvider.provide(receiver);
+            } else {
+                receiver.receive(transactionedConnection.get());
+            }
+            return receiver.returnValue();
+        } catch(SQLException e) {
+            throw queryException(sql, Optional.empty(), Optional.of(e));
+        }
     }
 }

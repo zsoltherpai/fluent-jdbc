@@ -1,16 +1,17 @@
 package org.codejargon.fluentjdbc.internal;
 
-import java.sql.Connection;
-import java.util.Map;
-import java.util.Optional;
-
 import org.codejargon.fluentjdbc.api.FluentJdbc;
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.ParamSetter;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Query;
+import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.query.QueryConfig;
 import org.codejargon.fluentjdbc.internal.query.QueryInternal;
+
+import java.sql.Connection;
+import java.util.Map;
+import java.util.Optional;
 
 public class FluentJdbcInternal implements FluentJdbc {
 
@@ -20,10 +21,11 @@ public class FluentJdbcInternal implements FluentJdbc {
     public FluentJdbcInternal(
             Optional<ConnectionProvider> connectionProvider, 
             Map<Class, ParamSetter> paramSetters,
-            Optional<Integer> defaultFetchSize
+            Optional<Integer> defaultFetchSize,
+            AfterQueryListener afterQueryListener
     ) {
         this.connectionProvider = connectionProvider;
-        queryConfig = new QueryConfig(defaultFetchSize, paramSetters);
+        queryConfig = new QueryConfig(defaultFetchSize, paramSetters, afterQueryListener);
     }
 
     @Override

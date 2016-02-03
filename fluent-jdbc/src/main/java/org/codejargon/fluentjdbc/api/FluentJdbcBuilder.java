@@ -2,6 +2,7 @@ package org.codejargon.fluentjdbc.api;
 
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionProvider;
+import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.FluentJdbcInternal;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
@@ -21,6 +22,7 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotN
 public class FluentJdbcBuilder {
     private Optional<Integer> defaultFetchSize = Optional.empty();
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
+    private AfterQueryListener afterQueryListener = (executionResult) -> {};
     private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
 
     public FluentJdbcBuilder() {
@@ -72,6 +74,12 @@ public class FluentJdbcBuilder {
         return this;
     }
 
+    public FluentJdbcBuilder afterQueryListener(AfterQueryListener afterQueryListener) {
+        checkNotNull(afterQueryListener, "afterQueryListener");
+        this.afterQueryListener = afterQueryListener;
+        return this;
+    }
+
     /**
      * Returns a FluentJdbc instance configured by the builder
      * @return FluentJdbc instance
@@ -80,7 +88,8 @@ public class FluentJdbcBuilder {
         return new FluentJdbcInternal(
                 connectionProvider, 
                 Maps.copyOf(paramSetters),
-                defaultFetchSize
+                defaultFetchSize,
+                afterQueryListener
         );
     }
 }
