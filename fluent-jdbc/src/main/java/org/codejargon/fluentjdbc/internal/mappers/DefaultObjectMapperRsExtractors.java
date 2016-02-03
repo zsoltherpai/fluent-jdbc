@@ -27,7 +27,7 @@ public class DefaultObjectMapperRsExtractors {
     }
 
     private static void javaDate(Map<Class, ObjectMapperRsExtractor<?>> exs) {
-        reg(exs, java.util.Date.class, ResultSet::getDate);
+        reg(exs, java.util.Date.class, ResultSet::getTimestamp);
     }
 
     private static void javaTimeTypes(Map<Class, ObjectMapperRsExtractor<?>> exs) {
