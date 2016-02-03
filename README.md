@@ -12,12 +12,13 @@ FluentJdbc's key features:
 * big data (scalable, streaming style of batch and select)
 * automatic result to pojo mapping
 * database inspection
+* query listener (for eg logging, auditing, performance measurement)
 
 ```xml
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 Note: requires java 8
@@ -27,7 +28,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 1.0.2 released - batching API improvements (accepting Stream and Iterable)
+* 1.0.4 released - query listener (for logging, etc), java.util.Date ObjectMapper bugfix, convenience method for named params
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
@@ -90,13 +91,10 @@ query
 ```
 ######Named parameters######
 ```java
-Map<String, Object> namedParams = new HashMap<>();
-namedParams.put("name", "John Doe");
-namedParams.put("address", "Dallas");
-
 query
 	.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
-	.namedParams(namedParams)
+	.namedParam("name", "John Doe")
+	.namedParam("address", "Dallas")
 	.run();
 ```
 
