@@ -1,12 +1,12 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import org.codejargon.fluentjdbc.api.ParamSetter;
+
 import java.time.*;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.codejargon.fluentjdbc.api.ParamSetter;
 
 class DefaultParamSetters {
 
@@ -32,7 +32,7 @@ class DefaultParamSetters {
 
     private static void javaDate(Map<Class, ParamSetter> ss) {
         reg(ss, Date.class, (param, ps, i) -> {
-            ps.setDate(i, new java.sql.Date(param.getTime()));
+            ps.setTimestamp(i, new java.sql.Timestamp(param.getTime()));
         });
     }
 

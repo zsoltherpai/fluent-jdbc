@@ -8,9 +8,9 @@ import java.time.*
 class ParamAssignerTest extends Specification {
     static final def localDateTime = LocalDateTime.of(2015, Month.MARCH, 5, 12, 5)
     static final def localDate = LocalDate.of(2015, Month.MARCH, 5)
-    static final def localTime = LocalTime.of(22, 12)
-    static final def instant = localDateTime.toInstant(ZoneOffset.MIN)
-    static final def javaDate = new java.util.Date(Date.valueOf(localDate).getTime())
+    static final def localTime = LocalTime.of(12, 5)
+    static final def instant = localDateTime.toInstant(ZoneOffset.UTC)
+    static final def javaDate = new java.util.Date(instant.toEpochMilli())
 
     static final def string = "a"
     static final def longParam = 5L
@@ -18,7 +18,7 @@ class ParamAssignerTest extends Specification {
     static final def bigDecimal = BigDecimal.TEN
     static final def sqlDate = java.sql.Date.valueOf(localDate)
     static final def time = Time.valueOf(localTime)
-    static final Timestamp timestamp = Timestamp.valueOf(localDateTime)
+    static final Timestamp timestamp = Timestamp.from(instant)
 
 
     def statement = Mock(PreparedStatement)
@@ -47,7 +47,7 @@ class ParamAssignerTest extends Specification {
                 [localDateTime, localDate, localTime]
         )
         then:
-        1 * statement.setTimestamp(1, timestamp)
+        1 * statement.setTimestamp(1, Timestamp.valueOf(localDateTime))
         1 * statement.setDate(2, sqlDate)
         1 * statement.setTime(3, time)
     }
@@ -69,7 +69,7 @@ class ParamAssignerTest extends Specification {
                 [javaDate]
         )
         then:
-        1 * statement.setDate(1, sqlDate)
+        1 * statement.setTimestamp(1, timestamp)
     }
 
 }
