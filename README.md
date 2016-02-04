@@ -18,7 +18,7 @@ FluentJdbc's key features:
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 </dependency>
 ```
 Note: requires java 8
@@ -28,7 +28,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
-* 1.0.4 released - query listener (for logging, etc), java.util.Date ObjectMapper bugfix, convenience method for named params
+* 1.0.5 released - query listener (for logging, etc), java.util.Date precision bugfix, convenience method for named params
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
