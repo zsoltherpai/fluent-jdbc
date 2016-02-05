@@ -151,5 +151,28 @@ query.transaction().in(
 ```
 All queries executed in the block will be part of the transaction - in the same thread, based on the same FluentJdbc/ConnectionProvider.
 Exceptions cause rollback. It is possible to use multiple transactions/datasources simultaneously.
+######Query listener######
+A listener provides a callback mechanism called on each FluentJdbc query operation. This allows things like SQL statement logging,
+performance measurement. The following example logs all successful SQL operations along with the time taken to execute them:
+```java
+AfterQueryListener listener = execution -> {
+    if(execution.success()) {
+        log.debug(
+            String.format(
+                "Query took %s ms to execute: %s",
+                execution.executionTimeMs(),
+                execution.sql()
+            )
+        )
+    }
+};
+
+FluentJdbc fluentJdbc = new FluentJdbcBuilder()
+    // other configuration
+    .afterQueryListener(listener)
+    .build();
+
+// run queries
+```
 
 Refer to the [full documentation](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation) for more details and code examples.
