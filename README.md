@@ -1,7 +1,7 @@
 ####About FluentJdbc####
-[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for operating with SQL queries conveniently. Every SQL operation is a single,
-readable api call without any of the JDBC clutter. It supports functionality most similar
-jdbc wrappers prevent or abstract away, more details below.
+[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for using native SQL queries. Every SQL operation is a single,
+readable api call without any of the JDBC clutter. It supports functionality most jdbc wrappers prevent or 
+abstract away, more details below.
 
 FluentJdbc's key features:
 * functional, fluent API
@@ -18,7 +18,7 @@ FluentJdbc's key features:
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 ```
 Note: requires java 8
