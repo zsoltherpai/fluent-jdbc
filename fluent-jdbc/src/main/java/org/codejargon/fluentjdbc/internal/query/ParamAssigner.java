@@ -9,9 +9,15 @@ import java.util.List;
 import java.util.Map;
 
 class ParamAssigner {
-    private static final ParamSetter objectParamSetter =
-            (param, statement, index) -> statement.setObject(index, param);
-    
+    private static final ParamSetter fallbackParamSetter =
+            (param, statement, index) -> {
+                if (!param.getClass().isEnum()) {
+                    statement.setObject(index, param);
+                } else {
+                    statement.setString(index, param.toString());
+                }
+            };
+
     private final Map<Class, ParamSetter> paramSetters;
 
     ParamAssigner(Map<Class, ParamSetter> paramSetters) {
@@ -42,7 +48,7 @@ class ParamAssigner {
         Integer sqlType;
         try {
             sqlType = statement.getParameterMetaData().getParameterType(index);
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new FluentJdbcSqlException("Can't access parameter metadata, JDBC 3.0 not supported by the driver.", e);
         }
         statement.setNull(index, sqlType);
@@ -52,9 +58,9 @@ class ParamAssigner {
     private void assignNonNull(Object param, PreparedStatement statement, Integer index) throws SQLException {
         paramSetter(param).set(param, statement, index);
     }
-    
+
     private ParamSetter paramSetter(Object param) {
         ParamSetter customSetter = paramSetters.get(param.getClass());
-        return customSetter != null ? customSetter : objectParamSetter;
+        return customSetter != null ? customSetter : fallbackParamSetter;
     }
 }

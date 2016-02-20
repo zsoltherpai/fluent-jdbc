@@ -72,4 +72,18 @@ class ParamAssignerTest extends Specification {
         1 * statement.setTimestamp(1, timestamp)
     }
 
+    def "enum set as string"() throws SQLException {
+        when:
+        paramAssigner.assignParams(
+                statement,
+                [Foo.BAR]
+        )
+        then:
+        1 * statement.setString(1, "BAR")
+    }
+
+    enum Foo {
+        BAR
+    }
+
 }
