@@ -28,6 +28,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
+* 1.0.6 released - enum parameters are set as Strings by default
 * 1.0.5 released - query listener (for logging, etc), java.util.Date precision bugfix, convenience method for named params
 
 #####Code examples of common use cases#####
