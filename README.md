@@ -1,18 +1,18 @@
 ####About FluentJdbc####
-[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for using native SQL queries. Every SQL operation is a single,
-readable api call without any of the JDBC clutter. It supports functionality most jdbc wrappers prevent or 
-abstract away, more details below.
+[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for convenient native SQL querying. Every SQL operation is a single,
+readable statement without any JDBC clutter. It supports functionality most jdbc wrappers prevent or
+abstract away, and is lightweight (<90K, no dependencies).
 
 FluentJdbc's key features:
 * functional, fluent API
 * execution of select/insert/update/delete/alter/... statements as one-liners
-* parameter mapping (named, positional, supports java.time, plugins for custom types)
-* accessing generated keys of insert/update queries
-* transaction handling
+* parameter mapping (named, positional, supports java.time, enums, Optional, plugins for custom types)
+* transactions
+* access to generated keys of insert/update queries
 * big data (scalable, streaming style of batch and select)
 * automatic result to pojo mapping
 * database inspection
-* query listener (for eg logging, auditing, performance measurement)
+* query listener (for logging, auditing, performance measurement, ...)
 
 ```xml
 <dependency>
@@ -28,6 +28,7 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
+* 1.1 released - java.util.Optional parameter support, access to managed Connection (for low-level ops)
 * 1.0.6 released - enum parameters are set as Strings by default
 * 1.0.5 released - query listener (for logging, etc), java.util.Date precision bugfix, convenience method for named params
 
@@ -51,8 +52,7 @@ query
 ```
 ######Query for a list of results######
 ```java
-List<Customer> customers = query
-	.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
+List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.listResult(customerMapper);
 ```
@@ -69,15 +69,13 @@ Mapper<Customer> customerMapper = objectMappers.forClass(Customer.class);
 ```
 ######Query for single result######
 ```java
-Long count = query
-	.select("SELECT COUNT(*) FROM CUSTOMER WHERE NAME = ?")
+Long count = query.select("SELECT COUNT(*) FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.singleResult(Mappers.singleLong);
 ```
 ######Query for first result######
 ```java
-Optional<Customer> customer = query
-	.select("SELECT FROM CUSTOMER WHERE NAME = ?")
+Optional<Customer> customer = query.select("SELECT FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.firstResult(customerMapper);
 ```
@@ -85,15 +83,13 @@ Optional<Customer> customer = query
 ######Batch insert or update######
 ```java
 Iterator<List<Object>> params = ...; // or Stream/Iterable
-query
-	.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
+query.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)
 	.run();
 ```
 ######Named parameters######
 ```java
-query
-	.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
+query.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
 	.namedParam("name", "John Doe")
 	.namedParam("address", "Dallas")
 	.run();
@@ -101,15 +97,20 @@ query
 
 ######java.time support for query parameters######
 ```java
-query
-	.update("UPDATE CUSTOMER SET DEADLINE = ?, UPDATED = ?")
+query.update("UPDATE CUSTOMER SET DEADLINE = ?, UPDATED = ?")
 	.params(LocalDate.of(2015, Month.MARCH, 5), Instant.now())
 	.run();
 ```
+######java.util.Optional support######
+```java
+Optional<LocalData> deadline = ...
+query.update("UPDATE CUSTOMER SET DEADLINE = ?")
+	.params(deadline)
+	.run();
+
 ######Iterating a large resultset######
 ```java
-query
-	.select("SELECT * FROM CUSTOMER")
+query.select("SELECT * FROM CUSTOMER")
 	.iterateResult(customerMapper, (customer) -> {
 		if(customer.isExpired()) {
 			...
@@ -118,8 +119,7 @@ query
 ```
 ######Query for a list of limited results######
 ```java
-List<Customer> customers = query
-	.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
+List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.maxRows(345L)
 	.listResult(customerMapper);
