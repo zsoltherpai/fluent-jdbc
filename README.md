@@ -101,13 +101,14 @@ query.update("UPDATE CUSTOMER SET DEADLINE = ?, UPDATED = ?")
 	.params(LocalDate.of(2015, Month.MARCH, 5), Instant.now())
 	.run();
 ```
+Note: support for any type can be implemented
 ######java.util.Optional support######
 ```java
 Optional<LocalData> deadline = ...
 query.update("UPDATE CUSTOMER SET DEADLINE = ?")
 	.params(deadline)
 	.run();
-
+```
 ######Iterating a large resultset######
 ```java
 query.select("SELECT * FROM CUSTOMER")
