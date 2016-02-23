@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 class ParamAssigner {
     private static final ParamSetter fallbackParamSetter =
@@ -27,7 +28,11 @@ class ParamAssigner {
     void assignParams(PreparedStatement statement, List<?> params) {
         int i = 1;
         for (Object param : params) {
-            assignParam(statement, i, param);
+            assignParam(
+                    statement,
+                    i,
+                    param instanceof Optional ? ((Optional<?>) param).orElse(null) : param
+            );
             ++i;
         }
     }

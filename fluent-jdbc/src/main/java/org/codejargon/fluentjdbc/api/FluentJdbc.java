@@ -1,13 +1,11 @@
 package org.codejargon.fluentjdbc.api;
 
-import java.sql.Connection;
-import java.util.Optional;
-
-import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Query;
 
+import java.sql.Connection;
+
 /**
- * Creates fluent Query API based on FluentJdbc's configuration. Thread-safe.
+ * Creates fluent Query API based on FluentJdbc's configuration. Immutable, thread-safe.
  * 
  * @see org.codejargon.fluentjdbc.api.FluentJdbcBuilder
  */

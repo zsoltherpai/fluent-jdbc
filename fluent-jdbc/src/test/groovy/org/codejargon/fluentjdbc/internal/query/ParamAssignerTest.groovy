@@ -82,6 +82,37 @@ class ParamAssignerTest extends Specification {
         1 * statement.setString(1, "BAR")
     }
 
+    def "Optional with value set"() throws SQLException {
+        given:
+        def value = Optional.of("foo");
+
+        when:
+        paramAssigner.assignParams(
+                statement,
+                [value]
+        )
+        then:
+        1 * statement.setObject(1, value.get())
+    }
+
+    def "Empty Optional set as null"() throws SQLException {
+        given:
+        def parameterMetadata = Mock(ParameterMetaData)
+        parameterMetadata.getParameterType(1) >> 1
+        statement.getParameterMetaData() >> parameterMetadata
+
+        def value = Optional.empty();
+
+        when:
+        paramAssigner.assignParams(
+                statement,
+                [value]
+        )
+        then:
+
+        1 * statement.setNull(1, 1)
+    }
+
     enum Foo {
         BAR
     }

@@ -3,7 +3,7 @@ package org.codejargon.fluentjdbc.api.query;
 import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
 
 /**
- * <p>FluentJdbc Query API to create select, update/insert, and batch update/insert queries.</p>
+ * <p>FluentJdbc Query API to create select, update/insert, and batch update/insert queries. Immutable, thread-safe.</p>
  * @see org.codejargon.fluentjdbc.api.integration.ConnectionProvider
  */
 public interface Query {

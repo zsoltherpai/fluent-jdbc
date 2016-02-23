@@ -25,7 +25,7 @@ public interface Transaction {
      */
     void inNoResult(Runnable runnable);
 
-    public enum Isolation {
+    enum Isolation {
         NONE(Connection.TRANSACTION_NONE),
         READ_COMMITTED(Connection.TRANSACTION_READ_COMMITTED),
         READ_UNCOMMITTED(Connection.TRANSACTION_READ_UNCOMMITTED),
