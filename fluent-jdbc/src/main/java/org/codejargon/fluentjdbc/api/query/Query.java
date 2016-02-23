@@ -2,6 +2,9 @@ package org.codejargon.fluentjdbc.api.query;
 
 import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
 
+import java.sql.Connection;
+import java.util.function.Function;
+
 /**
  * <p>FluentJdbc Query API to create select, update/insert, and batch update/insert queries. Immutable, thread-safe.</p>
  * @see org.codejargon.fluentjdbc.api.integration.ConnectionProvider
@@ -31,7 +34,21 @@ public interface Query {
      */
     BatchQuery batch(String sql);
 
+    /**
+     * Transaction control
+     *
+     * @return Transaction control
+     */
     Transaction transaction();
+
+    /**
+     * Provides access to a JDBC Connection managed by FluentJdbc for low level operations
+     *
+     * @param operation on a managed connection
+     * @param <T> type of return value
+     * @return value
+     */
+    <T> T plainConnection(Function<Connection, T> operation);
 
     /**
      * Inspection of the database (tables, columns, etc..)

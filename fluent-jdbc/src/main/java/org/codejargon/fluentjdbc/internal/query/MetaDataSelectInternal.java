@@ -7,6 +7,7 @@ import org.codejargon.fluentjdbc.api.query.inspection.MetaDataSelect;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MetaDataSelectInternal implements MetaDataSelect {
     private final QueryInternal query;
@@ -29,7 +30,7 @@ public class MetaDataSelectInternal implements MetaDataSelect {
                     }
                     return results;
                 },
-                "JDBC Select from MetaData"
+                Optional.of("JDBC Select from MetaData")
         );
     }
 }

@@ -84,7 +84,7 @@ class BatchQueryInternal implements BatchQuery {
         Preconditions.checkArgument(params.isPresent() || namedParams.isPresent(), "Parameters must be set to run a batch query");
         return query.query(
                 connection -> params.isPresent() ? positional(connection) : named(connection),
-                sql
+                Optional.of(sql)
         );
     }
 

@@ -53,7 +53,7 @@ abstract class SingleQueryBase {
             try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, fetchGenerated)) {
                 return queryRunnerPreparedStatement.run(ps);
             }
-        }, sql);
+        }, Optional.of(sql));
     }
 
     SqlAndParams sqlAndParams(QueryConfig config) {

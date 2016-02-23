@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class QueryInternal implements Query {
 
@@ -48,25 +49,34 @@ public class QueryInternal implements Query {
         return new TransactionInternal(this);
     }
 
+
     @Override
     public DatabaseInspection databaseInspection() {
         return new DatabaseInspectionInternal(this);
     }
 
-    <T> T query(QueryRunnerConnection<T> runner, String sql) {
+    <T> T query(QueryRunnerConnection<T> runner, Optional<String> sql) {
         long start = System.currentTimeMillis();
         try {
-            T result = executeQuery(runner, sql);
-            config.afterQueryListener.listen(
-                    new ExecutionDetailsInternal(sql, System.currentTimeMillis() - start, Optional.empty())
+            T returnValue = doQuery(runner);
+            sql.ifPresent(sqlQuery -> config.afterQueryListener.listen(
+                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.empty())
+            ));
+            return returnValue;
+        } catch (SQLException e) {
+            sql.ifPresent(sqlQuery ->
+                            config.afterQueryListener.listen(
+                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.of(e)
+                                    )
+                            )
             );
-            return result;
-        } catch (FluentJdbcSqlException e) {
-            config.afterQueryListener.listen(
-                    new ExecutionDetailsInternal(sql, System.currentTimeMillis() - start, Optional.of(e.sqlException()))
-            );
-            throw e;
+            throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
         }
+    }
+
+    @Override
+    public <T> T plainConnection(Function<Connection, T> operation) {
+        return query(operation::apply, Optional.empty());
     }
 
     FluentJdbcException queryException(String sql, Optional<String> reason, Optional<SQLException> e) {
@@ -76,23 +86,19 @@ public class QueryInternal implements Query {
         return e.isPresent() ? new FluentJdbcSqlException(message, e.get()) : new FluentJdbcException(message);
     }
 
+    private <T> T doQuery(QueryRunnerConnection<T> runner) throws SQLException {
+        QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
+        Optional<Connection> transactionedConnection = TransactionInternal.transactionedConnection(connectionProvider);
+        if (!transactionedConnection.isPresent()) {
+            connectionProvider.provide(receiver);
+        } else {
+            receiver.receive(transactionedConnection.get());
+        }
+        return receiver.returnValue();
+    }
+
 
     void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
         preparedStatementFactory.assignParams(statement, params);
-    }
-
-    private <T> T executeQuery(QueryRunnerConnection<T> runner, String sql) {
-        try {
-            QueryConnectionReceiverInternal<T> receiver = new QueryConnectionReceiverInternal<>(runner);
-            Optional<Connection> transactionedConnection = TransactionInternal.transactionedConnection(connectionProvider);
-            if (!transactionedConnection.isPresent()) {
-                connectionProvider.provide(receiver);
-            } else {
-                receiver.receive(transactionedConnection.get());
-            }
-            return receiver.returnValue();
-        } catch(SQLException e) {
-            throw queryException(sql, Optional.empty(), Optional.of(e));
-        }
     }
 }

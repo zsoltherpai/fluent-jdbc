@@ -1,6 +1,5 @@
 package org.codejargon.fluentjdbc.internal.integration;
 
-import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 import org.codejargon.fluentjdbc.api.integration.QueryConnectionReceiver;
 import org.codejargon.fluentjdbc.internal.query.QueryRunnerConnection;
 
@@ -16,12 +15,8 @@ public class QueryConnectionReceiverInternal<T> implements QueryConnectionReceiv
     }
 
     @Override
-    public void receive(Connection connection) {
-        try {
-            returnValue = runner.run(connection);
-        } catch (SQLException e) {
-            throw new FluentJdbcSqlException("Error while receiving connection", e);
-        }
+    public void receive(Connection connection) throws SQLException {
+        returnValue = runner.run(connection);
     }
 
     public T returnValue() {
