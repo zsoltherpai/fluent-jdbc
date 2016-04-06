@@ -2,5 +2,9 @@
 description 'FluentJdbc Core'
 
 dependencies {
+
+	testCompile( database.h2 )
+	testCompile( database.derby )
+	testCompile( database.hsqldb )
 	
 }

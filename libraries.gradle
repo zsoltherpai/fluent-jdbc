@@ -5,7 +5,9 @@ ext.guice = [
 
 ext.test = [
 	junit   : 'junit:junit:4.12',
-	mockito : 'org.mockito:mockito-core:1.9.5'
+	mockito : 'org.mockito:mockito-core:1.9.5',
+	spock   : 'org.spockframework:spock-core:1.0-groovy-2.4',
+    cglib   : 'cglib:cglib-nodep:3.1'
 ]
 
 ext.database = [
@@ -15,5 +17,6 @@ ext.database = [
 ]
 
 ext.persist = [
-	jpa : 'org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1'
+	jpa         : 'org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1',
+	eclipselink : 'org.eclipse.persistence:eclipselink:2.5.2'
 ]

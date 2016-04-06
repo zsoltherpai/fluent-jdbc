@@ -17,6 +17,7 @@ subprojects {
     apply plugin: 'base'
     apply plugin: 'java'
     apply plugin: 'maven'
+    apply plugin: 'groovy'
     
     apply plugin: 'idea'
     apply plugin: 'eclipse'
@@ -40,6 +41,10 @@ subprojects {
         mavenCentral()
         jcenter()
     }
+    
+    configurations {
+	    testArtifacts.extendsFrom testRuntime
+	}
 
     javadoc {
     	exclude  '**/internal**'
@@ -55,6 +60,9 @@ subprojects {
 
 	dependencies {
 		testCompile test.junit
+		testCompile test.mockito
+		testCompile test.spock
+		testCompile test.cglib
 	}
 	
 	idea {
@@ -101,6 +109,12 @@ subprojects {
 	         }
 	     }
 	 }
+	 
+	 extraArchive {
+	     sources = true
+	     tests   = true
+	     javadoc = true
+	 }
 	
 	 // https://github.com/bmuschko/gradle-nexus-plugin
 	 nexus {
@@ -114,5 +128,14 @@ subprojects {
 	 //   stagingProfileId = "ossrh"
 	 //   serverUrl = 'https://oss.sonatype.org/'
 	 //}
+	 
+	 task testJar(type: Jar) {
+	    classifier "testArtifacts"
+	    from sourceSets.test.output
+	}
+	
+	artifacts {
+	    testArtifacts testJar
+	}
 
 }
