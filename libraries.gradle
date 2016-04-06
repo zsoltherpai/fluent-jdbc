@@ -1,0 +1,19 @@
+ext.guice = [
+	core    : 'com.google.inject:guice:4.0',
+	persist : 'com.google.inject.extensions:guice-persist:4.0'
+]
+
+ext.test = [
+	junit   : 'junit:junit:4.12',
+	mockito : 'org.mockito:mockito-core:1.9.5'
+]
+
+ext.database = [
+	h2     : 'com.h2database:h2:1.4.184',
+	derby  : 'org.apache.derby:derby:10.11.1.1',
+	hsqldb : 'org.hsqldb:hsqldb:2.3.2'
+]
+
+ext.persist = [
+	jpa : 'org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1'
+]

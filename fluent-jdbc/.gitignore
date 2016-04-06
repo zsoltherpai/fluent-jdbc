@@ -1,0 +1,16 @@
+/build/
+/dist/
+/target/
+/bin/
+/.gradle/
+/.idea/
+/.nb-gradle/
+/.settings/
+/nbproject/
+/classes/
+/.metadata/
+*.project
+*.classpath
+*.iml
+*.hprof
+*.ipr

@@ -1,0 +1,118 @@
+
+buildscript {
+    repositories {
+    	mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
+        //classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+    }
+}
+
+subprojects {
+
+    apply plugin: 'base'
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    
+    apply   from: "${parent.projectDir}/libraries.gradle"
+    
+    // nebula - maven features in gradle
+	apply plugin: nebula.plugin.extraconfigurations.ProvidedBasePlugin
+	//apply plugin: nebula.plugin.extraconfigurations.OptionalBasePlugin
+    
+    // nexus
+    apply plugin: 'com.bmuschko.nexus'
+    
+    group 'org.codejargon'
+    
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+    
+    repositories {
+    	mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+
+    javadoc {
+    	exclude  '**/internal**'
+    }
+    
+    compileJava {
+    	options.encoding = 'UTF-8'
+    }
+    
+    compileTestJava {
+    	options.encoding = 'UTF-8'
+    }
+
+	dependencies {
+		testCompile test.junit
+	}
+	
+	idea {
+	    module {
+	        downloadJavadoc = false // if you hate browsing Javadoc
+	        downloadSources = true  // and love reading sources :)
+	    }
+	}
+	
+	eclipse {
+		classpath {
+			downloadSources = true
+			downloadJavadoc = false
+		}
+	}
+
+	modifyPom {
+	     project {
+	         //name 'FluentJdbc'
+	         //description 'FluentJdbc is a java library for executing native SQL queries as simply as possible.'
+	         url 'https://github.com/zsoltherpai/fluent-jdbc'
+	         inceptionYear '2015'
+	
+	         scm {
+	             url 'https://github.com/zsoltherpai/fluent-jdbc'
+	             connection 'scm:git:https://github.com/zsoltherpai/fluent-jdbc.git'
+	             developerConnection 'scm:git:git@github.com:zsoltherpai/fluent-jdbc.git'
+	         }
+	
+	         licenses {
+	             license {
+	                 name 'The Apache Software License, Version 2.0'
+	                 url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+	                 distribution 'repo'
+	             }
+	         }
+	
+	         developers {
+	             developer {
+	                 id 'zsoltherpai'
+	                 name 'Zsolt Herpai'
+	                 email 'zsolt.herpai@gmail.com'
+	             }
+	         }
+	     }
+	 }
+	
+	 // https://github.com/bmuschko/gradle-nexus-plugin
+	 nexus {
+	     sign = true
+	     //repositoryUrl = 'http://localhost:8081/nexus/content/repositories/internal/'
+	     //snapshotRepositoryUrl = 'http://localhost:8081/nexus/content/repositories/internal-snapshots/'
+	 }
+	 
+	 // https://github.com/Codearte/gradle-nexus-staging-plugin
+	 //nexusStaging {
+	 //   stagingProfileId = "ossrh"
+	 //   serverUrl = 'https://oss.sonatype.org/'
+	 //}
+
+}

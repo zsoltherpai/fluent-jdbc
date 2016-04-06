@@ -1,0 +1,13 @@
+
+description 'FluentJdbc Guice Persist'
+
+dependencies {
+
+	compile ( project(':fluentjdbc') )
+
+	compile ( guice.core )
+	compile ( guice.persist )
+	
+	provided ( persist.jpa )
+	
+}
