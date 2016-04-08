@@ -67,7 +67,7 @@ class FluentJdbcBatchTest extends UpdateTestBase {
         1 * preparedStatement.close()
     }
 
-    def assertUpdateResults(int[] expectedUpdated, List<UpdateResult> updated) {
+    def assertUpdateResults(int[] expectedUpdated, Collection<UpdateResult> updated) {
         assert updated.size() == expectedUpdated.length
         updated.eachWithIndex { UpdateResult result, int i ->
             result.affectedRows() == (long) expectedUpdated[i]

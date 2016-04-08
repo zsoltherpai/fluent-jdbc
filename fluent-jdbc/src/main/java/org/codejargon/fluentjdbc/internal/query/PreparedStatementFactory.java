@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
+import java.util.Collection;
 
 class PreparedStatementFactory {
     private final QueryConfig config;
@@ -25,7 +25,7 @@ class PreparedStatementFactory {
         return prepareStatement(con, sql, false);
     }
 
-    void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
+    void assignParams(PreparedStatement statement, Collection<?> params) throws SQLException {
         config.paramAssigner.assignParams(statement, params);
     }
 

@@ -18,7 +18,8 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotN
 
 class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
-    private Predicate filter = Predicates.alwaysTrue();
+    @SuppressWarnings("rawtypes")
+	private Predicate filter = Predicates.alwaysTrue();
     private Optional<Integer> fetchSize = empty();
     private Optional<Long> maxRows = empty();
 
@@ -49,7 +50,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
-    public SelectQuery params(List<?> params) {
+    public <C extends Collection<?>> SelectQuery params(C params) {
         addParameters(params);
         return this;
     }
@@ -91,7 +92,6 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T singleResult(Mapper<T> mapper) {
         Optional<T> firstResult = firstResult(mapper);
         if (!firstResult.isPresent()) {
