@@ -24,7 +24,7 @@ class BatchQueryInternal implements BatchQuery {
 
     private final String sql;
     private final QueryInternal query;
-    private Optional<Iterator<List<?>>> params = empty();
+    private Optional<Iterator<? extends Collection<?>>> params = empty();
     private Optional<Iterator<Map<String, ?>>> namedParams = empty();
     private Optional<Integer> batchSize = empty();
 
@@ -34,7 +34,7 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
-    public BatchQuery params(Iterator<List<?>> params) {
+    public <C extends Collection<?>> BatchQuery params(Iterator<C> params) {
         Preconditions.checkNotNull(params, "params");
         Preconditions.checkArgument(!this.params.isPresent(), positionalSet);
         Preconditions.checkArgument(!namedParams.isPresent(), namedSet);
@@ -43,12 +43,12 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
-    public BatchQuery params(Iterable<List<?>> params) {
+    public <C extends Collection<?>> BatchQuery params(Iterable<C> params) {
         return params(params.iterator());
     }
 
     @Override
-    public BatchQuery params(Stream<List<?>> params) {
+    public <C extends Collection<?>> BatchQuery params(Stream<C> params) {
         return params(params.iterator());
     }
 
@@ -80,7 +80,7 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
-    public List<UpdateResult> run() {
+    public Collection<UpdateResult> run() {
         Preconditions.checkArgument(params.isPresent() || namedParams.isPresent(), "Parameters must be set to run a batch query");
         return query.query(
                 connection -> params.isPresent() ? positional(connection) : named(connection),
@@ -88,14 +88,14 @@ class BatchQueryInternal implements BatchQuery {
         );
     }
 
-    private List<UpdateResult> positional(Connection connection) throws SQLException {
+    private Collection<UpdateResult> positional(Connection connection) throws SQLException {
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, sql)) {
             return runBatches(statement, stream(params.get()));
         }
 
     }
 
-    private List<UpdateResult> named(Connection connection) throws SQLException {
+    private Collection<UpdateResult> named(Connection connection) throws SQLException {
         NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
         try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
             return runBatches(
@@ -107,7 +107,7 @@ class BatchQueryInternal implements BatchQuery {
         }
     }
 
-    private List<UpdateResult> runBatches(PreparedStatement ps, Stream<List<?>> params) throws SQLException {
+    private Collection<UpdateResult> runBatches(PreparedStatement ps, Stream<? extends Collection<?>> params) throws SQLException {
         BatchExecution batchExecution = new BatchExecution(ps);
         params.forEachOrdered(consumer(batchExecution::add));
         return batchExecution.results();
@@ -115,7 +115,7 @@ class BatchQueryInternal implements BatchQuery {
 
     private class BatchExecution {
         private final PreparedStatement ps;
-        private final List<UpdateResult> updateResults = new ArrayList<>();
+        private final Collection<UpdateResult> updateResults = new ArrayList<>();
         private long totalBatchesAdded = 0L;
         private boolean newAdded = false;
 
@@ -124,14 +124,14 @@ class BatchQueryInternal implements BatchQuery {
             this.ps = ps;
         }
 
-        public void add(List<?> params) throws SQLException {
+        public void add(Collection<?> params) throws SQLException {
             addParamsToBatch(params);
             if (batchSize.isPresent() && totalBatchesAdded % batchSize.get() == 0) {
                 runBatch();
             }
         }
 
-        private void addParamsToBatch(List<?> params) throws SQLException {
+        private void addParamsToBatch(Collection<?> params) throws SQLException {
             query.assignParams(ps, params);
             ps.addBatch();
             ++totalBatchesAdded;
@@ -149,11 +149,11 @@ class BatchQueryInternal implements BatchQuery {
             newAdded = false;
         }
 
-        private List<UpdateResult> results() throws SQLException {
+        private Collection<UpdateResult> results() throws SQLException {
             if(newAdded) {
                 runBatch();
             }
-            return Collections.unmodifiableList(updateResults);
+            return Collections.unmodifiableCollection(updateResults);
         }
     }
 }

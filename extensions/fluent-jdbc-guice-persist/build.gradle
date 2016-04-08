@@ -1,0 +1,17 @@
+
+description 'FluentJdbc Guice Persist'
+
+dependencies {
+
+	compile ( project(':fluentjdbc') )
+
+	compile ( guice.core )
+	compile ( guice.persist )
+	
+	provided ( persist.jpa )
+	
+	testCompile project (path: ":fluentjdbc", configuration: 'testMe')
+	testCompile( persist.eclipselink )
+	testCompile( database.h2 )
+	
+}

@@ -1,5 +1,6 @@
 package org.codejargon.fluentjdbc.api.query;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,11 +14,12 @@ import java.util.function.Predicate;
 public interface SelectQuery {
     /**
      * Adds positional query parameters.
-     *
+     * 
+     * @type <C> any instance of {@link Collection}.
      * @param params additional query parameters
      * @return this
      */
-    SelectQuery params(List<?> params);
+    <C extends Collection<?>> SelectQuery params(C params);
 
     /**
      * Adds positional query parameters.

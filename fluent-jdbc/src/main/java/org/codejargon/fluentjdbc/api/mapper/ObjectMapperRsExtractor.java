@@ -14,7 +14,7 @@ public interface ObjectMapperRsExtractor<T> {
      * @param resultSet ResultSet containing the current row.
      * @param index column index in the ResultSet
      * @return Object of the required class - nullable
-     * @throws SQLException
+     * @throws SQLException database error
      */
     T extract(ResultSet resultSet, Integer index) throws SQLException;
 }

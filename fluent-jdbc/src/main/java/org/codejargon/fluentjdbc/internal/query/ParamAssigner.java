@@ -5,7 +5,7 @@ import org.codejargon.fluentjdbc.api.ParamSetter;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,7 +25,7 @@ class ParamAssigner {
         this.paramSetters = paramSetters;
     }
 
-    void assignParams(PreparedStatement statement, List<?> params) {
+    void assignParams(PreparedStatement statement, Collection<?> params) {
         int i = 1;
         for (Object param : params) {
             assignParam(

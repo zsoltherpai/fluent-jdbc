@@ -1,0 +1,24 @@
+rootProject.name = 'fluentjdbc-root'
+
+def searchProject(files, deep){
+	if(deep > 1){
+		return;
+	}
+	files.each { File dir -> 
+		if(new File(dir, 'build.gradle').isFile()){
+			String sInclude = ':'+ dir.name;
+			String nameProject = sInclude.replaceAll('fluent-jdbc', 'fluentjdbc')
+			// config project		
+			include nameProject;
+			project(nameProject).projectDir = dir 
+		}
+		else {
+			def dAux = deep + 1
+		    if(dAux <= 1){
+				searchProject(dir.listFiles(), dAux)
+			}
+		}
+	}
+}
+
+searchProject(rootDir.listFiles(), 0);

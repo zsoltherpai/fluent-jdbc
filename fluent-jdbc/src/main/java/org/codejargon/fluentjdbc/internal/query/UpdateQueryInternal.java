@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     }
 
     @Override
-    public UpdateQuery params(List<?> params) {
+    public <C extends Collection<?>> UpdateQuery params(C params) {
         addParameters(params);
         return this;
     }

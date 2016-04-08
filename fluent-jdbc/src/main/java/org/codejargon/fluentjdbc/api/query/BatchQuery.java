@@ -1,7 +1,7 @@
 package org.codejargon.fluentjdbc.api.query;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -11,24 +11,27 @@ import java.util.stream.Stream;
 public interface BatchQuery {
     /**
      *
+     * @type <C> any instance of {@link Collection}.
      * @param params Parameters used by the batch update
      * @return this
      */
-    BatchQuery params(Iterator<List<?>> params);
+	<C extends Collection<?>> BatchQuery params(Iterator<C> params);
 
     /**
      *
+     * @type <C> any instance of {@link Collection}.
      * @param params Parameters used by the batch update
      * @return this
      */
-    BatchQuery params(Iterable<List<?>> params);
+	<C extends Collection<?>> BatchQuery params(Iterable<C> params);
 
     /**
      *
+     * @type <C> any instance of {@link Collection}.
      * @param params Parameters used by the batch update
      * @return this
      */
-    BatchQuery params(Stream<List<?>> params);
+	<C extends Collection<?>> BatchQuery params(Stream<C> params);
 
     /**
      *
@@ -63,5 +66,5 @@ public interface BatchQuery {
      *
      * @return List of update results
      */
-    List<UpdateResult> run();
+    Collection<UpdateResult> run();
 }

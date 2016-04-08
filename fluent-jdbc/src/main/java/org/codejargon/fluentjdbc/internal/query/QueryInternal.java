@@ -10,7 +10,7 @@ import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInt
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -98,7 +98,7 @@ public class QueryInternal implements Query {
     }
 
 
-    void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
+    void assignParams(PreparedStatement statement, Collection<?> params) throws SQLException {
         preparedStatementFactory.assignParams(statement, params);
     }
 }
