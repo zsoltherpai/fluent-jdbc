@@ -1,3 +1,7 @@
+// # Plugins documentation
+
+// https://github.com/Codearte/gradle-nexus-staging-plugin
+// https://github.com/bmuschko/gradle-nexus-plugin
 
 buildscript {
     repositories {
@@ -8,7 +12,6 @@ buildscript {
     dependencies {
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
         classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
-        //classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
     }
 }
 
@@ -18,10 +21,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'groovy'
-    
     apply plugin: 'idea'
     apply plugin: 'eclipse'
-    
     apply   from: "${parent.projectDir}/libraries.gradle"
     
     // nebula - maven features in gradle
@@ -43,7 +44,7 @@ subprojects {
     }
     
     configurations {
-	    testArtifacts.extendsFrom testRuntime
+	    testMe.extendsFrom testRuntime
 	}
 
     javadoc {
@@ -66,10 +67,10 @@ subprojects {
 	}
 	
 	idea {
-	    module {
-	        downloadJavadoc = false // if you hate browsing Javadoc
-	        downloadSources = true  // and love reading sources :)
-	    }
+        module {
+            downloadJavadoc = false // if you hate browsing Javadoc
+            downloadSources = true  // and love reading sources :)
+        }
 	}
 	
 	eclipse {
@@ -80,62 +81,54 @@ subprojects {
 	}
 
 	modifyPom {
-	     project {
-	         //name 'FluentJdbc'
-	         //description 'FluentJdbc is a java library for executing native SQL queries as simply as possible.'
-	         url 'https://github.com/zsoltherpai/fluent-jdbc'
-	         inceptionYear '2015'
-	
-	         scm {
-	             url 'https://github.com/zsoltherpai/fluent-jdbc'
-	             connection 'scm:git:https://github.com/zsoltherpai/fluent-jdbc.git'
-	             developerConnection 'scm:git:git@github.com:zsoltherpai/fluent-jdbc.git'
-	         }
-	
-	         licenses {
-	             license {
-	                 name 'The Apache Software License, Version 2.0'
-	                 url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-	                 distribution 'repo'
-	             }
-	         }
-	
-	         developers {
-	             developer {
-	                 id 'zsoltherpai'
-	                 name 'Zsolt Herpai'
-	                 email 'zsolt.herpai@gmail.com'
-	             }
-	         }
-	     }
-	 }
+		project {
+			//name 'FluentJdbc'
+			//description 'FluentJdbc is a java library for executing native SQL queries as simply as possible.'
+			url 'https://github.com/zsoltherpai/fluent-jdbc'
+			inceptionYear '2015'
+			
+			scm {
+				url 'https://github.com/zsoltherpai/fluent-jdbc'
+				connection 'scm:git:https://github.com/zsoltherpai/fluent-jdbc.git'
+				developerConnection 'scm:git:git@github.com:zsoltherpai/fluent-jdbc.git'
+			}
+		
+			licenses {
+				license {
+					name 'The Apache Software License, Version 2.0'
+					url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					distribution 'repo'
+				}
+			}
+		
+			developers {
+				developer {
+					id 'zsoltherpai'
+					name 'Zsolt Herpai'
+					email 'zsolt.herpai@gmail.com'
+				}
+			}
+		}
+	}
 	 
-	 extraArchive {
-	     sources = true
-	     tests   = true
-	     javadoc = true
-	 }
+	extraArchive {
+		sources = true
+		tests   = true
+		javadoc = true
+	}
 	
-	 // https://github.com/bmuschko/gradle-nexus-plugin
-	 nexus {
-	     sign = true
-	     //repositoryUrl = 'http://localhost:8081/nexus/content/repositories/internal/'
-	     //snapshotRepositoryUrl = 'http://localhost:8081/nexus/content/repositories/internal-snapshots/'
-	 }
-	 
-	 // https://github.com/Codearte/gradle-nexus-staging-plugin
-	 //nexusStaging {
-	 //   stagingProfileId = "ossrh"
-	 //   serverUrl = 'https://oss.sonatype.org/'
-	 //}
-	 
-	 task testJar(type: Jar) {
-	    classifier "testArtifacts"
-	    from sourceSets.test.output
+	nexus {
+		sign = true
+	}
+	
+	// correct the test dependencies between the projects
+	task testJar(type: Jar) {
+		classifier "testMe"
+		from sourceSets.test.output
 	}
 	
 	artifacts {
-	    testArtifacts testJar
+		testMe testJar
 	}
 
 }

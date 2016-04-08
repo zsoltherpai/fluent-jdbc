@@ -10,7 +10,7 @@ dependencies {
 	
 	provided ( persist.jpa )
 	
-	testCompile project (path: ":fluentjdbc", configuration: 'testArtifacts')
+	testCompile project (path: ":fluentjdbc", configuration: 'testMe')
 	testCompile( persist.eclipselink )
 	testCompile( database.h2 )
 	
