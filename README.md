@@ -18,7 +18,7 @@ FluentJdbc's key features:
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 </dependency>
 ```
 Note: requires java 8
