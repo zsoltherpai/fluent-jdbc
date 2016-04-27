@@ -32,12 +32,25 @@ class H2IntegrationTest extends IntegrationTestRoutine {
         sentry.close()
     }
 
-    def "Auto-generated keys returned"() {
+    def "Auto-generated keys fetched"() {
         given:
         fluentJdbc.query().update("CREATE TABLE DUMMY_AUTO (id INTEGER PRIMARY KEY AUTO_INCREMENT, data VARCHAR(255));").run()
         when:
         def result = query.update("INSERT INTO DUMMY_AUTO(DATA) VALUES('bla')").runFetchGenKeys(
                 Mappers.singleLong()
+        )
+        then:
+        assert result.generatedKeys().size() == 1
+        assert result.generatedKeys().get(0) == 1L
+    }
+
+    def "Auto-generated keys for specified colums fetched"() {
+        given:
+        fluentJdbc.query().update("CREATE TABLE DUMMY_AUTO (id INTEGER PRIMARY KEY AUTO_INCREMENT, data VARCHAR(255));").run()
+        when:
+        String[] genColumns = ["id"]
+        def result = query.update("INSERT INTO DUMMY_AUTO(DATA) VALUES('bla')").runFetchGenKeys(
+                Mappers.singleLong(), genColumns
         )
         then:
         assert result.generatedKeys().size() == 1

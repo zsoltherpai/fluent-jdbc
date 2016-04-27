@@ -54,6 +54,25 @@ class FluentJdbcUpdateTest extends UpdateTestBase {
         }
     }
 
+    def "Update and fetch generated keys with generated column names specified (mandatory in Oracle)"() {
+        given:
+        String[] genColumns = ["id"];
+        Long generatedKey = 5L
+        ResultSet genKeyRs = Mock(ResultSet)
+        genKeyRs.next() >> true >> false
+        genKeyRs.getLong(1) >> generatedKey
+        preparedStatement.getGeneratedKeys() >> genKeyRs
+        0 * connection.prepareStatement(sql)
+        1 * connection.prepareStatement(sql, genColumns) >> preparedStatement
+        when:
+        UpdateResultGenKeys<Long> result = query.update(sql).params(param1, param2).runFetchGenKeys(Mappers.singleLong(), genColumns);
+        then:
+        result.generatedKeys().size() == 1
+        result.generatedKeys().get(0) == generatedKey
+        interaction {
+            verifyQuerying()
+        }
+    }
 
     def verifyQuerying() {
         1 * preparedStatement.setObject(1, param1)

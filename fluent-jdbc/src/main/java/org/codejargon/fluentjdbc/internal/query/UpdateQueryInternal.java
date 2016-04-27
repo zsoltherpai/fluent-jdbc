@@ -25,10 +25,16 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
 
     @Override
     public <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> mapper) {
+        return runFetchGenKeys(mapper, PreparedStatementFactory.emptyGenColumns);
+    }
+
+    @Override
+    public <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> mapper, String[] genColumns) {
         return runQueryAndFetch(
                 ps -> new UpdateResultGenKeysInternal<>(
                         (long) ps.executeUpdate(),
-                        generatedKeys(ps, mapper))
+                        generatedKeys(ps, mapper)),
+                genColumns
         );
     }
 

@@ -56,5 +56,14 @@ public interface UpdateQuery {
      */
     <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> generatedKeyMapper);
 
+    /**
+     * Runs the update query and fetches the generated keys
+     *
+     * @param generatedKeyMapper maps generated key(s) to an object
+     * @param <T> type of a single key or an object containing multiple keys
+     * @param columns names of columns containing generated values. mandatory using some vendors, like oracle
+     * @return result of the update including generated keys
+     */
+    <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> generatedKeyMapper, String[] columns);
 
 }

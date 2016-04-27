@@ -38,19 +38,21 @@ abstract class SingleQueryBase {
 
     protected <T> T runQuery(
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
-        return runQuery(queryRunnerPreparedStatement, false);
+        return runQuery(queryRunnerPreparedStatement, false, PreparedStatementFactory.emptyGenColumns);
     }
 
     protected <T> T runQueryAndFetch(
-            QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
-        return runQuery(queryRunnerPreparedStatement, true);
+            QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement,
+            String[] genColumns) {
+        return runQuery(queryRunnerPreparedStatement, true, genColumns);
     }
 
     private <T> T runQuery(
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement,
-            boolean fetchGenerated) {
+            boolean fetchGenerated,
+            String[] genColumns) {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, fetchGenerated)) {
+            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, fetchGenerated, genColumns)) {
                 return queryRunnerPreparedStatement.run(ps);
             }
         }, Optional.of(sql));
