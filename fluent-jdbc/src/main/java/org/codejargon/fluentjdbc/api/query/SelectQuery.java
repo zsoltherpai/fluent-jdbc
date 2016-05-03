@@ -1,5 +1,6 @@
 package org.codejargon.fluentjdbc.api.query;
 
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -110,6 +111,14 @@ public interface SelectQuery {
     <T> Set<T> setResult(Mapper<T> mapper);
 
     /**
+     * Runs the select query and provides resultset to the given consumer
+     *
+     * @param consumer Consumer accepting the ResultSet
+     * @param <T> result type
+     */
+    <T> void iterateResult(Consumer<ResultSet> consumer);
+
+    /**
      * Runs the select query and provides results to the given consumer
      *
      * @param mapper ResultSet mapper
@@ -117,4 +126,6 @@ public interface SelectQuery {
      * @param <T> result type
      */
     <T> void iterateResult(Mapper<T> mapper, Consumer<T> consumer);
+
+
 }

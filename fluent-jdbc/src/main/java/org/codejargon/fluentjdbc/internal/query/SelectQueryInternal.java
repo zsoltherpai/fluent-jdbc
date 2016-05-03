@@ -134,6 +134,19 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
+    public <T> void iterateResult(Consumer<ResultSet> consumer) {
+        runQuery(
+                ps -> {
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            consumer.accept(rs);
+                        }
+                    }
+                    return null;
+                });
+    }
+
+    @Override
     void customizeQuery(PreparedStatement statement, QueryConfig config) throws SQLException {
         selectFetchSize(statement, config);
         maxResults(statement);
@@ -147,8 +160,8 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     private void maxResults(PreparedStatement statement) throws SQLException {
-        if(maxRows.isPresent()) {
-            if(maxRows.get() > Integer.MAX_VALUE) {
+        if (maxRows.isPresent()) {
+            if (maxRows.get() > Integer.MAX_VALUE) {
                 setLargeMaxRows(statement);
             } else {
                 statement.setMaxRows((int) maxRows.get().longValue());
@@ -159,7 +172,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     private void setLargeMaxRows(PreparedStatement statement) throws SQLException {
         try {
             statement.setLargeMaxRows(maxRows.get());
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             throw new FluentJdbcException(
                     String.format(
                             "The JDBC driver %s doesn't support setLargeMaxRows(). Set max results <= Integer.MAX_VALUE",
