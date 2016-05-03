@@ -18,7 +18,7 @@ FluentJdbc's key features:
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.2</version>
+    <version>1.2.2</version>
 </dependency>
 ```
 Note: requires java 8
@@ -28,9 +28,8 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
 #####News#####
+* 1.2.2 released - simplified interface for iterating large resultsets, explicit specification of generated column names
 * 1.1 released - java.util.Optional parameter support, access to managed Connection (for low-level ops)
-* 1.0.6 released - enum parameters are set as Strings by default
-* 1.0.5 released - query listener (for logging, etc), java.util.Date precision bugfix, convenience method for named params
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
@@ -112,10 +111,8 @@ query.update("UPDATE CUSTOMER SET DEADLINE = ?")
 ######Iterating a large resultset######
 ```java
 query.select("SELECT * FROM CUSTOMER")
-	.iterateResult(customerMapper, (customer) -> {
-		if(customer.isExpired()) {
-			...
-		}
+	.iterateResult(rs -> {
+		// do something with the row
 	});
 ```
 ######Query for a list of limited results######
