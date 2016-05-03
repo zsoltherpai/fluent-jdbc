@@ -134,12 +134,15 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> void iterateResult(Consumer<ResultSet> consumer) {
         runQuery(
                 ps -> {
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {
-                            consumer.accept(rs);
+                            if(filter.test(rs)) {
+                                consumer.accept(rs);
+                            }
                         }
                     }
                     return null;
