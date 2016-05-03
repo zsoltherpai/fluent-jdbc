@@ -3,6 +3,7 @@ package org.codejargon.fluentjdbc.internal.query;
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
+import org.codejargon.fluentjdbc.api.query.SqlConsumer;
 import org.codejargon.fluentjdbc.internal.support.Predicates;
 
 import java.sql.PreparedStatement;
@@ -135,7 +136,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> void iterateResult(Consumer<ResultSet> consumer) {
+    public <T> void iterateResult(SqlConsumer<ResultSet> consumer) {
         runQuery(
                 ps -> {
                     try (ResultSet rs = ps.executeQuery()) {

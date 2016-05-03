@@ -116,7 +116,7 @@ public interface SelectQuery {
      * @param consumer Consumer accepting the ResultSet
      * @param <T> result type
      */
-    <T> void iterateResult(Consumer<ResultSet> consumer);
+    <T> void iterateResult(SqlConsumer<ResultSet> consumer);
 
     /**
      * Runs the select query and provides results to the given consumer
