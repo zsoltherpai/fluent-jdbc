@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc-parent</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <packaging>pom</packaging>
     <name>FluentJdbc Parent</name>
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
@@ -65,6 +65,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <repositories>
+        <!-- Oracle JDBC driver -->
+        <repository>
+            <id>codelds</id>
+            <url>https://code.lds.org/nexus/content/groups/main-repo</url>
+        </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>

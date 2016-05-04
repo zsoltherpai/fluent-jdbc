@@ -1,8 +1,6 @@
 package org.codejargon.fluentjdbc.integration
-
 import org.codejargon.fluentjdbc.api.FluentJdbc
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder
-import org.codejargon.fluentjdbc.api.FluentJdbcException
 import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionProvider
 import org.codejargon.fluentjdbc.api.mapper.Mappers
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers
@@ -19,9 +17,7 @@ import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.ResultSet
 
-import static org.codejargon.fluentjdbc.integration.testdata.Dummies.getDummy1
-import static org.codejargon.fluentjdbc.integration.testdata.Dummies.getDummy2
-import static org.codejargon.fluentjdbc.integration.testdata.Dummies.assertDummy
+import static org.codejargon.fluentjdbc.integration.testdata.Dummies.*
 import static org.codejargon.fluentjdbc.integration.testdata.TestQuery.*
 
 abstract class IntegrationTestRoutine extends Specification {
@@ -139,7 +135,7 @@ abstract class IntegrationTestRoutine extends Specification {
 
     def "Transaction isolation"() {
         when:
-        query.transaction().isolation(Transaction.Isolation.REPEATABLE_READ).in({ ->
+        query.transaction().isolation(Transaction.Isolation.READ_COMMITTED).in({ ->
             query.update(insertSqlPositional).params(dummy1.params()).run()
             query.update(insertSqlPositional).params(dummy2.params()).run()
         });
@@ -148,7 +144,7 @@ abstract class IntegrationTestRoutine extends Specification {
         dummies.size() == 2
     }
 
-    def "Database inspection with access"() {
+    protected def "Database inspection with access"() {
         when:
         boolean foundTable = query.databaseInspection().accessMetaData({
             meta ->
@@ -165,7 +161,7 @@ abstract class IntegrationTestRoutine extends Specification {
         foundTable
     }
 
-    def "Database inspection with select"() {
+    protected def "Database inspection with select"() {
         when:
         List<String> tables = query.databaseInspection().selectFromMetaData({
             meta ->
@@ -176,6 +172,11 @@ abstract class IntegrationTestRoutine extends Specification {
     }
 
     protected static void createTestTable(Connection connection) {
+        try {
+            new FluentJdbcBuilder().build().queryOn(connection).update(dropDummyTable).run()
+        } catch(Exception e) {
+            // ignorable
+        }
         new FluentJdbcBuilder().build().queryOn(connection).update(createDummyTable).run()
     }
 

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 
 class ParamAssigner {
+    private volatile boolean trySqlTypeForNull = true;
+
     private static final ParamSetter fallbackParamSetter =
             (param, statement, index) -> {
                 if (!param.getClass().isEnum()) {
@@ -50,13 +52,25 @@ class ParamAssigner {
     }
 
     private void assignNull(PreparedStatement statement, Integer index) throws SQLException {
-        Integer sqlType;
-        try {
-            sqlType = statement.getParameterMetaData().getParameterType(index);
-        } catch (SQLException e) {
-            throw new FluentJdbcSqlException("Can't access parameter metadata, JDBC 3.0 not supported by the driver.", e);
+        Optional<Integer> sqlType = sqlTypeForNull(statement, index);
+        if(sqlType.isPresent()) {
+            statement.setNull(index, sqlType.get());
+        } else {
+            statement.setObject(index, null);
         }
-        statement.setNull(index, sqlType);
+    }
+
+    private Optional<Integer> sqlTypeForNull(PreparedStatement statement, Integer index) {
+        if(trySqlTypeForNull) {
+            try {
+                return Optional.of(statement.getParameterMetaData().getParameterType(index));
+            } catch (SQLException e) {
+                trySqlTypeForNull = false;
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -68,4 +82,6 @@ class ParamAssigner {
         ParamSetter customSetter = paramSetters.get(param.getClass());
         return customSetter != null ? customSetter : fallbackParamSetter;
     }
+
+
 }
