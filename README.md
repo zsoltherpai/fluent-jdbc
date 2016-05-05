@@ -109,7 +109,7 @@ query.update("UPDATE CUSTOMER SET DEADLINE = ?")
 	.params(deadline)
 	.run();
 ```
-######Collection support######
+######Collection parameter support######
 ```java
 Set<Long> ids = ...
 List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE ID IN (:ids)")
