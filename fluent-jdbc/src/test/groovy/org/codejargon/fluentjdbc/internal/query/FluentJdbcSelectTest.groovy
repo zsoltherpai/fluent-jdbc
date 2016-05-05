@@ -133,7 +133,7 @@ class FluentJdbcSelectTest  extends Specification {
         given:
         def namedParamSql = "SELECT * FROM BAR WHERE COL1 = :param1 AND COL2 = :param2 AND COL3 = :param1"
         def expectedSql = "SELECT * FROM BAR WHERE COL1 = ? AND COL2 = ? AND COL3 = ?"
-        connection.prepareStatement(expectedSql) >> preparedStatement // expected?
+        connection.prepareStatement(expectedSql) >> preparedStatement
         mockSelectData()
         def namedParams = ["param1": param1, "param2": param2]
         when:
@@ -142,6 +142,20 @@ class FluentJdbcSelectTest  extends Specification {
         1 * preparedStatement.setObject(1, param1)
         1 * preparedStatement.setObject(2, param2)
         1 * preparedStatement.setObject(3, param1)
+    }
+
+    def "Select with named parameters including Collections"() {
+        given:
+        def namedParamSql = "SELECT * FROM BAR WHERE COL in (:params)"
+        def expectedSql = "SELECT * FROM BAR WHERE COL in (?, ?)"
+        connection.prepareStatement(expectedSql) >> preparedStatement
+        mockSelectData()
+        def namedParams = ["params": [param1, param2]]
+        when:
+        query.select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper)
+        then:
+        1 * preparedStatement.setObject(1, param1)
+        1 * preparedStatement.setObject(2, param2)
     }
 
     def "Select with fetchSize specified"() throws SQLException {

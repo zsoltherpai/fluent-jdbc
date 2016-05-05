@@ -1,14 +1,9 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 class PreparedStatementFactory {
@@ -32,25 +27,7 @@ class PreparedStatementFactory {
     }
 
     void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
-        List<?> flatParameters = params.stream().filter(param -> param instanceof Collection).findFirst().isPresent() ?
-                flatten(params) :
-                params;
-        config.paramAssigner.assignParams(statement, flatParameters);
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<?> flatten(List<?> params) {
-        List flattened = new ArrayList<>();
-        params.forEach(
-                param -> {
-                    if(param instanceof Collection) {
-                        flattened.addAll((Collection) param);
-                    } else {
-                        flattened.add(param);
-                    }
-                }
-        );
-        return Collections.unmodifiableList(flattened);
+        config.paramAssigner.assignParams(statement, params);
     }
 
     private PreparedStatement prepareStatement(Connection con, String sql, Boolean fetchGenerated, String[] genColumns) throws SQLException {

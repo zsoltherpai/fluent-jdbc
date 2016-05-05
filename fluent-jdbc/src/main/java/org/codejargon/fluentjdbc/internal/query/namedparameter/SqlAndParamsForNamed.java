@@ -3,9 +3,7 @@ package org.codejargon.fluentjdbc.internal.query.namedparameter;
 import org.codejargon.fluentjdbc.internal.query.SqlAndParams;
 import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class SqlAndParamsForNamed {
     public static SqlAndParams create(NamedTransformedSql namedTransformedSql, Map<String, Object> namedParams) {
@@ -20,6 +18,19 @@ public abstract class SqlAndParamsForNamed {
     }
 
     public static List<Object> params(ParsedSql parsedSql, Map<String, ?> namedParams) {
-        return Arrays.asList(NamedParameterUtils.buildValueArray(parsedSql, namedParams));
+        return flatten(NamedParameterUtils.buildValueArray(parsedSql, namedParams));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Object> flatten(Object[] params) {
+        List flattened = new ArrayList<>();
+        for (Object param : params) {
+            if (param instanceof Collection) {
+                flattened.addAll((Collection) param);
+            } else {
+                flattened.add(param);
+            }
+        }
+        return Collections.unmodifiableList(flattened);
     }
 }
