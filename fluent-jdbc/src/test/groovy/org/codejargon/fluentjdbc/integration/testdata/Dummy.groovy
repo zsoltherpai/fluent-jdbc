@@ -39,4 +39,8 @@ class Dummy {
                 "nullString"   : nullString
         ]
     }
+
+    public String id() {
+        return id;
+    }
 }

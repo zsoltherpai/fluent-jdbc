@@ -60,6 +60,15 @@ abstract class IntegrationTestRoutine extends Specification {
         assertDummy(dummy, dummy1);
     }
 
+    def "Select with named parameters including collections"() {
+        when:
+        query.update(insertSqlNamed).namedParams(dummy1.namedParams()).run()
+        query.update(insertSqlNamed).namedParams(dummy2.namedParams()).run()
+        then:
+        fluentJdbc.query().select(selectIds).namedParams(["ids": [dummy1.id(), dummy2.id()] as List ]).listResult(dummyMapper).size() == 2
+        fluentJdbc.query().select(selectIds).namedParams(["ids": [dummy1.id()] as List ]).listResult(dummyMapper).size() == 1
+    }
+
     def "Batch insert with positional parameters"() {
         when:
         query
@@ -81,9 +90,7 @@ abstract class IntegrationTestRoutine extends Specification {
         List<DummyAlias> dummies = fluentJdbc.query().select("SELECT ID AS ID_ALIAS FROM DUMMY").listResult(dummyAliasMapper)
         then:
         dummies.get(0).idAlias == dummy1.id
-
     }
-
 
     def "Batch insert with named parameters"() {
         when:

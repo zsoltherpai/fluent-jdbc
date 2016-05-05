@@ -1,7 +1,9 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.query.BatchQuery;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
 import org.codejargon.fluentjdbc.internal.support.Ints;
 import org.codejargon.fluentjdbc.api.query.UpdateResult;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
@@ -96,14 +98,29 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     private List<UpdateResult> named(Connection connection) throws SQLException {
-        NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql);
-        try (PreparedStatement statement = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
-            return runBatches(
-                    statement,
-                    stream(namedParams.get()).map(
-                            namedParam -> SqlAndParamsForNamed.params(namedTransformedSql.parsedSql(), namedParam)
-                    )
-            );
+        Iterator<Map<String, ?>> namedParamsIt = namedParams.get();
+        if (!namedParamsIt.hasNext()) {
+            return Collections.emptyList();
+        } else {
+            Map<String, ?> params = namedParamsIt.next();
+            noCollectionsAllowed(params);
+            NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql, params);
+            try (PreparedStatement ps = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
+                BatchExecution batchExecution = new BatchExecution(ps);
+                batchExecution.add(SqlAndParamsForNamed.params(namedTransformedSql.parsedSql(), params));
+                while(namedParamsIt.hasNext()) {
+                    params = namedParamsIt.next();
+                    noCollectionsAllowed(params);
+                    batchExecution.add(SqlAndParamsForNamed.params(namedTransformedSql.parsedSql(), params));
+                }
+                return batchExecution.results();
+            }
+        }
+    }
+
+    private void noCollectionsAllowed(Map<String, ?> namedParams) {
+        if (NamedTransformedSqlFactory.hasCollection(namedParams)) {
+            throw new FluentJdbcException("Batch updates should not contain collections as parameters");
         }
     }
 
@@ -150,7 +167,7 @@ class BatchQueryInternal implements BatchQuery {
         }
 
         private List<UpdateResult> results() throws SQLException {
-            if(newAdded) {
+            if (newAdded) {
                 runBatch();
             }
             return Collections.unmodifiableList(updateResults);
