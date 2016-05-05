@@ -61,7 +61,10 @@ abstract class SingleQueryBase {
     SqlAndParams sqlAndParams(QueryConfig config) {
         return namedParams.isEmpty() ?
                 new SqlAndParams(sql, params) :
-                SqlAndParamsForNamed.create(config.namedTransformedSql(sql, namedParams), namedParams);
+                SqlAndParamsForNamed.create(
+                        config.namedTransformedSqlFactory.create(sql, namedParams),
+                        namedParams
+                );
     }
 
     abstract void customizeQuery(PreparedStatement preparedStatement, QueryConfig config) throws SQLException;

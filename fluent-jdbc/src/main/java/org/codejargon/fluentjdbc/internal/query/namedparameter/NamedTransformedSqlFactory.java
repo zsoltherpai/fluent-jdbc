@@ -12,7 +12,7 @@ public class NamedTransformedSqlFactory {
         this.namedParamCacheWithCollections = Collections.synchronizedMap(new WeakHashMap<>());
     }
 
-    public NamedTransformedSql namedTransformedSqlWithPossibleConnections(String sql, Map<String, ?> namedParams) {
+    public NamedTransformedSql create(String sql, Map<String, ?> namedParams) {
         if (hasCollection(namedParams)) {
             Map<String, Integer> cacheKey = collectionParamCacheKey(namedParams);
             NamedTransformedSql namedTransformedSql = namedParamCacheWithCollections.get(cacheKey);

@@ -6,7 +6,7 @@ abstract away, and is lightweight (<90K, no dependencies).
 FluentJdbc's key features:
 * functional, fluent API
 * execution of select/insert/update/delete/alter/... statements as one-liners
-* parameter mapping (named, positional, supports java.time, enums, Optional, plugins for custom types)
+* parameter mapping (named, positional, supports java.time, enums, Optional, Collections, plugins for custom types)
 * transactions
 * access to generated keys of insert/update queries
 * big data (scalable, streaming style of batch and select)
@@ -93,7 +93,7 @@ query.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
 	.namedParam("address", "Dallas")
 	.run();
 ```
-
+Note: or .namedParams(mapOfParams)
 ######java.time support for query parameters######
 ```java
 query.update("UPDATE CUSTOMER SET DEADLINE = ?, UPDATED = ?")
@@ -108,6 +108,14 @@ query.update("UPDATE CUSTOMER SET DEADLINE = ?")
 	.params(deadline)
 	.run();
 ```
+######Collection support######
+```java
+Set<Long> ids = ...
+List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE ID IN (:ids)")
+	.namedParam("ids", ids)
+	.listResult(customerMapper);;
+```
+Note: supported for named parameters
 ######Iterating a large resultset######
 ```java
 query.select("SELECT * FROM CUSTOMER")

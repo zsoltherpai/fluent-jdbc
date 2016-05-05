@@ -104,7 +104,7 @@ class BatchQueryInternal implements BatchQuery {
         } else {
             Map<String, ?> params = namedParamsIt.next();
             noCollectionsAllowed(params);
-            NamedTransformedSql namedTransformedSql = query.config.namedTransformedSql(sql, params);
+            NamedTransformedSql namedTransformedSql = query.config.namedTransformedSqlFactory.create(sql, params);
             try (PreparedStatement ps = query.preparedStatementFactory.createBatch(connection, namedTransformedSql.sql())) {
                 BatchExecution batchExecution = new BatchExecution(ps);
                 batchExecution.add(SqlAndParamsForNamed.params(namedTransformedSql.parsedSql(), params));

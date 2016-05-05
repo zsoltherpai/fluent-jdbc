@@ -22,7 +22,7 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotN
 public class FluentJdbcBuilder {
     private Optional<Integer> defaultFetchSize = Optional.empty();
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
-    private AfterQueryListener afterQueryListener = (executionResult) -> {};
+    private Optional<AfterQueryListener> afterQueryListener = Optional.empty();
     private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
 
     public FluentJdbcBuilder() {
@@ -75,8 +75,7 @@ public class FluentJdbcBuilder {
     }
 
     public FluentJdbcBuilder afterQueryListener(AfterQueryListener afterQueryListener) {
-        checkNotNull(afterQueryListener, "afterQueryListener");
-        this.afterQueryListener = afterQueryListener;
+        this.afterQueryListener = Optional.of(afterQueryListener);
         return this;
     }
 

@@ -22,7 +22,7 @@ public class FluentJdbcInternal implements FluentJdbc {
             Optional<ConnectionProvider> connectionProvider, 
             Map<Class, ParamSetter> paramSetters,
             Optional<Integer> defaultFetchSize,
-            AfterQueryListener afterQueryListener
+            Optional<AfterQueryListener> afterQueryListener
     ) {
         this.connectionProvider = connectionProvider;
         queryConfig = new QueryConfig(defaultFetchSize, paramSetters, afterQueryListener);

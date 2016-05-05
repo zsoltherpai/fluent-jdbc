@@ -13,13 +13,13 @@ public class QueryConfig {
     final ParamAssigner paramAssigner;
 
     final Optional<Integer> defaultFetchSize;
-    final AfterQueryListener afterQueryListener;
-    private final NamedTransformedSqlFactory namedTransformedSqlFactory;
+    final Optional<AfterQueryListener> afterQueryListener;
+    final NamedTransformedSqlFactory namedTransformedSqlFactory;
 
     public QueryConfig(
             Optional<Integer> defaultFetchSize,
             Map<Class, ParamSetter> paramSetters,
-            AfterQueryListener afterQueryListener
+            Optional<AfterQueryListener> afterQueryListener
     ) {
         this.paramAssigner = new ParamAssigner(
                 Maps.merge(DefaultParamSetters.setters(), paramSetters)
@@ -29,9 +29,6 @@ public class QueryConfig {
         this.afterQueryListener = afterQueryListener;
     }
 
-    NamedTransformedSql namedTransformedSql(String sql, Map<String, ?> namedParams) {
-        return namedTransformedSqlFactory.namedTransformedSqlWithPossibleConnections(sql, namedParams);
-    }
     
     Optional<Integer> fetchSize(Optional<Integer> selectFetchSize) {
         return selectFetchSize.isPresent() ? selectFetchSize : defaultFetchSize;

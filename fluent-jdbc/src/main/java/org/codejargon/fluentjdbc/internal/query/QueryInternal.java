@@ -59,16 +59,19 @@ public class QueryInternal implements Query {
         long start = System.currentTimeMillis();
         try {
             T returnValue = doQuery(runner);
-            sql.ifPresent(sqlQuery -> config.afterQueryListener.listen(
-                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.empty())
-            ));
+            config.afterQueryListener.ifPresent(
+                    afterQueryListener ->
+                            sql.ifPresent(sqlQuery -> afterQueryListener.listen(
+                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.empty())
+                            ))
+            );
             return returnValue;
         } catch (SQLException e) {
-            sql.ifPresent(sqlQuery ->
-                            config.afterQueryListener.listen(
-                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.of(e)
-                                    )
-                            )
+            config.afterQueryListener.ifPresent(
+                    afterQueryListener ->
+                            sql.ifPresent(sqlQuery -> afterQueryListener.listen(
+                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.of(e))
+                            ))
             );
             throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
         }
