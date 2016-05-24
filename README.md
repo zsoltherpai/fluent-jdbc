@@ -30,7 +30,6 @@ Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 #####News#####
 * 1.3 released - support for Collection parameters (for batch select)
 * 1.2.2 released - simplified interface for iterating large resultsets, explicit specification of generated column names
-* 1.1 released - java.util.Optional parameter support, access to managed Connection (for low-level ops)
 
 #####Code examples of common use cases#####
 ######Setting up FluentJdbc######
