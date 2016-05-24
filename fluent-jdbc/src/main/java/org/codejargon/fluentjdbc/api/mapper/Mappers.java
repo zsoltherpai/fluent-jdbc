@@ -3,6 +3,10 @@ package org.codejargon.fluentjdbc.api.mapper;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 
 import java.math.BigDecimal;
+import java.sql.ResultSetMetaData;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>A set of common mappers for convenience.</p>
@@ -14,6 +18,14 @@ public abstract class Mappers {
     private static final Mapper<String> singleString = (rs) -> rs.getString(1);
     private static final Mapper<BigDecimal> singleBigDecimal = (rs) -> rs.getBigDecimal(1);
     private static final Mapper<Boolean> singleBoolean = (rs) -> rs.getBoolean(1);
+    private static final Mapper<Map<String, Object>> map = rs -> {
+        ResultSetMetaData meta = rs.getMetaData();
+        Map<String, Object> result = new HashMap<>(meta.getColumnCount());
+        for(int column = 1; column <= meta.getColumnCount(); ++column) {
+            result.put(meta.getColumnLabel(column), rs.getObject(column));
+        }
+        return Collections.unmodifiableMap(result);
+    };
 
     /**
      * Maps the first Integer column.
@@ -53,5 +65,13 @@ public abstract class Mappers {
      */
     public static Mapper<Boolean> singleBoolean() {
         return singleBoolean;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static Mapper<Map<String, Object>> map() {
+        return map;
     }
 }

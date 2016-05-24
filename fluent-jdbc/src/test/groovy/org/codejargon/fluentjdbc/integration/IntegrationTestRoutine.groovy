@@ -81,7 +81,7 @@ abstract class IntegrationTestRoutine extends Specification {
     }
 
 
-    def "ObjectMappers supports SQL AS"() {
+    def "ObjectMappers supports SQL as"() {
         when:
         query
                 .batch(insertSqlPositional)
@@ -90,6 +90,18 @@ abstract class IntegrationTestRoutine extends Specification {
         List<DummyAlias> dummies = fluentJdbc.query().select("SELECT ID AS ID_ALIAS FROM DUMMY").listResult(dummyAliasMapper)
         then:
         dummies.get(0).idAlias == dummy1.id
+    }
+
+    def "Mappers.map"() {
+        when:
+        query
+                .batch(insertSqlPositional)
+                .params(batchParams(dummy1))
+                .run()
+        List<Map<String, Object>> dummies = fluentJdbc.query().select("SELECT ID AS ID_ALIAS, string FROM DUMMY").listResult(Mappers.map())
+        then:
+        dummies[0].get("ID_ALIAS") == dummy1.id
+        dummies[0].get("STRING") == dummy1.string
     }
 
     def "Batch insert with named parameters"() {
