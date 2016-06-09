@@ -209,31 +209,13 @@ public abstract class NamedParameterUtils {
             if (namedParams.containsKey(paramName)) {
                 Object value = namedParams.get(paramName);
                 if (value instanceof Collection) {
-                    Iterator<?> entryIter = ((Collection<?>) value).iterator();
-                    int k = 0;
-                    while (entryIter.hasNext()) {
-                        if (k > 0) {
+                    for(int e = 0; e < ((Collection) value).size(); ++e) {
+                        if (e > 0) {
                             actualSql.append(", ");
                         }
-                        k++;
-                        Object entryItem = entryIter.next();
-                        if (entryItem instanceof Object[]) {
-                            Object[] expressionList = (Object[]) entryItem;
-                            actualSql.append("(");
-                            for (int m = 0; m < expressionList.length; m++) {
-                                if (m > 0) {
-                                    actualSql.append(", ");
-                                }
-                                actualSql.append("?");
-                            }
-                            actualSql.append(")");
-                        }
-                        else {
-                            actualSql.append("?");
-                        }
+                        actualSql.append("?");
                     }
-                }
-                else {
+                } else {
                     actualSql.append("?");
                 }
             }

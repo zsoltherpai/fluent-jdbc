@@ -7,10 +7,12 @@ import org.codejargon.fluentjdbc.api.query.Query
 import org.junit.Test
 import spock.lang.Specification;
 
-import java.sql.Connection;
+import java.sql.Connection
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.SQLException
+import java.sql.Types;
 import java.util.*
 
 class FluentJdbcSelectTest  extends Specification {
@@ -147,15 +149,31 @@ class FluentJdbcSelectTest  extends Specification {
     def "Select with named parameters including Collections"() {
         given:
         def namedParamSql = "SELECT * FROM BAR WHERE COL in (:params)"
-        def expectedSql = "SELECT * FROM BAR WHERE COL in (?, ?)"
-        connection.prepareStatement(expectedSql) >> preparedStatement
+        def expectedSql1 = "SELECT * FROM BAR WHERE COL in (?, ?)"
+        def expectedSql2 = "SELECT * FROM BAR WHERE COL in (?, ?, ?)"
+        connection.prepareStatement(expectedSql1) >> preparedStatement
+        connection.prepareStatement(expectedSql2) >> preparedStatement
         mockSelectData()
-        def namedParams = ["params": [param1, param2]]
+        def namedParams1 = ["params": [null, param2]]
+        def namedParams2 = ["params": [param1, param2, "foo"]]
         when:
-        query.select(namedParamSql).namedParams(namedParams).firstResult(dummyMapper)
+        query.select(namedParamSql).namedParams(namedParams1).firstResult(dummyMapper)
+        then:
+        1 * preparedStatement.setNull(1, Types.VARCHAR)
+        1 * preparedStatement.setObject(2, param2)
+        0 * preparedStatement.setObject(3, _)
+        when:
+        query.select(namedParamSql).namedParams(namedParams2).firstResult(dummyMapper)
         then:
         1 * preparedStatement.setObject(1, param1)
         1 * preparedStatement.setObject(2, param2)
+        1 * preparedStatement.setObject(3, "foo")
+        when:
+        query.select(namedParamSql).namedParams(namedParams1).firstResult(dummyMapper)
+        then:
+        1 * preparedStatement.setNull(1, Types.VARCHAR)
+        1 * preparedStatement.setObject(2, param2)
+        0 * preparedStatement.setObject(3, _)
     }
 
     def "Select with fetchSize specified"() throws SQLException {
@@ -211,6 +229,9 @@ class FluentJdbcSelectTest  extends Specification {
         preparedStatement.executeQuery() >> resultset
         resultset.next() >> true >> true >> true >> false
         resultset.getString(column) >> result1 >> result2 >> result3
+        ParameterMetaData parameterMetaData = Mock(ParameterMetaData)
+        preparedStatement.getParameterMetaData() >> parameterMetaData
+        parameterMetaData.getParameterType(_) >> Types.VARCHAR
     }
 
     private void mockEmptySelectData() {
