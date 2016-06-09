@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class NamedTransformedSqlFactory {
-    final Map<String, NamedTransformedSql> namedParamSqlCacheNoCollections;
-    final Map<Map<String, Integer>, NamedTransformedSql> namedParamCacheWithCollections;
+    private final Map<String, NamedTransformedSql> namedParamSqlCacheNoCollections;
+    private final Map<Map<String, Integer>, NamedTransformedSql> namedParamCacheWithCollections;
 
     public NamedTransformedSqlFactory() {
         this.namedParamSqlCacheNoCollections = Collections.synchronizedMap(new WeakHashMap<>());

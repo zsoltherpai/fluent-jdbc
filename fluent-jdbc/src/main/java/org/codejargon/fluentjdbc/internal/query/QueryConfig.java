@@ -2,7 +2,6 @@ package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.ParamSetter;
 import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
@@ -12,7 +11,7 @@ import java.util.Optional;
 public class QueryConfig {
     final ParamAssigner paramAssigner;
 
-    final Optional<Integer> defaultFetchSize;
+    private final Optional<Integer> defaultFetchSize;
     final Optional<AfterQueryListener> afterQueryListener;
     final NamedTransformedSqlFactory namedTransformedSqlFactory;
 
