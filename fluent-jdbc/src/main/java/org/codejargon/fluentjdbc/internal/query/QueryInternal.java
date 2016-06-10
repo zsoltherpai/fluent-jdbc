@@ -78,8 +78,8 @@ public class QueryInternal implements Query {
     }
 
     @Override
-    public <T> T plainConnection(Function<Connection, T> operation) {
-        return query(operation::apply, Optional.empty());
+    public <T> T plainConnection(PlainConnectionQuery<T> plainConnectionQuery) {
+        return query(plainConnectionQuery::operation, Optional.empty());
     }
 
     FluentJdbcException queryException(String sql, Optional<String> reason, Optional<SQLException> e) {

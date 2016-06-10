@@ -3,6 +3,7 @@ package org.codejargon.fluentjdbc.api.query;
 import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.function.Function;
 
 /**
@@ -44,11 +45,11 @@ public interface Query {
     /**
      * Provides access to a JDBC Connection managed by FluentJdbc for low level operations
      *
-     * @param operation on a managed connection
+     * @param plainConnectionQuery operation on a managed connection
      * @param <T> type of return value
      * @return value
      */
-    <T> T plainConnection(Function<Connection, T> operation);
+    <T> T plainConnection(PlainConnectionQuery<T> plainConnectionQuery);
 
     /**
      * Inspection of the database (tables, columns, etc..)

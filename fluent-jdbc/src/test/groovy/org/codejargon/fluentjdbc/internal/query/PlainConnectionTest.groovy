@@ -21,7 +21,6 @@ public class PlainConnectionTest extends Specification {
 
     def connection = Mock(Connection)
     def preparedStatement = Mock(PreparedStatement)
-    def resultset = Mock(ResultSet)
 
     Query query;
 
