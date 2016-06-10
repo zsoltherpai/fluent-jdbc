@@ -18,6 +18,8 @@ class Dummy {
     LocalDateTime localDateTimeColumn
     Instant instantColumn
     Instant instantNullColumn
+    Optional<String> optionalNonEmptyColumn
+    Optional<String> optionalEmptyColumn
 
     boolean equals(o) {
         if (this.is(o)) return true
@@ -32,6 +34,8 @@ class Dummy {
         if (localDateColumn != dummy.localDateColumn) return false
         if (localDateTimeColumn != dummy.localDateTimeColumn) return false
         if (longColumn != dummy.longColumn) return false
+        if (optionalNonEmptyColumn != dummy.optionalNonEmptyColumn) return false
+        if (optionalEmptyColumn != dummy.optionalEmptyColumn) return false
         if (stringColumn != dummy.stringColumn) return false
         if (stringNullColumn != dummy.stringNullColumn) return false
         if (yearColumn != dummy.yearColumn) return false
@@ -42,17 +46,19 @@ class Dummy {
 
     int hashCode() {
         int result
-        result = longColumn.hashCode()
-        result = 31 * result + intColumn.hashCode()
-        result = 31 * result + stringColumn.hashCode()
+        result = (longColumn != null ? longColumn.hashCode() : 0)
+        result = 31 * result + (intColumn != null ? intColumn.hashCode() : 0)
+        result = 31 * result + (stringColumn != null ? stringColumn.hashCode() : 0)
         result = 31 * result + (stringNullColumn != null ? stringNullColumn.hashCode() : 0)
-        result = 31 * result + bigDecimalColumn.hashCode()
-        result = 31 * result + yearColumn.hashCode()
-        result = 31 * result + yearMonthColumn.hashCode()
-        result = 31 * result + localDateColumn.hashCode()
-        result = 31 * result + localDateTimeColumn.hashCode()
-        result = 31 * result + instantColumn.hashCode()
+        result = 31 * result + (bigDecimalColumn != null ? bigDecimalColumn.hashCode() : 0)
+        result = 31 * result + (yearColumn != null ? yearColumn.hashCode() : 0)
+        result = 31 * result + (yearMonthColumn != null ? yearMonthColumn.hashCode() : 0)
+        result = 31 * result + (localDateColumn != null ? localDateColumn.hashCode() : 0)
+        result = 31 * result + (localDateTimeColumn != null ? localDateTimeColumn.hashCode() : 0)
+        result = 31 * result + (instantColumn != null ? instantColumn.hashCode() : 0)
         result = 31 * result + (instantNullColumn != null ? instantNullColumn.hashCode() : 0)
+        result = 31 * result + (optionalNonEmptyColumn != null ? optionalNonEmptyColumn.hashCode() : 0)
+        result = 31 * result + (optionalEmptyColumn != null ? optionalEmptyColumn.hashCode() : 0)
         return result
     }
 }

@@ -3,11 +3,13 @@ package org.codejargon.fluentjdbc.internal.mappers;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
@@ -58,14 +60,17 @@ public class ObjectMapper<T> implements Mapper<T> {
     private void mapColumn(String fieldName, int i, ResultSet rs, T result) throws IllegalArgumentException, FluentJdbcException, SQLException {
         Field field = fields.get(fieldName);
         if (field != null) {
-            Object value = value(field.getType(), rs, i);
+            Object value = value(typeOfField(field), rs, i);
             setField(field, result, value);
         }
     }
 
     private void setField(Field field, T result, Object value) {
         try {
-            field.set(result, value);
+            Object valueToBeSet = (field.getType().equals(Optional.class)) ?
+                    optionalOf(field, value) :
+                    value;
+            field.set(result, valueToBeSet);
         } catch (IllegalAccessException e) {
             throw new FluentJdbcException(
                     String.format(
@@ -76,6 +81,18 @@ public class ObjectMapper<T> implements Mapper<T> {
                     ),
                     e
             );
+        }
+    }
+
+    private Object optionalOf(Field field, Object value) {
+        if (value == null) {
+            return Optional.empty();
+        } else {
+            Class<?> typeOfField = typeOfField(field);
+            if (!typeOfField.isAssignableFrom(value.getClass())) {
+                throw new FluentJdbcException(String.format("Can't map value of class %s to Optional<%s>", value.getClass(), field));
+            }
+            return Optional.of(value);
         }
     }
 
@@ -95,7 +112,7 @@ public class ObjectMapper<T> implements Mapper<T> {
             );
         }
     }
-    
+
     private Constructor<T> noargConstructor() {
         try {
             Constructor<T> constructor = type.getDeclaredConstructor();
@@ -116,5 +133,11 @@ public class ObjectMapper<T> implements Mapper<T> {
 
     private String prepareFieldName(String fieldName) {
         return fieldName.toLowerCase().replace("_", "");
+    }
+
+    private Class<?> typeOfField(Field field) {
+        return field.getType().equals(Optional.class) ?
+                (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0] :
+                field.getType();
     }
 }

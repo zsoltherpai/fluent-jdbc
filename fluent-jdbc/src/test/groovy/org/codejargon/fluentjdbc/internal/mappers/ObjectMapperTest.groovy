@@ -19,7 +19,10 @@ class ObjectMapperTest extends Specification {
             localDateColumn: LocalDate.of(2015, Month.FEBRUARY, 15),
             localDateTimeColumn: LocalDateTime.of(2015, Month.FEBRUARY, 15, 11, 2),
             instantColumn: Instant.ofEpochMilli(543435L),
-            instantNullColumn: null
+            instantNullColumn: null,
+            optionalNonEmptyColumn: Optional.of("nonEmpty"),
+            optionalEmptyColumn: Optional.empty()
+
     )
 
     ResultSet resultSet = Mock(ResultSet)
@@ -50,8 +53,12 @@ class ObjectMapperTest extends Specification {
         meta.getColumnLabel(10) >> "INSTANT_COLUMN"
         resultSet.getTimestamp(11) >> null
         meta.getColumnLabel(11) >> "INSTANT_NULL_COLUMN"
+        resultSet.getString(12) >> expectedDummy.optionalNonEmptyColumn.get()
+        meta.getColumnLabel(12) >> "OPTIONAL_NON_EMPTY_COLUMN"
+        resultSet.getTimestamp(13) >> null
+        meta.getColumnLabel(13) >> "OPTIONAL_EMPTY_COLUMN"
         resultSet.getMetaData() >> meta
-        meta.getColumnCount() >> 11
+        meta.getColumnCount() >> 13
     }
 
     def map() {
