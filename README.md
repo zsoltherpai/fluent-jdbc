@@ -1,7 +1,6 @@
 ####About FluentJdbc####
-[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for convenient native SQL querying. Every SQL operation is a single,
-readable statement without any JDBC clutter. It supports functionality most jdbc wrappers prevent or
-abstract away, and is lightweight (<90K, no dependencies).
+[FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for convenient native SQL querying. Blends well with Java 8 / functional code, 
+supports functionality many jdbc wrappers prevent / abstract away, and is lightweight (~80K, no dependencies).
 
 FluentJdbc's key features:
 * functional, fluent API
@@ -41,7 +40,7 @@ FluentJdbc fluentJdbc = new FluentJdbcBuilder()
 Query query = fluentJdbc.query();
 // ... use the Query interface for queries (thread-safe, reentrant)
 ```
-Note: using a DataSource is the most common, there are other alternatives documented on the [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
+Note: using a DataSource is the most common scenario, there are other alternatives documented on the [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
 ######Update or insert queries######
 ```java
 query
@@ -81,7 +80,7 @@ Optional<Customer> customer = query.select("SELECT FROM CUSTOMER WHERE NAME = ?"
 
 ######Batch insert or update######
 ```java
-Iterator<List<Object>> params = ...; // or Stream/Iterable
+Stream<List<Object>> params = ...; // or Iterator/Iterable
 query.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)
 	.run();
