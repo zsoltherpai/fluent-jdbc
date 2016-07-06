@@ -3,6 +3,7 @@ package org.codejargon.fluentjdbc.api.mapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.codejargon.fluentjdbc.internal.mappers.ObjectMapper;
 import org.codejargon.fluentjdbc.api.query.Mapper;
@@ -11,7 +12,7 @@ import org.codejargon.fluentjdbc.internal.support.Maps;
 
 /**
  * <p>Constructs Mappers for mapping a ResultSet row into a plain java object based on object field vs ResultSet column
- * match. Matching is case insensitive and ignore '_' characters. The target class must have
+ * match. Default matching is case insensitive and ignore '_' characters. The target class must have
  * a no-arg constructor, fields can be private, no need for accessors.</p>
  *
  * <p>In addition to JDBC types, supports java.time types out of the box. Supports plugins for custom types.</p>
@@ -21,16 +22,18 @@ import org.codejargon.fluentjdbc.internal.support.Maps;
 public class ObjectMappers {
     private final Map<Class, ObjectMapperRsExtractor> extractors;
     private final Map<Class, Mapper<?>> mappers;
-
-    private ObjectMappers(Map<Class, ObjectMapperRsExtractor> extractors) {
+    private final Function<String, String> converter;
+    
+    private ObjectMappers(Map<Class, ObjectMapperRsExtractor> extractors, Function<String, String> converter) {
         this.extractors = Maps.merge(DefaultObjectMapperRsExtractors.extractors(), extractors);
+        this.converter = converter;
         mappers = new ConcurrentHashMap<>();
     }
 
     @SuppressWarnings("unchecked")
     public <T> Mapper<T> forClass(Class<T> clazz) {
         if(!mappers.containsKey(clazz)) {
-            mappers.put(clazz, new ObjectMapper<>(clazz, extractors));
+            mappers.put(clazz, new ObjectMapper<>(clazz, extractors, converter));
         }
         return (Mapper<T>) mappers.get(clazz);
     }
@@ -41,7 +44,7 @@ public class ObjectMappers {
     
     public static class Builder {
         private Map<Class, ObjectMapperRsExtractor> extractors = Maps.copyOf(new HashMap<>());
-        
+        private Function<String, String> converter;
         private Builder() {
             
         }
@@ -56,8 +59,18 @@ public class ObjectMappers {
             return this;
         }
         
+        /**
+         * Sets custom converter for object field to ResultSet column matching.
+         * @param converter function to convert field names
+         * @return this
+         */
+        public Builder fieldNameConverter(Function<String, String> converter) {
+            this.converter = converter;
+            return this;
+        }
+        
         public ObjectMappers build() {
-            return new ObjectMappers(Maps.copyOf(extractors));
+            return new ObjectMappers(Maps.copyOf(extractors), converter);
         }
     }
 }

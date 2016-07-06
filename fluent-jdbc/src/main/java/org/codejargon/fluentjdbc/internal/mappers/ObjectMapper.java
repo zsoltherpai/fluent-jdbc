@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
@@ -24,9 +25,13 @@ public class ObjectMapper<T> implements Mapper<T> {
     private final Map<String, Field> fields;
     private final Constructor<T> noargConstructor;
 
-    public ObjectMapper(Class<T> type, Map<Class, ObjectMapperRsExtractor> extractors) {
+    private static final Function<String, String> DEFAULT_FIELDNAME_CONVERTER = f -> f.replace("_", "");
+    private final Function<String, String> converter;
+    
+    public ObjectMapper(Class<T> type, Map<Class, ObjectMapperRsExtractor> extractors, Function<String, String> converter) {
         this.extractors = extractors;
         this.type = type;
+        this.converter = converter != null ? converter : DEFAULT_FIELDNAME_CONVERTER;
         this.fields = discoverFields(type);
         noargConstructor = noargConstructor();
     }
@@ -38,7 +43,7 @@ public class ObjectMapper<T> implements Mapper<T> {
             Arrs.stream(inspectedClass.getDeclaredFields()).forEach(
                     field -> {
                         field.setAccessible(true);
-                        allFields.put(prepareFieldName(field.getName()), field);
+                        allFields.put(converter.apply(field.getName()), field);
                     }
             );
             inspectedClass = inspectedClass.getSuperclass();
@@ -51,7 +56,7 @@ public class ObjectMapper<T> implements Mapper<T> {
         T result = newInstance();
         ResultSetMetaData metadata = rs.getMetaData();
         for (int i = 1; i <= metadata.getColumnCount(); ++i) {
-            mapColumn(fieldName(metadata, i), i, rs, result);
+            mapColumn(converter.apply(metadata.getColumnLabel(i)), i, rs, result);
         }
         return result;
 
@@ -125,14 +130,6 @@ public class ObjectMapper<T> implements Mapper<T> {
             );
         }
 
-    }
-
-    private String fieldName(ResultSetMetaData metadata, int i) throws SQLException {
-        return prepareFieldName(metadata.getColumnLabel(i));
-    }
-
-    private String prepareFieldName(String fieldName) {
-        return fieldName.toLowerCase().replace("_", "");
     }
 
     private Class<?> typeOfField(Field field) {
