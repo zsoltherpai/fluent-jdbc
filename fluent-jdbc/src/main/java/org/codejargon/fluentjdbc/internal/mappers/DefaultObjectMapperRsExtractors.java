@@ -1,7 +1,12 @@
 package org.codejargon.fluentjdbc.internal.mappers;
 
 import java.math.BigDecimal;
-import java.sql.*;
+import java.nio.ByteBuffer;
+import java.sql.Blob;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +28,7 @@ public class DefaultObjectMapperRsExtractors {
         basicTypes(exs);
         javaDate(exs);
         javaTimeTypes(exs);
+        binaryTypes(exs, Boolean.parseBoolean(System.getProperty("preferDirect", "false")));
         extractors = Collections.unmodifiableMap(exs);
     }
 
@@ -75,6 +81,42 @@ public class DefaultObjectMapperRsExtractors {
         reg(exs, Time.class, ResultSet::getTime);
         reg(exs, Date.class, ResultSet::getDate);
         reg(exs, String.class, ResultSet::getString);
+    }
+
+    private static void binaryTypes(Map<Class, ObjectMapperRsExtractor<?>> exs, boolean preferDirect) {
+        reg(exs, byte[].class, (rs, i) -> {
+            Blob blob = rs.getBlob(i);
+            if (blob == null) {
+                return null;
+            }
+            byte[] data = blob.getBytes(0, (int) blob.length());
+            try {
+              blob.free();
+            } catch (Exception e) {
+              // it's not JDBC 4.0 compatible -> ignore
+            }
+            return data;
+        });
+        reg(exs, ByteBuffer.class, (rs, i) -> {
+            Blob blob = rs.getBlob(i);
+            if (blob == null) {
+                return null;
+            }
+            ByteBuffer data;
+            if (preferDirect){
+              data = ByteBuffer.allocateDirect((int) blob.length());
+              data.put(blob.getBytes(0, data.capacity()));
+              data.flip();
+            } else {
+              data = ByteBuffer.wrap(blob.getBytes(0, (int) blob.length()));
+            }
+            try {
+              blob.free();
+            } catch (Exception e) {
+              // it's not JDBC 4.0 compatible -> ignore
+            }
+            return data;
+        });
     }
 
     public static Map<Class, ObjectMapperRsExtractor> extractors() {
