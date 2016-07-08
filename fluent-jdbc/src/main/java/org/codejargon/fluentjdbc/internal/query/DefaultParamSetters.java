@@ -43,13 +43,26 @@ class DefaultParamSetters {
 
     private static void javaBinary(Map<Class, ParamSetter> ss) {
         reg(ss, byte[].class, (param, ps, i) -> ps.setBlob(i, new ByteArrayInputStream(param)));
-        reg(ss, ByteBuffer.class, (param, ps, i) -> {
+        try {
+          reg(ss, Class.forName("java.nio.DirectByteBuffer"), (p, ps, i) -> {
+              ByteBuffer param = (ByteBuffer)p;
+              if (param.hasArray()) {
+                  ps.setBlob(i, new ByteArrayInputStream(param.array()));
+              }else{
+                  ps.setBlob(i, new ByteBufferInputStream(param));
+              }
+          });
+          reg(ss, Class.forName("java.nio.HeapByteBuffer"), (p, ps, i) -> {
+            ByteBuffer param = (ByteBuffer)p;
             if (param.hasArray()) {
                 ps.setBlob(i, new ByteArrayInputStream(param.array()));
             }else{
                 ps.setBlob(i, new ByteBufferInputStream(param));
             }
         });
+        } catch (ClassNotFoundException e) {
+          // ByteBuffer implementations missing
+        }
     }
 
     static Map<Class, ParamSetter> setters() {

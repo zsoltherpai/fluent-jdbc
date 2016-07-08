@@ -1,14 +1,23 @@
 package org.codejargon.fluentjdbc.internal.mappers;
 
-import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
-
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.sql.*;
-import java.time.*;
+import java.sql.Blob;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
 
 public class DefaultObjectMapperRsExtractors {
 
@@ -90,7 +99,11 @@ public class DefaultObjectMapperRsExtractors {
                 return null;
             }
             ByteBuffer data = ByteBuffer.wrap(blob.getBytes(0, (int) blob.length()));
-            blob.free();
+            try{
+              blob.free();
+            }catch (Exception e){
+              // it's not JDBC 4.0 compatible -> ignore
+            }
             return data;
         });
     }

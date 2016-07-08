@@ -94,7 +94,7 @@ public class ObjectMapper<T> implements Mapper<T> {
             return Optional.empty();
         } else {
             Class<?> typeOfField = typeOfField(field);
-            if (!typeOfField.isAssignableFrom(value.getClass())) {
+            if (!value.getClass().isAssignableFrom(typeOfField)) {
                 throw new FluentJdbcException(String.format("Can't map value of class %s to Optional<%s>", value.getClass(), field));
             }
             return Optional.of(value);
