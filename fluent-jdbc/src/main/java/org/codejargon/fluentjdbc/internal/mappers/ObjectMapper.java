@@ -25,13 +25,12 @@ public class ObjectMapper<T> implements Mapper<T> {
     private final Map<String, Field> fields;
     private final Constructor<T> noargConstructor;
 
-    private static final Function<String, String> DEFAULT_FIELDNAME_CONVERTER = f -> f.toLowerCase().replace("_", "");
     private final Function<String, String> converter;
     
     public ObjectMapper(Class<T> type, Map<Class, ObjectMapperRsExtractor> extractors, Function<String, String> converter) {
         this.extractors = extractors;
         this.type = type;
-        this.converter = Optional.ofNullable(converter).orElse(DEFAULT_FIELDNAME_CONVERTER);
+        this.converter = converter;
         this.fields = discoverFields(type);
         noargConstructor = noargConstructor();
     }
