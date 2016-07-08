@@ -18,6 +18,7 @@ class ParamAssignerTest extends Specification {
     static final def bigDecimal = BigDecimal.TEN
     static final def sqlDate = java.sql.Date.valueOf(localDate)
     static final def time = Time.valueOf(localTime)
+    static final def byteArray = "hah".getBytes()
     static final Timestamp timestamp = Timestamp.from(instant)
 
 
@@ -25,10 +26,11 @@ class ParamAssignerTest extends Specification {
     def paramAssigner = new ParamAssigner(DefaultParamSetters.setters())
 
     def "JDBC types"() {
+        InputStream blobContent
         when:
         paramAssigner.assignParams(
                 statement,
-                [string, longParam, intParam, bigDecimal, sqlDate, time, timestamp]
+                [string, longParam, intParam, bigDecimal, sqlDate, time, timestamp, byteArray]
         )
         then:
         1 * statement.setObject(1, string)
@@ -38,6 +40,10 @@ class ParamAssignerTest extends Specification {
         1 * statement.setObject(5, sqlDate)
         1 * statement.setObject(6, time)
         1 * statement.setObject(7, timestamp)
+        1 * statement.setBlob(8, _ as InputStream) >> {arguments -> blobContent = arguments[1]}
+        blobContent instanceof InputStream
+        blobContent.bytes == byteArray
+
     }
 
     def "Local java.time types"() {

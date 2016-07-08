@@ -24,7 +24,7 @@ public class DefaultObjectMapperRsExtractors {
         basicTypes(exs);
         javaDate(exs);
         javaTimeTypes(exs);
-        binaryTypes(exs, Boolean.parseBoolean(System.getProperty("preferDirect", "false")));
+        binaryTypes(exs);
         extractors = Collections.unmodifiableMap(exs);
     }
 
@@ -79,13 +79,13 @@ public class DefaultObjectMapperRsExtractors {
         reg(exs, String.class, ResultSet::getString);
     }
 
-    private static void binaryTypes(Map<Class, ObjectMapperRsExtractor<?>> exs, boolean preferDirect) {
+    private static void binaryTypes(Map<Class, ObjectMapperRsExtractor<?>> exs) {
         reg(exs, byte[].class, (rs, i) -> {
             Blob blob = rs.getBlob(i);
             if (blob == null) {
                 return null;
             }
-            byte[] data = blob.getBytes(0, (int) blob.length());
+            byte[] data = blob.getBytes(1, (int) blob.length());
             freeBlob(blob);
             return data;
         });
@@ -94,14 +94,7 @@ public class DefaultObjectMapperRsExtractors {
             if (blob == null) {
                 return null;
             }
-            ByteBuffer data;
-            if (preferDirect){
-              data = ByteBuffer.allocateDirect((int) blob.length());
-              data.put(blob.getBytes(0, data.capacity()));
-              data.flip();
-            } else {
-              data = ByteBuffer.wrap(blob.getBytes(0, (int) blob.length()));
-            }
+            ByteBuffer data = ByteBuffer.wrap(blob.getBytes(1, (int) blob.length()));
             freeBlob(blob);
             return data;
         });
