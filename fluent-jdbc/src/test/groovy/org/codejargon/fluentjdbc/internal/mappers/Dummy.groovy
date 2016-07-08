@@ -18,7 +18,7 @@ class Dummy {
     LocalDateTime localDateTimeColumn
     Instant instantColumn
     Instant instantNullColumn
-    Optional<String> optionalNonEmptyColumn
+    Optional<Date> optionalNonEmptyColumn
     Optional<String> optionalEmptyColumn
 
     boolean equals(o) {

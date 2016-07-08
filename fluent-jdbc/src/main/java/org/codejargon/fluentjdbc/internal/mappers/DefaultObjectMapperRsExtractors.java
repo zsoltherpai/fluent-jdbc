@@ -2,11 +2,7 @@ package org.codejargon.fluentjdbc.internal.mappers;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.sql.Blob;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +16,7 @@ import java.util.Map;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
 
 public class DefaultObjectMapperRsExtractors {
-
+    private static boolean attemptBlobFree = true;
     private static final Map<Class, ObjectMapperRsExtractor> extractors;
 
     static {
@@ -90,11 +86,7 @@ public class DefaultObjectMapperRsExtractors {
                 return null;
             }
             byte[] data = blob.getBytes(0, (int) blob.length());
-            try {
-              blob.free();
-            } catch (Exception e) {
-              // it's not JDBC 4.0 compatible -> ignore
-            }
+            freeBlob(blob);
             return data;
         });
         reg(exs, ByteBuffer.class, (rs, i) -> {
@@ -110,13 +102,19 @@ public class DefaultObjectMapperRsExtractors {
             } else {
               data = ByteBuffer.wrap(blob.getBytes(0, (int) blob.length()));
             }
-            try {
-              blob.free();
-            } catch (Exception e) {
-              // it's not JDBC 4.0 compatible -> ignore
-            }
+            freeBlob(blob);
             return data;
         });
+    }
+
+    private static void freeBlob(Blob blob) throws SQLException {
+        if(attemptBlobFree) {
+            try {
+                blob.free();
+            } catch (SQLFeatureNotSupportedException e) {
+                attemptBlobFree = false;
+            }
+        }
     }
 
     public static Map<Class, ObjectMapperRsExtractor> extractors() {
