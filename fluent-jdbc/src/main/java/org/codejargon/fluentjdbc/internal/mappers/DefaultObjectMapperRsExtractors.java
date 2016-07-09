@@ -1,6 +1,7 @@
 package org.codejargon.fluentjdbc.internal.mappers;
 
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.util.Map;
 import org.codejargon.fluentjdbc.api.mapper.ObjectMapperRsExtractor;
 
 public class DefaultObjectMapperRsExtractors {
-
+    private static boolean attemptBlobFree = true;
     private static final Map<Class, ObjectMapperRsExtractor> extractors;
 
     static {
@@ -23,6 +24,7 @@ public class DefaultObjectMapperRsExtractors {
         basicTypes(exs);
         javaDate(exs);
         javaTimeTypes(exs);
+        binaryTypes(exs);
         extractors = Collections.unmodifiableMap(exs);
     }
 
@@ -75,6 +77,37 @@ public class DefaultObjectMapperRsExtractors {
         reg(exs, Time.class, ResultSet::getTime);
         reg(exs, Date.class, ResultSet::getDate);
         reg(exs, String.class, ResultSet::getString);
+    }
+
+    private static void binaryTypes(Map<Class, ObjectMapperRsExtractor<?>> exs) {
+        reg(exs, byte[].class, (rs, i) -> {
+            Blob blob = rs.getBlob(i);
+            if (blob == null) {
+                return null;
+            }
+            byte[] data = blob.getBytes(1, (int) blob.length());
+            freeBlob(blob);
+            return data;
+        });
+        reg(exs, ByteBuffer.class, (rs, i) -> {
+            Blob blob = rs.getBlob(i);
+            if (blob == null) {
+                return null;
+            }
+            ByteBuffer data = ByteBuffer.wrap(blob.getBytes(1, (int) blob.length()));
+            freeBlob(blob);
+            return data;
+        });
+    }
+
+    private static void freeBlob(Blob blob) throws SQLException {
+        if(attemptBlobFree) {
+            try {
+                blob.free();
+            } catch (SQLFeatureNotSupportedException e) {
+                attemptBlobFree = false;
+            }
+        }
     }
 
     public static Map<Class, ObjectMapperRsExtractor> extractors() {

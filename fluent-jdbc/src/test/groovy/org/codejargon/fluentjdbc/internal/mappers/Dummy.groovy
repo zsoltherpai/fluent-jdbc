@@ -18,8 +18,9 @@ class Dummy {
     LocalDateTime localDateTimeColumn
     Instant instantColumn
     Instant instantNullColumn
-    Optional<String> optionalNonEmptyColumn
+    Optional<Date> optionalNonEmptyColumn
     Optional<String> optionalEmptyColumn
+    byte[] byteArrayColumn
 
     boolean equals(o) {
         if (this.is(o)) return true
@@ -28,14 +29,15 @@ class Dummy {
         Dummy dummy = (Dummy) o
 
         if (bigDecimalColumn != dummy.bigDecimalColumn) return false
+        if (!Arrays.equals(byteArrayColumn, dummy.byteArrayColumn)) return false
         if (instantColumn != dummy.instantColumn) return false
         if (instantNullColumn != dummy.instantNullColumn) return false
         if (intColumn != dummy.intColumn) return false
         if (localDateColumn != dummy.localDateColumn) return false
         if (localDateTimeColumn != dummy.localDateTimeColumn) return false
         if (longColumn != dummy.longColumn) return false
-        if (optionalNonEmptyColumn != dummy.optionalNonEmptyColumn) return false
         if (optionalEmptyColumn != dummy.optionalEmptyColumn) return false
+        if (optionalNonEmptyColumn != dummy.optionalNonEmptyColumn) return false
         if (stringColumn != dummy.stringColumn) return false
         if (stringNullColumn != dummy.stringNullColumn) return false
         if (yearColumn != dummy.yearColumn) return false
@@ -59,6 +61,7 @@ class Dummy {
         result = 31 * result + (instantNullColumn != null ? instantNullColumn.hashCode() : 0)
         result = 31 * result + (optionalNonEmptyColumn != null ? optionalNonEmptyColumn.hashCode() : 0)
         result = 31 * result + (optionalEmptyColumn != null ? optionalEmptyColumn.hashCode() : 0)
+        result = 31 * result + (byteArrayColumn != null ? Arrays.hashCode(byteArrayColumn) : 0)
         return result
     }
 }

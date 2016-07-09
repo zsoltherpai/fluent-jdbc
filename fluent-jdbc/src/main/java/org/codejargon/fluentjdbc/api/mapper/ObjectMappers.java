@@ -1,5 +1,6 @@
 package org.codejargon.fluentjdbc.api.mapper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,10 +13,10 @@ import org.codejargon.fluentjdbc.internal.support.Maps;
 
 /**
  * <p>Constructs Mappers for mapping a ResultSet row into a plain java object based on object field vs ResultSet column
- * match. Default matching is case insensitive and ignore '_' characters. The target class must have
+ * match. Default matching is case insensitive and ignores '_' characters in database fields. The target class must have
  * a no-arg constructor, fields can be private, no need for accessors.</p>
  *
- * <p>In addition to JDBC types, supports java.time types out of the box. Supports plugins for custom types.</p>
+ * <p>In addition to JDBC types, supports java.time types out of the box. Able to support any custom type.</p>
  *
  * @see org.codejargon.fluentjdbc.api.query.Mapper
  */
@@ -43,8 +44,8 @@ public class ObjectMappers {
     }
     
     public static class Builder {
-        private Map<Class, ObjectMapperRsExtractor> extractors = Maps.copyOf(new HashMap<>());
-        private Function<String, String> converter;
+        private Map<Class, ObjectMapperRsExtractor> extractors = Collections.emptyMap();
+        private Function<String, String> converter = f -> f.toLowerCase().replace("_", "");
         private Builder() {
             
         }

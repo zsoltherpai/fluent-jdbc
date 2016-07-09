@@ -3,6 +3,7 @@ package org.codejargon.fluentjdbc.api.mapper;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.ResultSetMetaData;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,11 @@ public abstract class Mappers {
         }
         return Collections.unmodifiableMap(result);
     };
+    private static final Mapper<byte[]> singleByteArray = (rs) -> {
+        Blob blob = rs.getBlob(1);
+        return blob.getBytes(1, (int) blob.length());
+    };
+
 
     /**
      * Maps the first Integer column.
@@ -73,5 +79,9 @@ public abstract class Mappers {
      */
     public static Mapper<Map<String, Object>> map() {
         return map;
+    }
+
+    public static Mapper<byte[]> singleByteArray() {
+        return singleByteArray;
     }
 }

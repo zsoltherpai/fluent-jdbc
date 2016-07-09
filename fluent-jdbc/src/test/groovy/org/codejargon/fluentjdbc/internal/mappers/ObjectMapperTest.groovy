@@ -1,8 +1,9 @@
 package org.codejargon.fluentjdbc.internal.mappers;
 
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers
-import spock.lang.Specification;
+import spock.lang.Specification
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.sql.*;
 import java.time.*;
 
@@ -20,9 +21,9 @@ class ObjectMapperTest extends Specification {
             localDateTimeColumn: LocalDateTime.of(2015, Month.FEBRUARY, 15, 11, 2),
             instantColumn: Instant.ofEpochMilli(543435L),
             instantNullColumn: null,
-            optionalNonEmptyColumn: Optional.of("nonEmpty"),
-            optionalEmptyColumn: Optional.empty()
-
+            optionalNonEmptyColumn: Optional.of(new java.util.Date()),
+            optionalEmptyColumn: Optional.empty(),
+            byteArrayColumn: "hah".getBytes()
     )
 
     ResultSet resultSet = Mock(ResultSet)
@@ -53,18 +54,22 @@ class ObjectMapperTest extends Specification {
         meta.getColumnLabel(10) >> "INSTANT_COLUMN"
         resultSet.getTimestamp(11) >> null
         meta.getColumnLabel(11) >> "INSTANT_NULL_COLUMN"
-        resultSet.getString(12) >> expectedDummy.optionalNonEmptyColumn.get()
+        resultSet.getTimestamp(12) >> new Timestamp(expectedDummy.optionalNonEmptyColumn.get().getTime())
         meta.getColumnLabel(12) >> "OPTIONAL_NON_EMPTY_COLUMN"
         resultSet.getTimestamp(13) >> null
         meta.getColumnLabel(13) >> "OPTIONAL_EMPTY_COLUMN"
+        resultSet.getBlob(14) >> new SerialBlob(expectedDummy.byteArrayColumn)
+        meta.getColumnLabel(14) >> "BYTE_ARRAY_COLUMN"
         resultSet.getMetaData() >> meta
-        meta.getColumnCount() >> 13
+        meta.getColumnCount() >> 14
     }
 
     def map() {
         def mapper = factory.forClass(Dummy.class)
         when:
         def mappedDummy = mapper.map(resultSet)
+        // For concise comparison in the expectations
+        mappedDummy.optionalNonEmptyColumn = Optional.of(new java.util.Date(mappedDummy.optionalNonEmptyColumn.get().getTime()))
         then:
         mappedDummy == expectedDummy
     }

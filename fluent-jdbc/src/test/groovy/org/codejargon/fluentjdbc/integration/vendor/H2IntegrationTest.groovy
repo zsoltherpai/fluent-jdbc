@@ -34,7 +34,7 @@ class H2IntegrationTest extends IntegrationTestRoutine {
 
     def "Auto-generated keys fetched"() {
         given:
-        fluentJdbc.query().update("CREATE TABLE DUMMY_AUTO (id INTEGER PRIMARY KEY AUTO_INCREMENT, data VARCHAR(255));").run()
+        query.update("CREATE TABLE DUMMY_AUTO (id INTEGER PRIMARY KEY AUTO_INCREMENT, data VARCHAR(255));").run()
         when:
         def result = query.update("INSERT INTO DUMMY_AUTO(DATA) VALUES('bla')").runFetchGenKeys(
                 Mappers.singleLong()
@@ -46,7 +46,7 @@ class H2IntegrationTest extends IntegrationTestRoutine {
 
     def "Auto-generated keys for specified colums fetched"() {
         given:
-        fluentJdbc.query().update("CREATE TABLE DUMMY_AUTO2 (id INTEGER PRIMARY KEY AUTO_INCREMENT, data VARCHAR(255));").run()
+        query.update("CREATE TABLE DUMMY_AUTO2 (id INTEGER PRIMARY KEY AUTO_INCREMENT, data VARCHAR(255));").run()
         when:
         String[] genColumns = ["id"]
         def result = query.update("INSERT INTO DUMMY_AUTO2(DATA) VALUES('bla')").runFetchGenKeys(
@@ -55,6 +55,17 @@ class H2IntegrationTest extends IntegrationTestRoutine {
         then:
         assert result.generatedKeys().size() == 1
         assert result.generatedKeys().get(0) == 1L
+    }
+
+    def "Blob support"() {
+        given:
+        query.update("CREATE TABLE DUMMY_BYTE (id INTEGER PRIMARY KEY AUTO_INCREMENT, data BINARY(1000));").run()
+        byte[] expected = "hah".getBytes()
+        when:
+        query.update("INSERT INTO DUMMY_BYTE(data) VALUES(?)").params(Collections.singletonList(expected)).run()
+        byte[] result = query.select("SELECT data FROM DUMMY_BYTE").singleResult(Mappers.singleByteArray())
+        then:
+        expected == result
     }
 
     private static def initH2DataSource() {
