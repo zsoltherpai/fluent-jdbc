@@ -13,13 +13,30 @@ import java.util.function.Predicate;
  */
 public interface SelectQuery {
     /**
+     * Adds a single query parameter.
+     *
+     * @param param one additional query parameter
+     * @return this
+     */
+    SelectQuery param(Object param);
+    
+    /**
      * Adds positional query parameters.
      *
      * @param params additional query parameters
      * @return this
      */
     SelectQuery params(List<?> params);
-
+    
+    /**
+     * Adds two positional query parameters.
+     * 
+     * @param param1 first additional query parameter
+     * @param param2 second additional query parameter
+     * @return this
+     */
+    SelectQuery params(Object param1, Object param2);
+    
     /**
      * Adds positional query parameters.
      *

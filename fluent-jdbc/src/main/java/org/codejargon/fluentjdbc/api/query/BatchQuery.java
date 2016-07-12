@@ -14,8 +14,14 @@ public interface BatchQuery {
      * @param params Parameters used by the batch update
      * @return this
      */
+    BatchQuery param(List<?> params);
+    
+    /**
+    *
+    * @param params Parameters used by the batch update
+    * @return this
+    */
     BatchQuery params(Iterator<List<?>> params);
-
     /**
      *
      * @param params Parameters used by the batch update
@@ -31,12 +37,20 @@ public interface BatchQuery {
     BatchQuery params(Stream<List<?>> params);
 
     /**
-     *
+     * 
+     * @param name Parameter name
      * @param params Parameters used by the batch update
      * @return this
      */
+    BatchQuery namedParam(String name, List<?> params);
+    
+    /**
+    *
+    * @param params Parameters used by the batch update
+    * @return this
+    */
     BatchQuery namedParams(Iterator<Map<String, ?>> params);
-
+    
     /**
      *
      * @param params Parameters used by the batch update
