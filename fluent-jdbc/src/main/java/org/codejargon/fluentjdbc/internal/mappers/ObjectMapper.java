@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
@@ -26,6 +28,7 @@ public class ObjectMapper<T> implements Mapper<T> {
     private final Constructor<T> noargConstructor;
 
     private final Function<String, String> converter;
+    private final ConcurrentMap<String, String> converterCache;
     
     public ObjectMapper(Class<T> type, Map<Class, ObjectMapperRsExtractor> extractors, Function<String, String> converter) {
         this.extractors = extractors;
@@ -33,8 +36,13 @@ public class ObjectMapper<T> implements Mapper<T> {
         this.converter = converter;
         this.fields = discoverFields(type);
         noargConstructor = noargConstructor();
+        converterCache = new ConcurrentHashMap<>();
     }
 
+    private String convert(String field){
+        return converterCache.computeIfAbsent(field, converter);
+    }
+    
     private Map<String, Field> discoverFields(Class<T> aType) throws SecurityException {
         Map<String, Field> allFields = new HashMap<>();
         Class inspectedClass = aType;
@@ -42,7 +50,7 @@ public class ObjectMapper<T> implements Mapper<T> {
             Arrs.stream(inspectedClass.getDeclaredFields()).forEach(
                     field -> {
                         field.setAccessible(true);
-                        allFields.put(converter.apply(field.getName()), field);
+                        allFields.put(convert(field.getName()), field);
                     }
             );
             inspectedClass = inspectedClass.getSuperclass();
@@ -55,7 +63,7 @@ public class ObjectMapper<T> implements Mapper<T> {
         T result = newInstance();
         ResultSetMetaData metadata = rs.getMetaData();
         for (int i = 1; i <= metadata.getColumnCount(); ++i) {
-            mapColumn(converter.apply(metadata.getColumnLabel(i)), i, rs, result);
+            mapColumn(convert(metadata.getColumnLabel(i)), i, rs, result);
         }
         return result;
 
