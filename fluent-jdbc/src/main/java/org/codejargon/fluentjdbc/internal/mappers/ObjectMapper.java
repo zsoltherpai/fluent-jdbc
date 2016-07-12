@@ -28,7 +28,7 @@ public class ObjectMapper<T> implements Mapper<T> {
     private final Constructor<T> noargConstructor;
 
     private final Function<String, String> converter;
-    private final ConcurrentMap<String, String> converterCache;
+    private final ConcurrentMap<String, String> converterCache = new ConcurrentHashMap<>();
     
     public ObjectMapper(Class<T> type, Map<Class, ObjectMapperRsExtractor> extractors, Function<String, String> converter) {
         this.extractors = extractors;
@@ -36,7 +36,6 @@ public class ObjectMapper<T> implements Mapper<T> {
         this.converter = converter;
         this.fields = discoverFields(type);
         noargConstructor = noargConstructor();
-        converterCache = new ConcurrentHashMap<>();
     }
 
     private String convert(String field){
