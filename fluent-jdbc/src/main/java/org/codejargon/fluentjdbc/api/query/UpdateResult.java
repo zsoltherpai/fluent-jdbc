@@ -4,5 +4,5 @@ package org.codejargon.fluentjdbc.api.query;
  * Results of an update / insert
  */
 public interface UpdateResult {
-    Long affectedRows();
+    long affectedRows();
 }

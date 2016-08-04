@@ -3,14 +3,14 @@ package org.codejargon.fluentjdbc.internal.query;
 import org.codejargon.fluentjdbc.api.query.UpdateResult;
 
 class UpdateResultInternal implements UpdateResult {
-    private final Long affectedRows;
+    private final long affectedRows;
 
-    UpdateResultInternal(Long affectedRows) {
+    UpdateResultInternal(long affectedRows) {
         this.affectedRows = affectedRows;
     }
 
     @Override
-    public Long affectedRows() {
+    public long affectedRows() {
         return affectedRows;
     }
 }
