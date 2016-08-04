@@ -33,10 +33,7 @@ public class ObjectMappers {
 
     @SuppressWarnings("unchecked")
     public <T> Mapper<T> forClass(Class<T> clazz) {
-        if(!mappers.containsKey(clazz)) {
-            mappers.put(clazz, new ObjectMapper<>(clazz, extractors, converter));
-        }
-        return (Mapper<T>) mappers.get(clazz);
+        return (Mapper<T>) mappers.computeIfAbsent(clazz, c -> new ObjectMapper<>(c, extractors, converter));
     }
     
     public static Builder builder() {
