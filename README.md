@@ -1,4 +1,4 @@
-####About FluentJdbc####
+#### About FluentJdbc
 [FluentJdbc](http://zsoltherpai.github.io/fluent-jdbc) is a java library for convenient native SQL querying. Blends well with Java 8 / functional code, 
 supports functionality many jdbc wrappers prevent / abstract away, and is lightweight (~80K, no dependencies).
 
@@ -26,12 +26,12 @@ Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Mot
 
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
 
-#####News#####
+##### News
 * 1.3 released - support for Collection parameters (for batch select)
 * 1.2.2 released - simplified interface for iterating large resultsets, explicit specification of generated column names
 
-#####Code examples of common use cases#####
-######Setting up FluentJdbc######
+##### Code examples of common use cases
+###### Setting up FluentJdbc
 ```java
 DataSource dataSource = ...
 FluentJdbc fluentJdbc = new FluentJdbcBuilder()
@@ -41,20 +41,20 @@ Query query = fluentJdbc.query();
 // ... use the Query interface for queries (thread-safe, reentrant)
 ```
 Note: using a DataSource is the most common scenario, there are other alternatives documented on the [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
-######Update or insert queries######
+###### Update or insert queries
 ```java
 query
 	.update("UPDATE CUSTOMER SET NAME = ?, ADDRESS = ?")
 	.params("John Doe", "Dallas")
 	.run();
 ```
-######Query for a list of results######
+###### Query for a list of results
 ```java
 List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.listResult(customerMapper);
 ```
-######Mapping of results######
+###### Mapping of results
 Mapper<Customer> can be implemented manually
 ```java
 resultSet -> new Customer(resultSet.getString("NAME"), resultSet.getString("ADDRESS"));
@@ -65,27 +65,27 @@ ObjectMappers objectMappers = ObjectMappers.builder().build(); //typically one i
 ...
 Mapper<Customer> customerMapper = objectMappers.forClass(Customer.class);
 ```
-######Query for single result######
+###### Query for single result
 ```java
 Long count = query.select("SELECT COUNT(*) FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.singleResult(Mappers.singleLong);
 ```
-######Query for first result######
+###### Query for first result
 ```java
 Optional<Customer> customer = query.select("SELECT FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.firstResult(customerMapper);
 ```
 
-######Batch insert or update######
+###### Batch insert or update
 ```java
 Stream<List<Object>> params = ...; // or Iterator/Iterable
 query.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 	.params(params)
 	.run();
 ```
-######Named parameters######
+###### Named parameters
 ```java
 query.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
 	.namedParam("name", "John Doe")
@@ -93,21 +93,21 @@ query.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
 	.run();
 ```
 Note: or .namedParams(mapOfParams)
-######java.time support for query parameters######
+###### java.time support for query parameters
 ```java
 query.update("UPDATE CUSTOMER SET DEADLINE = ?, UPDATED = ?")
 	.params(LocalDate.of(2015, Month.MARCH, 5), Instant.now())
 	.run();
 ```
 Note: support for any type can be implemented
-######java.util.Optional support######
+###### java.util.Optional support
 ```java
 Optional<LocalData> deadline = ...
 query.update("UPDATE CUSTOMER SET DEADLINE = ?")
 	.params(deadline)
 	.run();
 ```
-######Collection parameter support######
+###### Collection parameter support
 ```java
 Set<Long> ids = ...
 List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE ID IN (:ids)")
@@ -115,21 +115,21 @@ List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE ID IN (:id
 	.listResult(customerMapper);;
 ```
 Note: supported for named parameters
-######Iterating a large resultset######
+###### Iterating a large resultset
 ```java
 query.select("SELECT * FROM CUSTOMER")
 	.iterateResult(rs -> {
 		// do something with the row
 	});
 ```
-######Query for a list of limited results######
+###### Query for a list of limited results
 ```java
 List<Customer> customers = query.select("SELECT * FROM CUSTOMER WHERE NAME = ?")
 	.params("John Doe")
 	.maxRows(345L)
 	.listResult(customerMapper);
 ```
-######Fetching generated key of an insert or updates######
+###### Fetching generated key of an insert or updates
 ```java
 UpdateResultGenKeys<Long> result = query
 	.update("INSERT INTO CUSTOMER(NAME) VALUES(:name)")
@@ -137,13 +137,13 @@ UpdateResultGenKeys<Long> result = query
     .runFetchGenKeys(Mappers.singleLong());
 Long id = result.generatedKeys().get(0);
 ```
-######Querying using a specific connection object######
+###### Querying using a specific connection object
 ```java
 Connection connection = ...
 Query query = fluentJdbc.queryOn(connection);
 // do some querying...
 ```
-######Transactions######
+###### Transactions
 ```java
 query.transaction().in(
 	() -> {
@@ -157,7 +157,7 @@ query.transaction().in(
 ```
 All queries executed in the block will be part of the transaction - in the same thread, based on the same FluentJdbc/ConnectionProvider.
 Exceptions cause rollback. It is possible to use multiple transactions/datasources simultaneously.
-######Query listener######
+###### Query listener
 A listener provides a callback mechanism called on each FluentJdbc query operation. This allows things like SQL statement logging,
 performance measurement. The following example logs all successful SQL operations along with the time taken to execute them:
 ```java
