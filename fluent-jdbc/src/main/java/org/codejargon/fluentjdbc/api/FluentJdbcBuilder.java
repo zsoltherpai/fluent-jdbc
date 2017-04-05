@@ -2,6 +2,7 @@ package org.codejargon.fluentjdbc.api;
 
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionProvider;
+import org.codejargon.fluentjdbc.api.query.Transaction;
 import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.FluentJdbcInternal;
 import org.codejargon.fluentjdbc.internal.support.Maps;
@@ -23,6 +24,7 @@ public class FluentJdbcBuilder {
     private Optional<Integer> defaultFetchSize = Optional.empty();
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
     private Optional<AfterQueryListener> afterQueryListener = Optional.empty();
+    private Optional<Transaction.Isolation> defaultTransactionIsolation = Optional.empty();
     private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
 
     public FluentJdbcBuilder() {
@@ -74,6 +76,17 @@ public class FluentJdbcBuilder {
         return this;
     }
 
+    /**
+     * Overrides default transaction isolation imposed by the jdbc driver or the database engine
+     * @param isolation Default isolation
+     * @return this
+     */
+    public FluentJdbcBuilder defaultTransactionIsolation(Transaction.Isolation isolation) {
+        checkNotNull(isolation, "isolation");
+        this.defaultTransactionIsolation = Optional.of(isolation);
+        return this;
+    }
+
     public FluentJdbcBuilder afterQueryListener(AfterQueryListener afterQueryListener) {
         this.afterQueryListener = Optional.of(afterQueryListener);
         return this;
@@ -88,7 +101,8 @@ public class FluentJdbcBuilder {
                 connectionProvider, 
                 Maps.copyOf(paramSetters),
                 defaultFetchSize,
-                afterQueryListener
+                afterQueryListener,
+                defaultTransactionIsolation
         );
     }
 }

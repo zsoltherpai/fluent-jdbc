@@ -5,6 +5,7 @@ import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.ParamSetter;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Query;
+import org.codejargon.fluentjdbc.api.query.Transaction;
 import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.query.QueryConfig;
 import org.codejargon.fluentjdbc.internal.query.QueryInternal;
@@ -22,10 +23,11 @@ public class FluentJdbcInternal implements FluentJdbc {
             Optional<ConnectionProvider> connectionProvider, 
             Map<Class, ParamSetter> paramSetters,
             Optional<Integer> defaultFetchSize,
-            Optional<AfterQueryListener> afterQueryListener
+            Optional<AfterQueryListener> afterQueryListener,
+            Optional<Transaction.Isolation> defaultTransactionIsolation
     ) {
         this.connectionProvider = connectionProvider;
-        queryConfig = new QueryConfig(defaultFetchSize, paramSetters, afterQueryListener);
+        queryConfig = new QueryConfig(defaultFetchSize, paramSetters, afterQueryListener, defaultTransactionIsolation);
     }
 
     @Override

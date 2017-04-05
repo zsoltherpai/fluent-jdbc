@@ -14,10 +14,11 @@ class TransactionInternal implements Transaction {
     private static ThreadLocal<Map<ConnectionProvider, Connection>> connections = new ThreadLocal<>();
 
     private final QueryInternal queryInternal;
-    private Optional<Isolation> isolation = Optional.empty();
+    private Optional<Isolation> isolation;
 
     TransactionInternal(QueryInternal queryInternal) {
         this.queryInternal = queryInternal;
+        this.isolation = queryInternal.config.defaultTransactionIsolation;
     }
 
     @Override

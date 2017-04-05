@@ -1,6 +1,7 @@
 package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.ParamSetter;
+import org.codejargon.fluentjdbc.api.query.Transaction;
 import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
 import org.codejargon.fluentjdbc.internal.support.Maps;
@@ -14,11 +15,13 @@ public class QueryConfig {
     private final Optional<Integer> defaultFetchSize;
     final Optional<AfterQueryListener> afterQueryListener;
     final NamedTransformedSqlFactory namedTransformedSqlFactory;
+    final Optional<Transaction.Isolation> defaultTransactionIsolation;
 
     public QueryConfig(
             Optional<Integer> defaultFetchSize,
             Map<Class, ParamSetter> paramSetters,
-            Optional<AfterQueryListener> afterQueryListener
+            Optional<AfterQueryListener> afterQueryListener,
+            Optional<Transaction.Isolation> defaultTransactionIsolation
     ) {
         this.paramAssigner = new ParamAssigner(
                 Maps.merge(DefaultParamSetters.setters(), paramSetters)
@@ -26,6 +29,7 @@ public class QueryConfig {
         this.namedTransformedSqlFactory = new NamedTransformedSqlFactory();
         this.defaultFetchSize = defaultFetchSize;
         this.afterQueryListener = afterQueryListener;
+        this.defaultTransactionIsolation = defaultTransactionIsolation;
     }
 
     
