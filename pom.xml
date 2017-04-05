@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc-parent</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <packaging>pom</packaging>
     <name>FluentJdbc Parent</name>
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
