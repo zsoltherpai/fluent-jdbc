@@ -1,5 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query
 
+import org.codejargon.fluentjdbc.api.FluentJdbcBuilder
 import org.codejargon.fluentjdbc.api.FluentJdbcException
 import org.codejargon.fluentjdbc.api.query.Transaction
 
@@ -107,6 +108,20 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
         1 * connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ)
         1 * connection.commit()
         updateResult.affectedRows() == expectedUpdatedRows
+    }
+
+    def "Default transaction isolation"() {
+        given:
+        def fluentJdbc = new FluentJdbcBuilder()
+                .connectionProvider(connectionProvider)
+                .defaultTransactionIsolation(Transaction.Isolation.SERIALIZABLE)
+                .build()
+
+        when:
+        fluentJdbc.query().transaction().in({})
+
+        then:
+        1 * connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE)
     }
 
     def throwException() {
