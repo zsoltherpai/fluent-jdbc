@@ -33,6 +33,7 @@ abstract class SingleQueryBase {
     }
 
     protected void addNamedParameter(String name, Object parameter) {
+        Preconditions.checkArgument(params.isEmpty(), "Can not add named parameters if positional parameters are set.");
         this.namedParams.put(name, parameter);
     }
 
