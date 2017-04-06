@@ -1,6 +1,11 @@
 package org.codejargon.fluentjdbc.internal.query
 import org.codejargon.fluentjdbc.api.query.UpdateResult
 
+import java.sql.ResultSet
+import java.sql.Statement
+
+import static org.codejargon.fluentjdbc.api.mapper.Mappers.singleLong
+
 class FluentJdbcBatchTest extends UpdateTestBase {
     static def param3 = "param3"
     static def param4 = "param4"
@@ -60,6 +65,35 @@ class FluentJdbcBatchTest extends UpdateTestBase {
             verifyBatches(1);
         }
     }
+
+    def "Batch update fetch generated keys"() {
+        given:
+        Long generatedKey1 = 5L
+        Long generatedKey2 = 6L
+        int[] expectedUpdated = [1, 1]
+        Iterable<List<Object>> params = [
+                [param1, param2],
+                [param3, param4]
+        ]
+        preparedStatement.executeBatch() >> expectedUpdated
+        ResultSet genKeyRs = Mock(ResultSet)
+        genKeyRs.next() >> true >> true >> false
+        genKeyRs.getLong(1) >> generatedKey1 >> generatedKey2
+        preparedStatement.getGeneratedKeys() >> genKeyRs
+        connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) >> preparedStatement
+        when:
+        def updated = query.batch(sql).params(params).runFetchGenKeys(singleLong())
+        then:
+        assertUpdateResults(expectedUpdated, updated)
+        updated.size() == 2
+        updated.get(0).generatedKeys() == [generatedKey1]
+        updated.get(1).generatedKeys() == [generatedKey2]
+        interaction {
+            verify4Params()
+            verifyBatches(2)
+        }
+    }
+
 
 
     def verifyBatches(Integer addBatch) {

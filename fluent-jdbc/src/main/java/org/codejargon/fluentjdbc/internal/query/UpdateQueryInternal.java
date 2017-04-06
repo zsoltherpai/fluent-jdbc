@@ -31,9 +31,7 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     @Override
     public <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> mapper, String[] genColumns) {
         return runQueryAndFetch(
-                ps -> new UpdateResultGenKeysInternal<>(
-                        (long) ps.executeUpdate(),
-                        generatedKeys(ps, mapper)),
+                ps -> FetchGenKey.yes(mapper).genKeys(ps, ps.executeUpdate()),
                 genColumns
         );
     }
@@ -68,13 +66,4 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
 
     }
 
-    private <T> List<T> generatedKeys(PreparedStatement ps, Mapper<T> generatedKeyMapper) throws SQLException {
-        try (ResultSet keySet = ps.getGeneratedKeys()) {
-            List<T> keys = new ArrayList<>(1);
-            while (keySet.next()) {
-                keys.add(generatedKeyMapper.map(keySet));
-            }
-            return Collections.unmodifiableList(keys);
-        }
-    }
 }

@@ -22,8 +22,8 @@ class PreparedStatementFactory {
         return statement;
     }
 
-    PreparedStatement createBatch(Connection con, String sql) throws SQLException {
-        return prepareStatement(con, sql, false, emptyGenColumns);
+    PreparedStatement createBatch(Connection con, Boolean fetchGenerated, String sql) throws SQLException {
+        return prepareStatement(con, sql, fetchGenerated, emptyGenColumns);
     }
 
     void assignParams(PreparedStatement statement, List<?> params) throws SQLException {

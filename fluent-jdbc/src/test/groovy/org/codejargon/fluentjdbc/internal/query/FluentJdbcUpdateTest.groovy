@@ -37,18 +37,21 @@ class FluentJdbcUpdateTest extends UpdateTestBase {
 
     def "Update and fetch generated keys"() {
         given:
-        Long generatedKey = 5L
+        Long generatedKey1 = 5L
+        Long generatedKey2 = 6L
         ResultSet genKeyRs = Mock(ResultSet)
-        genKeyRs.next() >> true >> false
-        genKeyRs.getLong(1) >> generatedKey
+        genKeyRs.next() >> true >> true >> false
+        genKeyRs.getLong(1) >> generatedKey1 >> generatedKey2
         preparedStatement.getGeneratedKeys() >> genKeyRs
         0 * connection.prepareStatement(sql)
         1 * connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) >> preparedStatement
+        1 * preparedStatement.executeUpdate() >> 2
         when:
         UpdateResultGenKeys<Long> result = query.update(sql).params(param1, param2).runFetchGenKeys(Mappers.singleLong());
         then:
-        result.generatedKeys().size() == 1
-        result.generatedKeys().get(0) == generatedKey
+        result.generatedKeys().size() == 2
+        result.generatedKeys().get(0) == generatedKey1
+        result.generatedKeys().get(1) == generatedKey2
         interaction {
             verifyQuerying()
         }
@@ -64,6 +67,7 @@ class FluentJdbcUpdateTest extends UpdateTestBase {
         preparedStatement.getGeneratedKeys() >> genKeyRs
         0 * connection.prepareStatement(sql)
         1 * connection.prepareStatement(sql, genColumns) >> preparedStatement
+        1 * preparedStatement.executeUpdate() >> 1
         when:
         UpdateResultGenKeys<Long> result = query.update(sql).params(param1, param2).runFetchGenKeys(Mappers.singleLong(), genColumns);
         then:

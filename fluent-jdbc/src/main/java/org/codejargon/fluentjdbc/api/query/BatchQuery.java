@@ -64,4 +64,11 @@ public interface BatchQuery {
      * @return List of update results
      */
     List<UpdateResult> run();
+
+    /**
+     * Runs the batch insert or update and returns the results (eg affected rows)
+     *
+     * @return List of update results
+     */
+    <T> List<UpdateResultGenKeys<T>> runFetchGenKeys(Mapper<T> generatedKeyMapper);
 }
