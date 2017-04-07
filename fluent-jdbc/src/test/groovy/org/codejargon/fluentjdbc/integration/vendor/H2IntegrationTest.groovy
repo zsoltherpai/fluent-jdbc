@@ -57,18 +57,6 @@ class H2IntegrationTest extends IntegrationTestRoutine {
         result.generatedKeys().get(0) == 1L
     }
 
-    def "Batch insert auto-generated keys fetch"() {
-        given:
-        query.update("CREATE TABLE DUMMY_AUTO3 (id INTEGER PRIMARY KEY AUTO_INCREMENT, data VARCHAR(255));").run()
-        when:
-        def result = query.batch("INSERT INTO DUMMY_AUTO3(DATA) VALUES(?)").params([["a"], ["b"]]).runFetchGenKeys(Mappers.singleLong())
-        then:
-        result.size() == 1
-        result.get(0).generatedKeys().size() == 2
-        result.get(0).generatedKeys().get(0)
-        result.get(0).generatedKeys().get(1)
-    }
-
     def "Blob support"() {
         given:
         query.update("CREATE TABLE DUMMY_BYTE (id INTEGER PRIMARY KEY AUTO_INCREMENT, data BINARY(1000));").run()

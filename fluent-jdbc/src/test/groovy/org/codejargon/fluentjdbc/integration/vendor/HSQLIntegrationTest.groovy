@@ -1,4 +1,6 @@
 package org.codejargon.fluentjdbc.integration.vendor
+
+import org.codejargon.fluentjdbc.api.mapper.Mappers
 import org.codejargon.fluentjdbc.integration.IntegrationTest
 import org.codejargon.fluentjdbc.integration.IntegrationTestRoutine
 import org.junit.AfterClass
@@ -25,6 +27,19 @@ class HSQLIntegrationTest extends IntegrationTestRoutine {
     @AfterClass
     static void closeHsql() {
             sentry.close()
+    }
+
+    def "Batch insert auto-generated keys fetch"() {
+        given:
+        query.update("CREATE TABLE DUMMY_AUTO (id INTEGER IDENTITY PRIMARY KEY, data VARCHAR(255));").run()
+        when:
+        def result = query.batch("INSERT INTO DUMMY_AUTO(DATA) VALUES(?)").params([["a"], ["b"]]).runFetchGenKeys(Mappers.singleLong())
+        then:
+        result.size() == 2
+        result.get(0).generatedKeys().size() == 1
+        result.get(0).generatedKeys().get(0) == 0
+        result.get(1).generatedKeys().size() == 1
+        result.get(1).generatedKeys().get(0) == 1
     }
 
     private static void initH2DataSource() {
