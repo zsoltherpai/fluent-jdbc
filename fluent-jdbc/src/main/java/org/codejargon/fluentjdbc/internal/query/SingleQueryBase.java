@@ -18,6 +18,17 @@ abstract class SingleQueryBase {
         this.sql = sql;
     }
 
+    protected void addParameter(Object param) {
+      Preconditions.checkArgument(namedParams.isEmpty(), "Can not add positional parameters if named parameters are set.");
+      this.params.add(param);
+    }
+    
+    protected void addParameters(Object param1, Object param2) {
+      Preconditions.checkArgument(namedParams.isEmpty(), "Can not add positional parameters if named parameters are set.");
+      this.params.add(param1);
+      this.params.add(param2);
+    }
+    
     protected void addParameters(List<?> params) {
         Preconditions.checkArgument(namedParams.isEmpty(), "Can not add positional parameters if named parameters are set.");
         this.params.addAll(params);

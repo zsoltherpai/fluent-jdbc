@@ -61,6 +61,12 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
+    public BatchQuery param(List<?> params) {
+        List<List<?>> list = Collections.singletonList(params);
+        return params(list.iterator());
+    }
+
+    @Override
     public BatchQuery namedParams(Iterator<Map<String, ?>> namedParams) {
         Preconditions.checkNotNull(namedParams, "namedParams");
         Preconditions.checkArgument(!this.namedParams.isPresent(), namedSet);
@@ -79,6 +85,12 @@ class BatchQueryInternal implements BatchQuery {
         return namedParams(params.iterator());
     }
 
+    @Override
+    public BatchQuery namedParam(String name, List<?> params) {
+        List<Map<String, ?>> list = Collections.singletonList(Collections.singletonMap(name, params));
+        return namedParams(list.iterator());
+    }
+    
     @Override
     public BatchQuery batchSize(Integer batchSize) {
         Preconditions.checkNotNull(batchSize, "batch size");
