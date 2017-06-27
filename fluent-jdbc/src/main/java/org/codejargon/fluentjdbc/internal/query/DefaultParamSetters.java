@@ -2,10 +2,6 @@ package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.ParamSetter;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.time.*;
 import java.util.Collections;
 import java.util.Date;
@@ -42,7 +38,7 @@ class DefaultParamSetters {
     }
 
     private static void javaBinary(Map<Class, ParamSetter> ss) {
-        reg(ss, byte[].class, (param, ps, i) -> ps.setBlob(i, new ByteArrayInputStream(param)));
+        reg(ss, byte[].class, (param, ps, i) -> ps.setBytes(i, param));
     }
 
     static Map<Class, ParamSetter> setters() {

@@ -40,10 +40,7 @@ class ParamAssignerTest extends Specification {
         1 * statement.setObject(5, sqlDate)
         1 * statement.setObject(6, time)
         1 * statement.setObject(7, timestamp)
-        1 * statement.setBlob(8, _ as InputStream) >> {arguments -> blobContent = arguments[1]}
-        blobContent instanceof InputStream
-        blobContent.bytes == byteArray
-
+        1 * statement.setBytes(8, byteArray)
     }
 
     def "Local java.time types"() {
