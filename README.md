@@ -17,7 +17,7 @@ FluentJdbc's key features:
 <dependency>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
 </dependency>
 ```
 Note: requires java 8
@@ -25,10 +25,6 @@ Note: requires java 8
 Full documentation on [wiki](https://github.com/zsoltherpai/fluent-jdbc/wiki/Motivation)
 
 Latest [javadoc](https://github.com/zsoltherpai/fluent-jdbc/wiki/Javadoc)
-
-##### News
-* 1.3 released - support for Collection parameters (for batch select)
-* 1.2.2 released - simplified interface for iterating large resultsets, explicit specification of generated column names
 
 ##### Code examples of common use cases
 ###### Setting up FluentJdbc
@@ -87,7 +83,7 @@ query.batch("INSERT INTO CUSTOMER(NAME, ADDRESS) VALUES(?, ?)")
 ```
 ###### Named parameters
 ```java
-query.batch("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
+query.update("UPDATE CUSTOMER SET NAME = :name, ADDRESS = :address")
 	.namedParam("name", "John Doe")
 	.namedParam("address", "Dallas")
 	.run();
