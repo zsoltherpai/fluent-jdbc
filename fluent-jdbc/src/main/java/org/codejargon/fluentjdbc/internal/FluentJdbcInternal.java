@@ -21,13 +21,10 @@ public class FluentJdbcInternal implements FluentJdbc {
 
     public FluentJdbcInternal(
             Optional<ConnectionProvider> connectionProvider, 
-            Map<Class, ParamSetter> paramSetters,
-            Optional<Integer> defaultFetchSize,
-            Optional<AfterQueryListener> afterQueryListener,
-            Optional<Transaction.Isolation> defaultTransactionIsolation
+            QueryConfig queryConfig
     ) {
         this.connectionProvider = connectionProvider;
-        queryConfig = new QueryConfig(defaultFetchSize, paramSetters, afterQueryListener, defaultTransactionIsolation);
+        this.queryConfig = queryConfig;
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionP
 import org.codejargon.fluentjdbc.api.query.Transaction;
 import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.FluentJdbcInternal;
+import org.codejargon.fluentjdbc.internal.query.QueryConfig;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
 import javax.sql.DataSource;
@@ -22,6 +23,7 @@ import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotN
  */
 public class FluentJdbcBuilder {
     private Optional<Integer> defaultFetchSize = Optional.empty();
+    private Optional<Integer> defaultBatchSize = Optional.empty();
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
     private Optional<AfterQueryListener> afterQueryListener = Optional.empty();
     private Optional<Transaction.Isolation> defaultTransactionIsolation = Optional.empty();
@@ -77,6 +79,19 @@ public class FluentJdbcBuilder {
     }
 
     /**
+     * Sets default batch size for batch operations. Vendor default is used if not set.
+     *
+     * @param size Number of rows updated in a single batch
+     * @return this
+     */
+    public FluentJdbcBuilder defaultBatchSize(Integer size) {
+        checkNotNull(size, "size");
+        checkArgument(size >= 0, "Batch size rows must be >= 0");
+        this.defaultBatchSize = Optional.of(size);
+        return this;
+    }
+
+    /**
      * Overrides default transaction isolation imposed by the jdbc driver or the database engine
      * @param isolation Default isolation
      * @return this
@@ -98,11 +113,14 @@ public class FluentJdbcBuilder {
      */
     public FluentJdbc build() {
         return new FluentJdbcInternal(
-                connectionProvider, 
-                Maps.copyOf(paramSetters),
-                defaultFetchSize,
-                afterQueryListener,
-                defaultTransactionIsolation
+                connectionProvider,
+                new QueryConfig(
+                        defaultFetchSize,
+                        defaultBatchSize,
+                        Maps.copyOf(paramSetters),
+                        afterQueryListener,
+                        defaultTransactionIsolation
+                )
         );
     }
 }

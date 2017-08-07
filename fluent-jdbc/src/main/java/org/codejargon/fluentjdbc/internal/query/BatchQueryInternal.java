@@ -34,11 +34,12 @@ class BatchQueryInternal implements BatchQuery {
     private final QueryInternal query;
     private Optional<Iterator<List<?>>> params = empty();
     private Optional<Iterator<Map<String, ?>>> namedParams = empty();
-    private Optional<Integer> batchSize = empty();
+    private Optional<Integer> batchSize;
 
     public BatchQueryInternal(String sql, QueryInternal query) {
         this.sql = sql;
         this.query = query;
+        this.batchSize = query.config.defaultBatchSize;
     }
 
     @Override

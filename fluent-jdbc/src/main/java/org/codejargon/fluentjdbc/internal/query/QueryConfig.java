@@ -13,12 +13,14 @@ public class QueryConfig {
     final ParamAssigner paramAssigner;
 
     private final Optional<Integer> defaultFetchSize;
+    final Optional<Integer> defaultBatchSize;
     final Optional<AfterQueryListener> afterQueryListener;
     final NamedTransformedSqlFactory namedTransformedSqlFactory;
     final Optional<Transaction.Isolation> defaultTransactionIsolation;
 
     public QueryConfig(
             Optional<Integer> defaultFetchSize,
+            Optional<Integer> defaultBatchSize,
             Map<Class, ParamSetter> paramSetters,
             Optional<AfterQueryListener> afterQueryListener,
             Optional<Transaction.Isolation> defaultTransactionIsolation
@@ -28,6 +30,7 @@ public class QueryConfig {
         );
         this.namedTransformedSqlFactory = new NamedTransformedSqlFactory();
         this.defaultFetchSize = defaultFetchSize;
+        this.defaultBatchSize = defaultBatchSize;
         this.afterQueryListener = afterQueryListener;
         this.defaultTransactionIsolation = defaultTransactionIsolation;
     }
