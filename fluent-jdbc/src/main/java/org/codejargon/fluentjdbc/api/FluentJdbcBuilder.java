@@ -9,9 +9,11 @@ import org.codejargon.fluentjdbc.internal.query.QueryConfig;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
@@ -28,6 +30,7 @@ public class FluentJdbcBuilder {
     private Optional<AfterQueryListener> afterQueryListener = Optional.empty();
     private Optional<Transaction.Isolation> defaultTransactionIsolation = Optional.empty();
     private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
+    private Predicate<SQLException> criticalSqlException = (s)->true;
 
     public FluentJdbcBuilder() {
         
@@ -107,6 +110,12 @@ public class FluentJdbcBuilder {
         return this;
     }
 
+    public FluentJdbcBuilder criticalSqlException(Predicate<SQLException> predicate) {
+        checkNotNull(predicate, "predicate");
+        this.criticalSqlException = predicate;
+        return this;
+    }
+
     /**
      * Returns a FluentJdbc instance configured by the builder
      * @return FluentJdbc instance
@@ -119,7 +128,8 @@ public class FluentJdbcBuilder {
                         defaultBatchSize,
                         Maps.copyOf(paramSetters),
                         afterQueryListener,
-                        defaultTransactionIsolation
+                        defaultTransactionIsolation,
+                        criticalSqlException
                 )
         );
     }

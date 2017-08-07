@@ -6,8 +6,10 @@ import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class QueryConfig {
     final ParamAssigner paramAssigner;
@@ -17,13 +19,15 @@ public class QueryConfig {
     final Optional<AfterQueryListener> afterQueryListener;
     final NamedTransformedSqlFactory namedTransformedSqlFactory;
     final Optional<Transaction.Isolation> defaultTransactionIsolation;
+    final Predicate<SQLException> criticalSqlException;
 
     public QueryConfig(
             Optional<Integer> defaultFetchSize,
             Optional<Integer> defaultBatchSize,
             Map<Class, ParamSetter> paramSetters,
             Optional<AfterQueryListener> afterQueryListener,
-            Optional<Transaction.Isolation> defaultTransactionIsolation
+            Optional<Transaction.Isolation> defaultTransactionIsolation,
+            Predicate<SQLException> criticalSqlException
     ) {
         this.paramAssigner = new ParamAssigner(
                 Maps.merge(DefaultParamSetters.setters(), paramSetters)
@@ -33,6 +37,7 @@ public class QueryConfig {
         this.defaultBatchSize = defaultBatchSize;
         this.afterQueryListener = afterQueryListener;
         this.defaultTransactionIsolation = defaultTransactionIsolation;
+        this.criticalSqlException = criticalSqlException;
     }
 
     
