@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class QueryInternal implements Query {
 
@@ -49,7 +48,6 @@ public class QueryInternal implements Query {
         return new TransactionInternal(this);
     }
 
-
     @Override
     public DatabaseInspection databaseInspection() {
         return new DatabaseInspectionInternal(this);
@@ -57,23 +55,28 @@ public class QueryInternal implements Query {
 
     <T> T query(QueryRunnerConnection<T> runner, Optional<String> sql) {
         long start = System.currentTimeMillis();
-        try {
-            T returnValue = doQuery(runner);
-            config.afterQueryListener.ifPresent(
-                    afterQueryListener ->
-                            sql.ifPresent(sqlQuery -> afterQueryListener.listen(
-                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.empty())
-                            ))
-            );
-            return returnValue;
-        } catch (SQLException e) {
-            config.afterQueryListener.ifPresent(
-                    afterQueryListener ->
-                            sql.ifPresent(sqlQuery -> afterQueryListener.listen(
-                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.of(e))
-                            ))
-            );
-            throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
+
+        while (true) {
+            try {
+                T returnValue = doQuery(runner);
+                config.afterQueryListener.ifPresent(
+                        afterQueryListener ->
+                                sql.ifPresent(sqlQuery -> afterQueryListener.listen(
+                                        new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.empty())
+                                ))
+                );
+                return returnValue;
+            } catch (SQLException e) {
+                config.afterQueryListener.ifPresent(
+                        afterQueryListener ->
+                                sql.ifPresent(sqlQuery -> afterQueryListener.listen(
+                                        new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.of(e))
+                                ))
+                );
+                if (config.criticalSqlException.test(e)) {
+                    throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
+                }
+            }
         }
     }
 
