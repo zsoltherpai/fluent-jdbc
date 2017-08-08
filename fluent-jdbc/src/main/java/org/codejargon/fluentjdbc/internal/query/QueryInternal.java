@@ -56,14 +56,11 @@ public class QueryInternal implements Query {
     }
 
     <T> T query(QueryRunnerConnection<T> runner, Optional<String> sql, SqlErrorHandler sqlErrorHandler) {
-        long start = System.currentTimeMillis();
-        try {
-            T returnValue = doQuery(runner);
-            listen(sql, start, Optional.empty());
-            return returnValue;
-        } catch (SQLException e) {
-            return handleError(runner, sql, sqlErrorHandler, start, e);
+        AttemptResult<T> ret = new AttemptResult<>(null, false);
+        while(!ret.success) {
+            ret = attemptQuery(runner, sql, sqlErrorHandler);
         }
+        return ret.result;
     }
 
     @Override
@@ -76,6 +73,18 @@ public class QueryInternal implements Query {
                 "Error running query" + (reason.isPresent() ? ": " + reason.get() : "") + ", %s", sql
         );
         return e.isPresent() ? new FluentJdbcSqlException(message, e.get()) : new FluentJdbcException(message);
+    }
+
+    private <T> AttemptResult<T> attemptQuery(QueryRunnerConnection<T> runner, Optional<String> sql, SqlErrorHandler sqlErrorHandler) {
+        long start = System.currentTimeMillis();
+        try {
+            T returnValue = doQuery(runner);
+            listen(sql, start, Optional.empty());
+            return new AttemptResult<>(returnValue, true);
+        } catch (SQLException e) {
+            handleError(sql, sqlErrorHandler, start, e);
+            return new AttemptResult<>(null, true);
+        }
     }
 
     private <T> T doQuery(QueryRunnerConnection<T> runner) throws SQLException {
@@ -103,17 +112,22 @@ public class QueryInternal implements Query {
         );
     }
 
-    private <T> T handleError(QueryRunnerConnection<T> runner, Optional<String> sql, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
+    private void handleError(Optional<String> sql, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
         try {
-            if(SqlErrorHandler.Action.RETRY == sqlErrorHandler.handle(e, sql)) {
-                return query(runner, sql, sqlErrorHandler);
-            } else {
-                listen(sql, start, Optional.of(e));
-                throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
-            }
+            sqlErrorHandler.handle(e, sql);
         } catch(SQLException sqle) {
             listen(sql, start, Optional.of(e));
             throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
+        }
+    }
+
+    private static class AttemptResult<T> {
+        private final T result;
+        private final Boolean success;
+
+        public AttemptResult(T result, Boolean success) {
+            this.result = result;
+            this.success = success;
         }
     }
 }
