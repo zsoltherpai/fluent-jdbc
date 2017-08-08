@@ -18,7 +18,8 @@ class DatabaseInspectionInternal implements DatabaseInspection {
     public <T> T accessMetaData(MetaDataAccess<T> access) {
         return query.query(
                 connection -> access.access(connection.getMetaData()),
-                Optional.of("JDBC Database Inspection")
+                Optional.of("JDBC Database Inspection"),
+                query.config.defaultSqlErrorHandler
         );
     }
 

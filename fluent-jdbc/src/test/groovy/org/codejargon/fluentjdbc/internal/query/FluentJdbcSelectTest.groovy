@@ -5,8 +5,9 @@ import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder;
 import org.codejargon.fluentjdbc.api.query.Query
 import org.junit.Test
-import spock.lang.Specification;
+import spock.lang.Specification
 
+import javax.naming.OperationNotSupportedException;
 import java.sql.Connection
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -217,6 +218,17 @@ class FluentJdbcSelectTest  extends Specification {
         true
     }
 
+    def "Select with custom error handler"() {
+        given:
+        String namedParamSql = "SELECT * FROM BAR"
+        connection.prepareStatement(_) >> preparedStatement
+        preparedStatement.executeQuery() >> {throw new SQLException ("Oops")}
+        when:
+        query.select(namedParamSql).errorHandler({e, sql -> throw new OhNoes(namedParamSql)}).firstResult(dummyMapper);
+        then:
+        def e = thrown(OhNoes)
+        e.getMessage() == namedParamSql
+    }
 
     void assertSelectResult(List<Dummy> dummies) {
         assert dummies.size() == 3
@@ -253,6 +265,12 @@ class FluentJdbcSelectTest  extends Specification {
 
         Dummy(String foo) {
             this.foo = foo
+        }
+    }
+
+    static class OhNoes extends RuntimeException {
+        OhNoes(String msg) {
+            super(msg)
         }
     }
 }

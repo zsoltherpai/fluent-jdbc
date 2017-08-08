@@ -17,9 +17,17 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     }
 
     @Override
+    public UpdateQuery errorHandler(SqlErrorHandler sqlErrorHandler ) {
+        this.sqlErrorHandler = sqlErrorHandler;
+        return this;
+    }
+
+
+    @Override
     public UpdateResult run() {
         return runQuery(
-                ps -> new UpdateResultInternal((long) ps.executeUpdate())
+                ps -> new UpdateResultInternal((long) ps.executeUpdate()),
+                sqlErrorHandler
         );
     }
 
@@ -32,7 +40,8 @@ class UpdateQueryInternal extends SingleQueryBase implements UpdateQuery {
     public <T> UpdateResultGenKeys<T> runFetchGenKeys(Mapper<T> mapper, String[] genColumns) {
         return runQueryAndFetch(
                 ps -> FetchGenKey.yes(mapper).genKeys(ps, ps.executeUpdate()),
-                genColumns
+                genColumns,
+                sqlErrorHandler
         );
     }
 

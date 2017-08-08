@@ -1,13 +1,10 @@
 package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
-import org.codejargon.fluentjdbc.api.query.BatchQuery;
-import org.codejargon.fluentjdbc.api.query.Mapper;
-import org.codejargon.fluentjdbc.api.query.UpdateResultGenKeys;
+import org.codejargon.fluentjdbc.api.query.*;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
 import org.codejargon.fluentjdbc.internal.support.Ints;
-import org.codejargon.fluentjdbc.api.query.UpdateResult;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
 import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
@@ -35,11 +32,13 @@ class BatchQueryInternal implements BatchQuery {
     private Optional<Iterator<List<?>>> params = empty();
     private Optional<Iterator<Map<String, ?>>> namedParams = empty();
     private Optional<Integer> batchSize;
+    private SqlErrorHandler sqlErrorHandler;
 
     public BatchQueryInternal(String sql, QueryInternal query) {
         this.sql = sql;
         this.query = query;
         this.batchSize = query.config.defaultBatchSize;
+        this.sqlErrorHandler = query.config.defaultSqlErrorHandler;
     }
 
     @Override
@@ -89,6 +88,12 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
+    public BatchQuery errorHandler(SqlErrorHandler sqlErrorHandler ) {
+        this.sqlErrorHandler = sqlErrorHandler;
+        return this;
+    }
+
+    @Override
     public List<UpdateResult> run() {
         return run(FetchGenKey.no());
     }
@@ -105,7 +110,8 @@ class BatchQueryInternal implements BatchQuery {
         Preconditions.checkArgument(params.isPresent() || namedParams.isPresent(), "Parameters must be set to run a batch query");
         return query.query(
                 connection -> params.isPresent() ? positional(connection, fetchGen) : named(connection, fetchGen),
-                Optional.of(sql)
+                Optional.of(sql),
+                sqlErrorHandler
         );
     }
 

@@ -74,6 +74,14 @@ public interface SelectQuery {
     SelectQuery maxRows(Long rows);
 
     /**
+     * Sets a custom error handler
+     *
+     * @param sqlErrorHandler
+     * @return this
+     */
+    SelectQuery errorHandler(SqlErrorHandler sqlErrorHandler);
+
+    /**
      * Runs the select query and returns first result - if any
      *
      * @param mapper ResultSet mapper
@@ -114,9 +122,8 @@ public interface SelectQuery {
      * Runs the select query and provides resultset to the given consumer
      *
      * @param consumer Consumer accepting the ResultSet
-     * @param <T> result type
      */
-    <T> void iterateResult(SqlConsumer<ResultSet> consumer);
+     void iterateResult(SqlConsumer<ResultSet> consumer);
 
     /**
      * Runs the select query and provides results to the given consumer

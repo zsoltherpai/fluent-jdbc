@@ -34,10 +34,8 @@ public class StandaloneFluentJdbcModule extends AbstractModule {
     public StandaloneFluentJdbcModule(
             FluentJdbcBuilder fluentJdbcBuilder, DataSource dataSource
     ) {
-        Preconditions.checkNotNull(fluentJdbcBuilder, "fluentJdbcBuilder");
-        Preconditions.checkNotNull(dataSource, "dataSource");
-        this.fluentJdbcBuilder = fluentJdbcBuilder;
-        this.connectionProvider = new StandaloneTxConnectionProvider(dataSource);
+        this.fluentJdbcBuilder = Preconditions.checkNotNull(fluentJdbcBuilder, "fluentJdbcBuilder");
+        this.connectionProvider = new StandaloneTxConnectionProvider(Preconditions.checkNotNull(dataSource, "dataSource"));
     }
 
     /**
@@ -49,10 +47,8 @@ public class StandaloneFluentJdbcModule extends AbstractModule {
     public StandaloneFluentJdbcModule(
             FluentJdbcBuilder fluentJdbcBuilder, ConnectionProvider connectionProvider
     ) {
-        Preconditions.checkNotNull(fluentJdbcBuilder, "fluentJdbcBuilder");
-        Preconditions.checkNotNull(connectionProvider, "connectionProvider");
-        this.fluentJdbcBuilder = fluentJdbcBuilder;
-        this.connectionProvider = new StandaloneTxConnectionProvider(connectionProvider);
+        this.fluentJdbcBuilder = Preconditions.checkNotNull(fluentJdbcBuilder, "fluentJdbcBuilder");
+        this.connectionProvider = new StandaloneTxConnectionProvider(Preconditions.checkNotNull(connectionProvider, "connectionProvider"));
     }
     
 

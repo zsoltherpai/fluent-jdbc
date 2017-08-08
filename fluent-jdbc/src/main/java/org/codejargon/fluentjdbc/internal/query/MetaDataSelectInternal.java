@@ -1,6 +1,7 @@
 package org.codejargon.fluentjdbc.internal.query;
 
 import org.codejargon.fluentjdbc.api.query.Mapper;
+import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
 import org.codejargon.fluentjdbc.api.query.inspection.MetaDataResultSet;
 import org.codejargon.fluentjdbc.api.query.inspection.MetaDataSelect;
 
@@ -30,7 +31,8 @@ public class MetaDataSelectInternal implements MetaDataSelect {
                     }
                     return results;
                 },
-                Optional.of("JDBC Select from MetaData")
+                Optional.empty(),
+                query.config.defaultSqlErrorHandler
         );
     }
 }

@@ -2,9 +2,11 @@ package org.codejargon.fluentjdbc.api;
 
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionProvider;
+import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
 import org.codejargon.fluentjdbc.api.query.Transaction;
 import org.codejargon.fluentjdbc.api.query.listen.AfterQueryListener;
 import org.codejargon.fluentjdbc.internal.FluentJdbcInternal;
+import org.codejargon.fluentjdbc.internal.query.DefaultSqlHandler;
 import org.codejargon.fluentjdbc.internal.query.QueryConfig;
 import org.codejargon.fluentjdbc.internal.support.Maps;
 
@@ -27,6 +29,7 @@ public class FluentJdbcBuilder {
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
     private Optional<AfterQueryListener> afterQueryListener = Optional.empty();
     private Optional<Transaction.Isolation> defaultTransactionIsolation = Optional.empty();
+    private SqlErrorHandler defaultSqlErrorHandler = new DefaultSqlHandler();
     private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
 
     public FluentJdbcBuilder() {
@@ -41,8 +44,7 @@ public class FluentJdbcBuilder {
      * @return this
      */
     public FluentJdbcBuilder connectionProvider(ConnectionProvider connectionProvider) {
-        checkNotNull(connectionProvider, "connectionProvider");
-        this.connectionProvider = Optional.of(connectionProvider);
+        this.connectionProvider = Optional.of(checkNotNull(connectionProvider, "connectionProvider"));
         return this;
     }
 
@@ -58,8 +60,7 @@ public class FluentJdbcBuilder {
      * @return this
      */
     public FluentJdbcBuilder paramSetters(Map<Class, ParamSetter> paramSetters) {
-        checkNotNull(paramSetters, "paramSetters");
-        this.paramSetters = paramSetters;
+        this.paramSetters = checkNotNull(paramSetters, "paramSetters");
         return this;
     }
 
@@ -72,8 +73,7 @@ public class FluentJdbcBuilder {
      * @return this
      */
     public FluentJdbcBuilder defaultFetchSize(Integer rows) {
-        checkNotNull(rows, "rows");
-        checkArgument(rows >= 0, "Fetch size rows must be >= 0");
+        checkArgument(checkNotNull(rows, "rows") >= 0, "Fetch size rows must be >= 0");
         this.defaultFetchSize = Optional.of(rows);
         return this;
     }
@@ -85,8 +85,7 @@ public class FluentJdbcBuilder {
      * @return this
      */
     public FluentJdbcBuilder defaultBatchSize(Integer size) {
-        checkNotNull(size, "size");
-        checkArgument(size >= 0, "Batch size rows must be >= 0");
+        checkArgument(checkNotNull(size, "size") >= 0, "Batch size rows must be >= 0");
         this.defaultBatchSize = Optional.of(size);
         return this;
     }
@@ -97,8 +96,12 @@ public class FluentJdbcBuilder {
      * @return this
      */
     public FluentJdbcBuilder defaultTransactionIsolation(Transaction.Isolation isolation) {
-        checkNotNull(isolation, "isolation");
-        this.defaultTransactionIsolation = Optional.of(isolation);
+        this.defaultTransactionIsolation = Optional.of(checkNotNull(isolation, "isolation"));
+        return this;
+    }
+
+    public FluentJdbcBuilder defaultSqlHandler(SqlErrorHandler sqlErrorHandler) {
+        this.defaultSqlErrorHandler = sqlErrorHandler;
         return this;
     }
 
@@ -119,7 +122,8 @@ public class FluentJdbcBuilder {
                         defaultBatchSize,
                         Maps.copyOf(paramSetters),
                         afterQueryListener,
-                        defaultTransactionIsolation
+                        defaultTransactionIsolation,
+                        defaultSqlErrorHandler
                 )
         );
     }

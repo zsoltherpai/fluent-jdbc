@@ -55,31 +55,20 @@ public class QueryInternal implements Query {
         return new DatabaseInspectionInternal(this);
     }
 
-    <T> T query(QueryRunnerConnection<T> runner, Optional<String> sql) {
+    <T> T query(QueryRunnerConnection<T> runner, Optional<String> sql, SqlErrorHandler sqlErrorHandler) {
         long start = System.currentTimeMillis();
         try {
             T returnValue = doQuery(runner);
-            config.afterQueryListener.ifPresent(
-                    afterQueryListener ->
-                            sql.ifPresent(sqlQuery -> afterQueryListener.listen(
-                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.empty())
-                            ))
-            );
+            listen(sql, start, Optional.empty());
             return returnValue;
         } catch (SQLException e) {
-            config.afterQueryListener.ifPresent(
-                    afterQueryListener ->
-                            sql.ifPresent(sqlQuery -> afterQueryListener.listen(
-                                    new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, Optional.of(e))
-                            ))
-            );
-            throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
+            return handleError(runner, sql, sqlErrorHandler, start, e);
         }
     }
 
     @Override
     public <T> T plainConnection(PlainConnectionQuery<T> plainConnectionQuery) {
-        return query(plainConnectionQuery::operation, Optional.empty());
+        return query(plainConnectionQuery::operation, Optional.empty(), config.defaultSqlErrorHandler);
     }
 
     FluentJdbcException queryException(String sql, Optional<String> reason, Optional<SQLException> e) {
@@ -103,5 +92,28 @@ public class QueryInternal implements Query {
 
     void assignParams(PreparedStatement statement, List<?> params) throws SQLException {
         preparedStatementFactory.assignParams(statement, params);
+    }
+
+    private void listen(Optional<String> sql, long start, Optional<SQLException> e) {
+        config.afterQueryListener.ifPresent(
+                afterQueryListener ->
+                        sql.ifPresent(sqlQuery -> afterQueryListener.listen(
+                                new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, e)
+                        ))
+        );
+    }
+
+    private <T> T handleError(QueryRunnerConnection<T> runner, Optional<String> sql, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
+        try {
+            if(SqlErrorHandler.Action.RETRY == sqlErrorHandler.handle(e, sql)) {
+                return query(runner, sql, sqlErrorHandler);
+            } else {
+                listen(sql, start, Optional.of(e));
+                throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
+            }
+        } catch(SQLException sqle) {
+            listen(sql, start, Optional.of(e));
+            throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
+        }
     }
 }

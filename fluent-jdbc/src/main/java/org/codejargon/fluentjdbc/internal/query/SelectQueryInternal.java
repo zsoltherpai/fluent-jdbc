@@ -4,6 +4,7 @@ import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
 import org.codejargon.fluentjdbc.api.query.SqlConsumer;
+import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
 import org.codejargon.fluentjdbc.internal.support.Predicates;
 
 import java.sql.PreparedStatement;
@@ -74,6 +75,13 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     }
 
     @Override
+    public SelectQuery errorHandler(SqlErrorHandler sqlErrorHandler ) {
+        this.sqlErrorHandler = sqlErrorHandler;
+        return this;
+    }
+
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> Optional<T> firstResult(Mapper<T> mapper) {
         return runQuery(
@@ -88,7 +96,8 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                         }
                         return result;
                     }
-                });
+                },
+                sqlErrorHandler);
     }
 
     @Override
@@ -130,13 +139,14 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                         }
                     }
                     return null;
-                }
+                },
+                sqlErrorHandler
         );
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> void iterateResult(SqlConsumer<ResultSet> consumer) {
+    public void iterateResult(SqlConsumer<ResultSet> consumer) {
         runQuery(
                 ps -> {
                     try (ResultSet rs = ps.executeQuery()) {
@@ -147,7 +157,8 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                         }
                     }
                     return null;
-                });
+                },
+                sqlErrorHandler);
     }
 
     @Override

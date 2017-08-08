@@ -41,6 +41,14 @@ public interface UpdateQuery {
     UpdateQuery namedParam(String name, Object parameter);
 
     /**
+     * Sets custom error handler
+     *
+     * @param sqlErrorHandler
+     * @return this
+     */
+    UpdateQuery errorHandler(SqlErrorHandler sqlErrorHandler);
+
+    /**
      * Runs the update query
      *
      * @return result of the update (eg affected rows)

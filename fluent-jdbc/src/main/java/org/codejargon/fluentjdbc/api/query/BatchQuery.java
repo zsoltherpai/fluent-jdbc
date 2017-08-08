@@ -59,6 +59,14 @@ public interface BatchQuery {
     BatchQuery batchSize(Integer batchSize);
 
     /**
+     * Sets a custom error handler
+     *
+     * @param sqlErrorHandler
+     * @return this
+     */
+    BatchQuery errorHandler(SqlErrorHandler sqlErrorHandler);
+
+    /**
      * Runs the batch insert or update and returns the results (eg affected rows)
      *
      * @return List of update results

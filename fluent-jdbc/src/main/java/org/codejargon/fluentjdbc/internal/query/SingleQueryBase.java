@@ -1,5 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
 import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
@@ -12,10 +13,12 @@ abstract class SingleQueryBase {
     protected final QueryInternal query;
     protected final List<Object> params = new ArrayList<>(0);
     protected final Map<String, Object> namedParams = new HashMap<>(0);
+    protected SqlErrorHandler sqlErrorHandler;
 
     protected SingleQueryBase(QueryInternal query, String sql) {
         this.query = query;
         this.sql = sql;
+        this.sqlErrorHandler = query.config.defaultSqlErrorHandler;
     }
 
     protected void addParameters(List<?> params) {
@@ -38,25 +41,34 @@ abstract class SingleQueryBase {
     }
 
     protected <T> T runQuery(
-            QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement) {
-        return runQuery(queryRunnerPreparedStatement, false, PreparedStatementFactory.emptyGenColumns);
+            QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement,
+            SqlErrorHandler sqlErrorHandler) {
+        return runQuery(
+                queryRunnerPreparedStatement,
+                false,
+                PreparedStatementFactory.emptyGenColumns,
+                sqlErrorHandler
+        );
     }
 
     protected <T> T runQueryAndFetch(
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement,
-            String[] genColumns) {
-        return runQuery(queryRunnerPreparedStatement, true, genColumns);
+            String[] genColumns,
+            SqlErrorHandler sqlErrorHandler) {
+        return runQuery(queryRunnerPreparedStatement, true, genColumns, sqlErrorHandler);
     }
 
     private <T> T runQuery(
             QueryRunnerPreparedStatement<T> queryRunnerPreparedStatement,
             boolean fetchGenerated,
-            String[] genColumns) {
+            String[] genColumns,
+            SqlErrorHandler sqlErrorHandler) {
         return query.query(connection -> {
-            try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, fetchGenerated, genColumns)) {
-                return queryRunnerPreparedStatement.run(ps);
-            }
-        }, Optional.of(sql));
+                    try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, fetchGenerated, genColumns)) {
+                        return queryRunnerPreparedStatement.run(ps);
+                    }
+                }, Optional.of(sql),
+                sqlErrorHandler);
     }
 
     SqlAndParams sqlAndParams(QueryConfig config) {
