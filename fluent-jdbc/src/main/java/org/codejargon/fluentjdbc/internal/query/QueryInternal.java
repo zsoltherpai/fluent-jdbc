@@ -83,7 +83,7 @@ public class QueryInternal implements Query {
             return new AttemptResult<>(returnValue, true);
         } catch (SQLException e) {
             handleError(sql, sqlErrorHandler, start, e);
-            return new AttemptResult<>(null, true);
+            return new AttemptResult<>(null, false);
         }
     }
 
