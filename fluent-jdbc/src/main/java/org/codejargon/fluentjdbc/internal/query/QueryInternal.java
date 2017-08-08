@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
+
 public class QueryInternal implements Query {
 
     final ConnectionProvider connectionProvider;
@@ -114,7 +116,7 @@ public class QueryInternal implements Query {
 
     private void handleError(Optional<String> sql, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
         try {
-            sqlErrorHandler.handle(e, sql);
+            checkNotNull(sqlErrorHandler.handle(e, sql), "Action in SqlErrorHandler");
         } catch(SQLException sqle) {
             listen(sql, start, Optional.of(e));
             throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
