@@ -7,13 +7,14 @@ import org.codejargon.fluentjdbc.internal.support.Preconditions;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Supplier;
 
 abstract class SingleQueryBase {
     protected final String sql;
     protected final QueryInternal query;
     protected final List<Object> params = new ArrayList<>(0);
     protected final Map<String, Object> namedParams = new HashMap<>(0);
-    protected SqlErrorHandler sqlErrorHandler;
+    protected Supplier<SqlErrorHandler> sqlErrorHandler;
 
     protected SingleQueryBase(QueryInternal query, String sql) {
         this.query = query;

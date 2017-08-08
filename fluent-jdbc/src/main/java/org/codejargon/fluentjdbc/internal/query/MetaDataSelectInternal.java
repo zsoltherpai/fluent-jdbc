@@ -32,7 +32,7 @@ public class MetaDataSelectInternal implements MetaDataSelect {
                     return results;
                 },
                 Optional.empty(),
-                query.config.defaultSqlErrorHandler
+                query.config.defaultSqlErrorHandler.get()
         );
     }
 }

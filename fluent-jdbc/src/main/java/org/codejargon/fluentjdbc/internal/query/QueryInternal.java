@@ -68,7 +68,7 @@ public class QueryInternal implements Query {
 
     @Override
     public <T> T plainConnection(PlainConnectionQuery<T> plainConnectionQuery) {
-        return query(plainConnectionQuery::operation, Optional.empty(), config.defaultSqlErrorHandler);
+        return query(plainConnectionQuery::operation, Optional.empty(), config.defaultSqlErrorHandler.get());
     }
 
     FluentJdbcException queryException(String sql, Optional<String> reason, Optional<SQLException> e) {

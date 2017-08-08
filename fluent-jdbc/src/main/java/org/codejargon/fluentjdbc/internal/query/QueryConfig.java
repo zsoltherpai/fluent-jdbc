@@ -9,6 +9,7 @@ import org.codejargon.fluentjdbc.internal.support.Maps;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class QueryConfig {
     final ParamAssigner paramAssigner;
@@ -18,7 +19,7 @@ public class QueryConfig {
     final Optional<AfterQueryListener> afterQueryListener;
     final NamedTransformedSqlFactory namedTransformedSqlFactory;
     final Optional<Transaction.Isolation> defaultTransactionIsolation;
-    final SqlErrorHandler defaultSqlErrorHandler;
+    final Supplier<SqlErrorHandler> defaultSqlErrorHandler;
 
     public QueryConfig(
             Optional<Integer> defaultFetchSize,
@@ -26,7 +27,7 @@ public class QueryConfig {
             Map<Class, ParamSetter> paramSetters,
             Optional<AfterQueryListener> afterQueryListener,
             Optional<Transaction.Isolation> defaultTransactionIsolation,
-            SqlErrorHandler defaultSqlErrorHandler
+            Supplier<SqlErrorHandler> defaultSqlErrorHandler
     ) {
         this.paramAssigner = new ParamAssigner(
                 Maps.merge(DefaultParamSetters.setters(), paramSetters)

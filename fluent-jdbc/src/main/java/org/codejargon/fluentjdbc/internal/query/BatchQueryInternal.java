@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -32,7 +33,7 @@ class BatchQueryInternal implements BatchQuery {
     private Optional<Iterator<List<?>>> params = empty();
     private Optional<Iterator<Map<String, ?>>> namedParams = empty();
     private Optional<Integer> batchSize;
-    private SqlErrorHandler sqlErrorHandler;
+    private Supplier<SqlErrorHandler> sqlErrorHandler;
 
     public BatchQueryInternal(String sql, QueryInternal query) {
         this.sql = sql;
@@ -88,8 +89,8 @@ class BatchQueryInternal implements BatchQuery {
     }
 
     @Override
-    public BatchQuery errorHandler(SqlErrorHandler sqlErrorHandler ) {
-        this.sqlErrorHandler = sqlErrorHandler;
+    public BatchQuery errorHandler(SqlErrorHandler sqlErrorHandler) {
+        this.sqlErrorHandler = () -> sqlErrorHandler;
         return this;
     }
 
@@ -111,7 +112,7 @@ class BatchQueryInternal implements BatchQuery {
         return query.query(
                 connection -> params.isPresent() ? positional(connection, fetchGen) : named(connection, fetchGen),
                 Optional.of(sql),
-                sqlErrorHandler
+                sqlErrorHandler.get()
         );
     }
 

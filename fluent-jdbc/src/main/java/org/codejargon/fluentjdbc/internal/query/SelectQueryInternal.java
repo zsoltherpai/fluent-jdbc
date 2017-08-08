@@ -76,7 +76,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
     @Override
     public SelectQuery errorHandler(SqlErrorHandler sqlErrorHandler ) {
-        this.sqlErrorHandler = sqlErrorHandler;
+        this.sqlErrorHandler = () -> sqlErrorHandler;
         return this;
     }
 
@@ -97,7 +97,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                         return result;
                     }
                 },
-                sqlErrorHandler);
+                sqlErrorHandler.get());
     }
 
     @Override
@@ -140,7 +140,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                     }
                     return null;
                 },
-                sqlErrorHandler
+                sqlErrorHandler.get()
         );
     }
 
@@ -158,7 +158,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                     }
                     return null;
                 },
-                sqlErrorHandler);
+                sqlErrorHandler.get());
     }
 
     @Override

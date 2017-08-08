@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
 import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
@@ -29,7 +30,7 @@ public class FluentJdbcBuilder {
     private Optional<ConnectionProvider> connectionProvider = Optional.empty();
     private Optional<AfterQueryListener> afterQueryListener = Optional.empty();
     private Optional<Transaction.Isolation> defaultTransactionIsolation = Optional.empty();
-    private SqlErrorHandler defaultSqlErrorHandler = new DefaultSqlHandler();
+    private Supplier<SqlErrorHandler> defaultSqlErrorHandler = DefaultSqlHandler::new;
     private Map<Class, ParamSetter> paramSetters = Maps.copyOf(new HashMap<>());
 
     public FluentJdbcBuilder() {
@@ -100,7 +101,13 @@ public class FluentJdbcBuilder {
         return this;
     }
 
-    public FluentJdbcBuilder defaultSqlHandler(SqlErrorHandler sqlErrorHandler) {
+    /**
+     * Sets a default / global sql handler. The supplier will be called to fetch an error handler instance for each query execution.
+     *
+     * @param sqlErrorHandler supplier of sql error handlers.
+     * @return this
+     */
+    public FluentJdbcBuilder defaultSqlHandler(Supplier<SqlErrorHandler> sqlErrorHandler) {
         this.defaultSqlErrorHandler = sqlErrorHandler;
         return this;
     }

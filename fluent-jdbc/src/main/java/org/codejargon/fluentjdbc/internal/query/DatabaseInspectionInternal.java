@@ -19,7 +19,7 @@ class DatabaseInspectionInternal implements DatabaseInspection {
         return query.query(
                 connection -> access.access(connection.getMetaData()),
                 Optional.of("JDBC Database Inspection"),
-                query.config.defaultSqlErrorHandler
+                query.config.defaultSqlErrorHandler.get()
         );
     }
 
