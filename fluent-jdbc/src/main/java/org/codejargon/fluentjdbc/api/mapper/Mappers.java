@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.ResultSetMetaData;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
