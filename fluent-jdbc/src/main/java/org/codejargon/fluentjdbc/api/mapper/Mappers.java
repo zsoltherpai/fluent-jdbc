@@ -21,7 +21,7 @@ public abstract class Mappers {
     private static final Mapper<Boolean> singleBoolean = (rs) -> rs.getBoolean(1);
     private static final Mapper<Map<String, Object>> map = rs -> {
         ResultSetMetaData meta = rs.getMetaData();
-        Map<String, Object> result = new HashMap<>(meta.getColumnCount());
+        Map<String, Object> result = new LinkedHashMap<>(meta.getColumnCount());
         for(int column = 1; column <= meta.getColumnCount(); ++column) {
             result.put(meta.getColumnLabel(column), rs.getObject(column));
         }
