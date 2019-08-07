@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.codejargon</groupId>
     <artifactId>fluentjdbc-parent</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.4</version>
     <packaging>pom</packaging>
     <name>FluentJdbc Parent</name>
     <url>https://github.com/zsoltherpai/fluent-jdbc</url>
@@ -168,6 +168,7 @@
                             <excludePackageNames>
                                 org.codejargon.fluentjdbc.internal:org.codejargon.fluentjdbc.internal.*
                             </excludePackageNames>
+                            <source>8</source>
                         </configuration>
                     </plugin>
                     <plugin>
