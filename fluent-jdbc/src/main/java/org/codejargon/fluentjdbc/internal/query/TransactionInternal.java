@@ -8,6 +8,7 @@ import org.codejargon.fluentjdbc.api.query.Transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 class TransactionInternal implements Transaction {
@@ -57,7 +58,9 @@ class TransactionInternal implements Transaction {
                             try {
                                 result.add(operation.get());
                             } catch(RuntimeException e) {
-                                con.rollback();
+                                if (!con.getAutoCommit()) {
+                                    con.rollback();
+                                }
                                 throw e;
                             }
                             con.commit();
@@ -85,7 +88,7 @@ class TransactionInternal implements Transaction {
     private Map<ConnectionProvider, Connection> connections() {
         Map<ConnectionProvider, Connection> cons = connections.get();
         if(cons == null) {
-            cons = new HashMap<>(4);
+            cons = new ConcurrentHashMap<>(4);
             connections.set(cons);
         }
         return cons;
