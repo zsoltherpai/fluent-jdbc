@@ -21,7 +21,7 @@ class HSQLIntegrationTest extends IntegrationTestRoutine {
     @BeforeClass
     static void initHsql() {
         initH2DataSource()
-        createTestTable(sentry)
+        createTestTable(sentry, "VARBINARY(100)")
     }
 
     @AfterClass

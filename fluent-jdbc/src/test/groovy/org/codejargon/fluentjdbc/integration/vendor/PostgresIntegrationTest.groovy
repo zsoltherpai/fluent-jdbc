@@ -19,7 +19,7 @@ class PostgresIntegrationTest extends IntegrationTestRoutine {
         def con = null
         try {
             con = ds.getConnection()
-            createTestTable(con)
+            createTestTable(con, "bytea")
         } finally {
             con.close()
         }
@@ -34,4 +34,7 @@ class PostgresIntegrationTest extends IntegrationTestRoutine {
     protected DataSource dataSource() {
         return ds
     }
+
+
 }
+

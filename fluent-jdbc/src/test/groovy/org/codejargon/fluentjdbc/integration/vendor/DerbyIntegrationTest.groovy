@@ -17,7 +17,7 @@ class DerbyIntegrationTest extends IntegrationTestRoutine {
     @BeforeClass
     static void initH2() {
         initDerbyDataSource()
-        createTestTable(sentry)
+        createTestTable(sentry, "BLOB")
     }
 
     @AfterClass

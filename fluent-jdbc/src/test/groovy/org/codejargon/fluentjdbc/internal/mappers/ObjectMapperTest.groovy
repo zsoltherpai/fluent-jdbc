@@ -58,7 +58,7 @@ class ObjectMapperTest extends Specification {
         meta.getColumnLabel(12) >> "OPTIONAL_NON_EMPTY_COLUMN"
         resultSet.getTimestamp(13) >> null
         meta.getColumnLabel(13) >> "OPTIONAL_EMPTY_COLUMN"
-        resultSet.getBlob(14) >> new SerialBlob(expectedDummy.byteArrayColumn)
+        resultSet.getBytes(14) >> expectedDummy.byteArrayColumn
         meta.getColumnLabel(14) >> "BYTE_ARRAY_COLUMN"
         resultSet.getMetaData() >> meta
         meta.getColumnCount() >> 14

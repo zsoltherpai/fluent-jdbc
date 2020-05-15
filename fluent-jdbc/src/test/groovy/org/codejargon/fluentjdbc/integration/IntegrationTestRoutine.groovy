@@ -190,13 +190,13 @@ abstract class IntegrationTestRoutine extends Specification {
         ["DUMMY", "dummy"].any { tables.contains(it) }
     }
 
-    protected static void createTestTable(Connection connection) {
+    protected static void createTestTable(Connection connection, String binaryColumn) {
         try {
             new FluentJdbcBuilder().build().queryOn(connection).update(dropDummyTable).run()
         } catch(Exception e) {
             // ignorable
         }
-        new FluentJdbcBuilder().build().queryOn(connection).update(createDummyTable).run()
+        new FluentJdbcBuilder().build().queryOn(connection).update(createDummyTable.replace("%BINCOLUMN%", binaryColumn)).run()
     }
 
     void removeContentAndVerify() {

@@ -24,7 +24,7 @@ class H2IntegrationTest extends IntegrationTestRoutine {
     @BeforeClass
     static void initH2() {
         initH2DataSource()
-        createTestTable(sentry)
+        createTestTable(sentry, "VARBINARY")
     }
 
     @AfterClass

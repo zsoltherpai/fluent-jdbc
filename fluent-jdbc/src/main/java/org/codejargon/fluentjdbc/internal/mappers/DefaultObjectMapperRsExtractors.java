@@ -80,15 +80,8 @@ public class DefaultObjectMapperRsExtractors {
     }
 
     private static void binaryTypes(Map<Class, ObjectMapperRsExtractor<?>> exs) {
-        reg(exs, byte[].class, (rs, i) -> {
-            Blob blob = rs.getBlob(i);
-            if (blob == null) {
-                return null;
-            }
-            byte[] data = blob.getBytes(1, (int) blob.length());
-            freeBlob(blob);
-            return data;
-        });
+        reg(exs, byte[].class, (rs, i) -> rs.getBytes(i));
+
         reg(exs, ByteBuffer.class, (rs, i) -> {
             Blob blob = rs.getBlob(i);
             if (blob == null) {

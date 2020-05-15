@@ -8,14 +8,15 @@ class Dummy {
     LocalDate dateLocalDate
     java.sql.Date dateSqlDate
     String nullString
-    byte[] byteArray
+    byte[] bytearray
 
-    Dummy(String id, String string, LocalDate dateLocalDate, java.sql.Date dateSqlDate) {
+    Dummy(String id, String string, LocalDate dateLocalDate, java.sql.Date dateSqlDate, byte[] bytearray) {
         this.id = id
         this.string = string
         this.dateLocalDate = dateLocalDate
         this.dateSqlDate = dateSqlDate
         this.nullString = null
+        this.bytearray = bytearray
     }
 
     private Dummy() {
@@ -27,7 +28,8 @@ class Dummy {
                 string,
                 dateLocalDate,
                 dateSqlDate,
-                nullString
+                nullString,
+                bytearray
         ]
     }
 
@@ -37,7 +39,8 @@ class Dummy {
                 "string"       : string,
                 "dateLocalDate": dateLocalDate,
                 "dateSqlDate"  : dateSqlDate,
-                "nullString"   : nullString
+                "nullString"   : nullString,
+                "bytearray"    : bytearray
         ]
     }
 
