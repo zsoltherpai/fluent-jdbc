@@ -3,18 +3,19 @@ package org.codejargon.fluentjdbc.integration.testdata
 import java.time.LocalDate
 
 class Dummy {
-    String id;
-    String string;
-    LocalDate dateLocalDate;
-    java.sql.Date dateSqlDate;
-    String nullString;
+    String id
+    String string
+    LocalDate dateLocalDate
+    java.sql.Date dateSqlDate
+    String nullString
+    byte[] byteArray
 
-    public Dummy(String id, String string, LocalDate dateLocalDate, java.sql.Date dateSqlDate) {
-        this.id = id;
-        this.string = string;
-        this.dateLocalDate = dateLocalDate;
-        this.dateSqlDate = dateSqlDate;
-        this.nullString = null;
+    Dummy(String id, String string, LocalDate dateLocalDate, java.sql.Date dateSqlDate) {
+        this.id = id
+        this.string = string
+        this.dateLocalDate = dateLocalDate
+        this.dateSqlDate = dateSqlDate
+        this.nullString = null
     }
 
     private Dummy() {
@@ -40,7 +41,7 @@ class Dummy {
         ]
     }
 
-    public String id() {
+     String id() {
         return id;
     }
 }

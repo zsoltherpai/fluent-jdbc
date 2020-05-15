@@ -31,7 +31,7 @@ abstract class IntegrationTestRoutine extends Specification {
     protected abstract DataSource dataSource()
 
     @Before
-    public void initializeFluentJdbcAndCleanUpDb() {
+    void initializeFluentJdbcAndCleanUpDb() {
         fluentJdbc = new FluentJdbcBuilder()
                 .connectionProvider(new DataSourceConnectionProvider(dataSource()))
                 .build()
@@ -40,7 +40,7 @@ abstract class IntegrationTestRoutine extends Specification {
     }
 
     @After
-    public void cleanUpDb() {
+    void cleanUpDb() {
         removeContentAndVerify()
     }
 
@@ -100,8 +100,8 @@ abstract class IntegrationTestRoutine extends Specification {
                 .run()
         List<Map<String, Object>> dummies = fluentJdbc.query().select("SELECT ID AS ID_ALIAS, string FROM DUMMY").listResult(Mappers.map())
         then:
-        dummies[0].get("ID_ALIAS") == dummy1.id
-        dummies[0].get("STRING") == dummy1.string
+        ["ID_ALIAS", "id_alias"].collect { dummies[0].get(it) }.any { it == dummy1.id }
+        ["STRING", "string"].collect { dummies[0].get(it) }.any { it ==  dummy1.string}
     }
 
     def "Batch insert with named parameters"() {
@@ -169,7 +169,7 @@ abstract class IntegrationTestRoutine extends Specification {
             meta ->
                 ResultSet rs = meta.getTables(null, null, null, null)
                 while (rs.next()) {
-                    if ("DUMMY".equals(rs.getString(3))) {
+                    if (["DUMMY", "dummy"].any { it.equals(rs.getString(3)) }) {
                         return true;
                     }
                 }
@@ -187,7 +187,7 @@ abstract class IntegrationTestRoutine extends Specification {
                 meta.getTables(null, null, null, null)
         }).listResult({ rs -> return rs.getString(3) })
         then:
-        tables.contains("DUMMY")
+        ["DUMMY", "dummy"].any { tables.contains(it) }
     }
 
     protected static void createTestTable(Connection connection) {
