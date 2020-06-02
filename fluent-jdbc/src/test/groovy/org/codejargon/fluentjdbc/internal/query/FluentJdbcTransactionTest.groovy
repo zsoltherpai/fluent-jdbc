@@ -80,12 +80,17 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
     }
 
     def "Transactions are lazy"() {
-        given:
-        preparedStatement.executeUpdate() >> expectedUpdatedRows.intValue()
         when:
-        query.transaction().inNoResult({ -> });
+        query.transaction().inNoResult({ -> /* not using query */ });
         then:
-        0 * connection.setAutoCommit(false)
+        connectionProvided == 0
+    }
+    
+    def "Nested transactions are lazy"() {
+        when:
+        query.transaction().inNoResult({ -> query.transaction().inNoResult({ -> /* not using query */ })});
+        then:
+        connectionProvided == 0
     }
 
     def "Transaction isolation"() {
