@@ -1,6 +1,7 @@
 package org.codejargon.fluentjdbc.integration
 import org.codejargon.fluentjdbc.api.FluentJdbc
 import org.codejargon.fluentjdbc.api.FluentJdbcBuilder
+import org.codejargon.fluentjdbc.api.FluentJdbcException
 import org.codejargon.fluentjdbc.api.integration.providers.DataSourceConnectionProvider
 import org.codejargon.fluentjdbc.api.mapper.Mappers
 import org.codejargon.fluentjdbc.api.mapper.ObjectMappers
@@ -58,6 +59,14 @@ abstract class IntegrationTestRoutine extends Specification {
         then:
         Dummy dummy = fluentJdbc.query().select(selectAllSql).singleResult(dummyMapper)
         assertDummy(dummy, dummy1);
+    }
+
+    def "Typo in named param"() {
+        when:
+        query.update("INSERT INTO DUMMY(string) VALUES (:myString)").namedParams(["string": "value"]).run()
+        then:
+        FluentJdbcException exception = thrown()
+        exception.message == "Named parameter not set: 'myString'"
     }
 
     def "Select with named parameters including collections"() {
