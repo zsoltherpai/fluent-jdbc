@@ -218,8 +218,7 @@ public abstract class NamedParameterUtils {
                 } else {
                     actualSql.append("?");
                 }
-            }
-            else {
+            } else {
                 actualSql.append("?");
             }
             lastIndex = endIndex;
@@ -242,6 +241,9 @@ public abstract class NamedParameterUtils {
         List<String> paramNames = parsedSql.getParameterNames();
         for (int i = 0; i < paramNames.size(); i++) {
             String paramName = paramNames.get(i);
+            if (!namedParams.containsKey(paramName)) {
+                throw new FluentJdbcException(String.format("Named parameter not set: '%s'", paramName));
+            }
             paramArray[i] = namedParams.get(paramName);
         }
         return paramArray;
