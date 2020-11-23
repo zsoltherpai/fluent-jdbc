@@ -1,22 +1,28 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import static java.util.Optional.empty;
+import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
+import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.query.Mapper;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
 import org.codejargon.fluentjdbc.api.query.SqlConsumer;
 import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
 import org.codejargon.fluentjdbc.internal.support.Predicates;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
-import static java.util.Optional.empty;
-import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkArgument;
-import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
 
 class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
 
@@ -105,7 +111,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
     public <T> T singleResult(Mapper<T> mapper) {
         Optional<T> firstResult = firstResult(mapper);
         if (!firstResult.isPresent()) {
-            throw query.queryException(sql, Optional.of("At least one result expected"), empty());
+            throw query.queryException(QueryInfoInternal.optional(sql, params, namedParams), Optional.of("At least one result expected"), empty());
         }
         return firstResult.get();
     }

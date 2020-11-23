@@ -35,7 +35,7 @@ class QueryListenerTest extends Specification {
         then:
         executionDetails != null
         executionDetails.success()
-        executionDetails.sql() == sql
+        executionDetails.queryInfo().sql() == sql
         executionDetails.executionTimeMs() >= 0
         !executionDetails.sqlException().isPresent()
     }
@@ -49,7 +49,7 @@ class QueryListenerTest extends Specification {
         thrown(FluentJdbcSqlException)
         executionDetails != null
         !executionDetails.success()
-        executionDetails.sql() == sql
+        executionDetails.queryInfo().sql() == sql
         executionDetails.executionTimeMs() >= 0
         executionDetails.sqlException().isPresent()
     }

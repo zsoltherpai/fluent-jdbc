@@ -1,20 +1,25 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.api.FluentJdbcException;
-import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
-import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
-import org.codejargon.fluentjdbc.api.query.*;
-import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
-import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
+import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
-import static org.codejargon.fluentjdbc.internal.support.Preconditions.checkNotNull;
+import org.codejargon.fluentjdbc.api.FluentJdbcException;
+import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
+import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
+import org.codejargon.fluentjdbc.api.query.BatchQuery;
+import org.codejargon.fluentjdbc.api.query.PlainConnectionQuery;
+import org.codejargon.fluentjdbc.api.query.Query;
+import org.codejargon.fluentjdbc.api.query.SelectQuery;
+import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
+import org.codejargon.fluentjdbc.api.query.Transaction;
+import org.codejargon.fluentjdbc.api.query.UpdateQuery;
+import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
+import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
 
 public class QueryInternal implements Query {
 
@@ -57,7 +62,7 @@ public class QueryInternal implements Query {
         return new DatabaseInspectionInternal(this);
     }
 
-    <T> T query(QueryRunnerConnection<T> runner, Optional<String> sql, SqlErrorHandler sqlErrorHandler) {
+    <T> T query(QueryRunnerConnection<T> runner, Optional<QueryInfoInternal> sql, SqlErrorHandler sqlErrorHandler) {
         AttemptResult<T> ret = new AttemptResult<>(null, false);
         while(!ret.success) {
             ret = attemptQuery(runner, sql, sqlErrorHandler);
@@ -70,14 +75,15 @@ public class QueryInternal implements Query {
         return query(plainConnectionQuery::operation, Optional.empty(), config.defaultSqlErrorHandler.get());
     }
 
-    FluentJdbcException queryException(String sql, Optional<String> reason, Optional<SQLException> e) {
-        String message = String.format(
-                "Error running query" + (reason.isPresent() ? ": " + reason.get() : "") + ", %s", sql
-        );
+    FluentJdbcException queryException(Optional<QueryInfoInternal> queryInfo, Optional<String> reason, Optional<SQLException> e) {
+        String sql = queryInfo.map(QueryInfoInternal::sql).orElse("");
+        String message = reason.isPresent()
+                ? String.format("Error running query: %s, %s", reason.get(), sql)
+                : String.format("Error running query, %s", sql);
         return e.isPresent() ? new FluentJdbcSqlException(message, e.get()) : new FluentJdbcException(message);
     }
 
-    private <T> AttemptResult<T> attemptQuery(QueryRunnerConnection<T> runner, Optional<String> sql, SqlErrorHandler sqlErrorHandler) {
+    private <T> AttemptResult<T> attemptQuery(QueryRunnerConnection<T> runner, Optional<QueryInfoInternal> sql, SqlErrorHandler sqlErrorHandler) {
         long start = System.currentTimeMillis();
         try {
             T returnValue = doQuery(runner);
@@ -105,21 +111,21 @@ public class QueryInternal implements Query {
         preparedStatementFactory.assignParams(statement, params);
     }
 
-    private void listen(Optional<String> sql, long start, Optional<SQLException> e) {
+    private void listen(Optional<QueryInfoInternal> queryInfo, long start, Optional<SQLException> e) {
         config.afterQueryListener.ifPresent(
                 afterQueryListener ->
-                        sql.ifPresent(sqlQuery -> afterQueryListener.listen(
-                                new ExecutionDetailsInternal(sqlQuery, System.currentTimeMillis() - start, e)
+                        queryInfo.ifPresent(sqlQueryInfo -> afterQueryListener.listen(
+                                new ExecutionDetailsInternal(sqlQueryInfo, System.currentTimeMillis() - start, e)
                         ))
         );
     }
 
-    private void handleError(Optional<String> sql, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
+    private void handleError(Optional<QueryInfoInternal> sql, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
         try {
             checkNotNull(sqlErrorHandler.handle(e, sql), "Action in SqlErrorHandler");
         } catch(SQLException sqle) {
             listen(sql, start, Optional.of(e));
-            throw queryException(sql.orElse(""), Optional.empty(), Optional.of(e));
+            throw queryException(sql, Optional.empty(), Optional.of(e));
         }
     }
 

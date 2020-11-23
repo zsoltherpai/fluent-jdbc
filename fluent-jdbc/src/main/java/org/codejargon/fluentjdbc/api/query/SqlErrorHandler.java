@@ -3,6 +3,8 @@ package org.codejargon.fluentjdbc.api.query;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import org.codejargon.fluentjdbc.internal.query.QueryInfoInternal;
+
 public interface SqlErrorHandler {
     enum Action {
         RETRY
@@ -17,5 +19,5 @@ public interface SqlErrorHandler {
      * @param sql The sql query. Always present unless the error was thrown by direct plainConnection() usage.
      * @return In case no exception is thrown, otherwise action needs to be returned ( eg retry ).
      */
-    Action handle(SQLException e, Optional<String> sql) throws SQLException;
+    Action handle(SQLException e, Optional<QueryInfoInternal> sql) throws SQLException;
 }

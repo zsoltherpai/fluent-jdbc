@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface ExecutionDetails {
     Boolean success();
-    String sql();
+    QueryInfo queryInfo();
     Long executionTimeMs();
     Optional<SQLException> sqlException();
 }

@@ -1,28 +1,34 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.api.FluentJdbcException;
-import org.codejargon.fluentjdbc.api.query.*;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
-import org.codejargon.fluentjdbc.internal.support.Ints;
-import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
-import org.codejargon.fluentjdbc.internal.support.Preconditions;
+import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
+import static org.codejargon.fluentjdbc.internal.support.Iterables.stream;
+import static org.codejargon.fluentjdbc.internal.support.Sneaky.consumer;
 
-import java.awt.geom.AffineTransform;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Optional.empty;
-import static java.util.stream.Collectors.toList;
-import static org.codejargon.fluentjdbc.internal.support.Sneaky.consumer;
-import static org.codejargon.fluentjdbc.internal.support.Iterables.stream;
+import org.codejargon.fluentjdbc.api.FluentJdbcException;
+import org.codejargon.fluentjdbc.api.query.BatchQuery;
+import org.codejargon.fluentjdbc.api.query.Mapper;
+import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
+import org.codejargon.fluentjdbc.api.query.UpdateResult;
+import org.codejargon.fluentjdbc.api.query.UpdateResultGenKeys;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSql;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.NamedTransformedSqlFactory;
+import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
+import org.codejargon.fluentjdbc.internal.support.Ints;
+import org.codejargon.fluentjdbc.internal.support.Preconditions;
 
 class BatchQueryInternal implements BatchQuery {
     private static final String namedSet = "Named parameters are already set.";
@@ -111,7 +117,7 @@ class BatchQueryInternal implements BatchQuery {
         Preconditions.checkArgument(params.isPresent() || namedParams.isPresent(), "Parameters must be set to run a batch query");
         return query.query(
                 connection -> params.isPresent() ? positional(connection, fetchGen) : named(connection, fetchGen),
-                Optional.of(sql),
+                Optional.of(QueryInfoInternal.of(sql)),
                 sqlErrorHandler.get()
         );
     }

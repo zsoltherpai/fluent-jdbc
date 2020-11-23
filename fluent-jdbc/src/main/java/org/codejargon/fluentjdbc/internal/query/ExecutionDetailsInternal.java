@@ -1,20 +1,20 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.api.query.listen.ExecutionDetails;
-
 import java.sql.SQLException;
 import java.util.Optional;
 
+import org.codejargon.fluentjdbc.api.query.listen.ExecutionDetails;
+
 class ExecutionDetailsInternal implements ExecutionDetails {
-    private final String sql;
+    private final QueryInfoInternal queryInfo;
     private final Long executionTimeMs;
     private final Optional<SQLException> sqlException;
 
     public ExecutionDetailsInternal(
-            String sql,
+            QueryInfoInternal queryInfo,
             Long executionTimeMs,
             Optional<SQLException> sqlException) {
-        this.sql = sql;
+        this.queryInfo = queryInfo;
         this.executionTimeMs = executionTimeMs;
         this.sqlException = sqlException;
     }
@@ -25,8 +25,8 @@ class ExecutionDetailsInternal implements ExecutionDetails {
     }
 
     @Override
-    public String sql() {
-        return sql;
+    public QueryInfoInternal queryInfo() {
+        return queryInfo;
     }
 
     @Override
