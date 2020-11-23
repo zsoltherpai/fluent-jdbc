@@ -12,6 +12,7 @@ import java.sql.SQLException
 
 class QueryListenerTest extends Specification {
     protected static final def sql = "UPDATE FOO SET BAR = 'x' WHERE COL1 = ? AND COL2 = ?"
+    protected static final def namedSql = "UPDATE FOO SET BAR = 'x' WHERE COL1 = :name AND COL2 = :name"
     Query query
     def preparedStatement = Mock(PreparedStatement)
     Connection connection = Mock(Connection)
@@ -29,13 +30,41 @@ class QueryListenerTest extends Specification {
                 .query()
     }
 
-    def "Listener invoked"() {
+    def "Listener invoked without params"() {
         when:
         query.update(sql).run()
         then:
         executionDetails != null
         executionDetails.success()
         executionDetails.queryInfo().sql() == sql
+        !executionDetails.queryInfo().params().isPresent()
+        !executionDetails.queryInfo().namedParams().isPresent()
+        executionDetails.executionTimeMs() >= 0
+        !executionDetails.sqlException().isPresent()
+    }
+    
+    def "Listener invoked with param"() {
+        when:
+        query.update(sql).params(5).run()
+        then:
+        executionDetails != null
+        executionDetails.success()
+        executionDetails.queryInfo().sql() == sql
+        executionDetails.queryInfo().params().isPresent()
+        !executionDetails.queryInfo().namedParams().isPresent()
+        executionDetails.executionTimeMs() >= 0
+        !executionDetails.sqlException().isPresent()
+    }
+
+    def "Listener invoked with named param"() {
+        when:
+        query.update(namedSql).namedParam("name", "param").run()
+        then:
+        executionDetails != null
+        executionDetails.success()
+        executionDetails.queryInfo().sql() == namedSql
+        !executionDetails.queryInfo().params().isPresent()
+        executionDetails.queryInfo().namedParams().isPresent()
         executionDetails.executionTimeMs() >= 0
         !executionDetails.sqlException().isPresent()
     }
