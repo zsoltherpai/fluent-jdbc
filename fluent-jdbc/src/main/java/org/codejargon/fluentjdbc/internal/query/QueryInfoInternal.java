@@ -10,8 +10,9 @@ import java.util.Optional;
 import org.codejargon.fluentjdbc.api.query.listen.QueryInfo;
 
 /**
- * @author tono
- *
+ * Implementation of {@link QueryInfo}
+ * 
+ * @author bwc
  */
 public class QueryInfoInternal implements QueryInfo {
     private final String sql;
@@ -29,16 +30,16 @@ public class QueryInfoInternal implements QueryInfo {
         this.namedParams = namedParams;
     }
 
-    public static Optional<QueryInfoInternal> optional(String sql, List<Object> params, Map<String, Object> namedParams) {
+    public static Optional<QueryInfo> optional(String sql, List<Object> params, Map<String, Object> namedParams) {
         return Optional.of(of(sql, params, namedParams));
     }
 
-    public static QueryInfoInternal of(String sql, List<Object> params, Map<String, Object> namedParams) {
+    public static QueryInfo of(String sql, List<Object> params, Map<String, Object> namedParams) {
         return new QueryInfoInternal(sql, params.isEmpty() ? Optional.empty() : Optional.of(params), 
                         namedParams.isEmpty() ? Optional.empty() : Optional.of(namedParams));
     }
 
-    public static QueryInfoInternal of(String sql) {
+    public static QueryInfo of(String sql) {
         return new QueryInfoInternal(sql, Optional.empty(), Optional.empty());
     }
 

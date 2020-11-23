@@ -4,14 +4,15 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import org.codejargon.fluentjdbc.api.query.listen.ExecutionDetails;
+import org.codejargon.fluentjdbc.api.query.listen.QueryInfo;
 
 class ExecutionDetailsInternal implements ExecutionDetails {
-    private final QueryInfoInternal queryInfo;
+    private final QueryInfo queryInfo;
     private final Long executionTimeMs;
     private final Optional<SQLException> sqlException;
 
     public ExecutionDetailsInternal(
-            QueryInfoInternal queryInfo,
+            QueryInfo queryInfo,
             Long executionTimeMs,
             Optional<SQLException> sqlException) {
         this.queryInfo = queryInfo;
@@ -25,7 +26,7 @@ class ExecutionDetailsInternal implements ExecutionDetails {
     }
 
     @Override
-    public QueryInfoInternal queryInfo() {
+    public QueryInfo queryInfo() {
         return queryInfo;
     }
 

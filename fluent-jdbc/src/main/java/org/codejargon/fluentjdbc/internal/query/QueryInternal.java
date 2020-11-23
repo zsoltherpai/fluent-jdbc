@@ -19,6 +19,7 @@ import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
 import org.codejargon.fluentjdbc.api.query.Transaction;
 import org.codejargon.fluentjdbc.api.query.UpdateQuery;
 import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
+import org.codejargon.fluentjdbc.api.query.listen.QueryInfo;
 import org.codejargon.fluentjdbc.internal.integration.QueryConnectionReceiverInternal;
 
 public class QueryInternal implements Query {
@@ -62,10 +63,10 @@ public class QueryInternal implements Query {
         return new DatabaseInspectionInternal(this);
     }
 
-    <T> T query(QueryRunnerConnection<T> runner, Optional<QueryInfoInternal> sql, SqlErrorHandler sqlErrorHandler) {
+    <T> T query(QueryRunnerConnection<T> runner, Optional<QueryInfo> queryInfo, SqlErrorHandler sqlErrorHandler) {
         AttemptResult<T> ret = new AttemptResult<>(null, false);
         while(!ret.success) {
-            ret = attemptQuery(runner, sql, sqlErrorHandler);
+            ret = attemptQuery(runner, queryInfo, sqlErrorHandler);
         }
         return ret.result;
     }
@@ -75,22 +76,22 @@ public class QueryInternal implements Query {
         return query(plainConnectionQuery::operation, Optional.empty(), config.defaultSqlErrorHandler.get());
     }
 
-    FluentJdbcException queryException(Optional<QueryInfoInternal> queryInfo, Optional<String> reason, Optional<SQLException> e) {
-        String sql = queryInfo.map(QueryInfoInternal::sql).orElse("");
+    FluentJdbcException queryException(Optional<QueryInfo> queryInfo, Optional<String> reason, Optional<SQLException> e) {
+        String sql = queryInfo.map(QueryInfo::sql).orElse("");
         String message = reason.isPresent()
                 ? String.format("Error running query: %s, %s", reason.get(), sql)
                 : String.format("Error running query, %s", sql);
         return e.isPresent() ? new FluentJdbcSqlException(message, e.get()) : new FluentJdbcException(message);
     }
 
-    private <T> AttemptResult<T> attemptQuery(QueryRunnerConnection<T> runner, Optional<QueryInfoInternal> sql, SqlErrorHandler sqlErrorHandler) {
+    private <T> AttemptResult<T> attemptQuery(QueryRunnerConnection<T> runner, Optional<QueryInfo> queryInfo, SqlErrorHandler sqlErrorHandler) {
         long start = System.currentTimeMillis();
         try {
             T returnValue = doQuery(runner);
-            listen(sql, start, Optional.empty());
+            listen(queryInfo, start, Optional.empty());
             return new AttemptResult<>(returnValue, true);
         } catch (SQLException e) {
-            handleError(sql, sqlErrorHandler, start, e);
+            handleError(queryInfo, sqlErrorHandler, start, e);
             return new AttemptResult<>(null, false);
         }
     }
@@ -111,7 +112,7 @@ public class QueryInternal implements Query {
         preparedStatementFactory.assignParams(statement, params);
     }
 
-    private void listen(Optional<QueryInfoInternal> queryInfo, long start, Optional<SQLException> e) {
+    private void listen(Optional<QueryInfo> queryInfo, long start, Optional<SQLException> e) {
         config.afterQueryListener.ifPresent(
                 afterQueryListener ->
                         queryInfo.ifPresent(sqlQueryInfo -> afterQueryListener.listen(
@@ -120,12 +121,12 @@ public class QueryInternal implements Query {
         );
     }
 
-    private void handleError(Optional<QueryInfoInternal> sql, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
+    private void handleError(Optional<QueryInfo> queryInfo, SqlErrorHandler sqlErrorHandler, long start, SQLException e) {
         try {
-            checkNotNull(sqlErrorHandler.handle(e, sql), "Action in SqlErrorHandler");
+            checkNotNull(sqlErrorHandler.handle(e, queryInfo), "Action in SqlErrorHandler");
         } catch(SQLException sqle) {
-            listen(sql, start, Optional.of(e));
-            throw queryException(sql, Optional.empty(), Optional.of(e));
+            listen(queryInfo, start, Optional.of(e));
+            throw queryException(queryInfo, Optional.empty(), Optional.of(e));
         }
     }
 
