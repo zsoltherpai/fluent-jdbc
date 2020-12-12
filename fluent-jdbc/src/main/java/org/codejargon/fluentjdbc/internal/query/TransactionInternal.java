@@ -1,6 +1,5 @@
 package org.codejargon.fluentjdbc.internal.query;
 
-import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.Transaction;
@@ -63,7 +62,9 @@ class TransactionInternal implements Transaction {
                                 }
                                 throw e;
                             }
-                            con.commit();
+                            if (!con.getAutoCommit()) {
+                                con.commit();
+                            }
                         } catch(SQLException e) {
                             throw new FluentJdbcSqlException("Error executing transaction", e);
                         } finally {
