@@ -124,6 +124,27 @@ class FluentJdbcTransactionTest extends UpdateTestBase {
         1 * connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE)
     }
 
+    def "Empty transaction doesn't throw exception"() {
+        given:
+        preparedStatement.executeUpdate() >> expectedUpdatedRows.intValue()
+        when:
+        query.transaction().in(
+                { ->
+                    // no queries
+                }
+        )
+        then:
+        // checking original state, then check before commit
+        connection.getAutoCommit() >> true >> true
+
+        _ * connection.getAutoCommit()
+        0 * connection.setAutoCommit(false)
+        0 * preparedStatement.close()
+        0 * connection.rollback()
+        0 * connection.commit()
+        1 * connection.setAutoCommit(true)
+    }
+
     def throwException() {
         throw new MyRuntimeException()
     }
