@@ -91,7 +91,7 @@ class SelectQueryInternal extends SingleQueryBase implements SelectQuery {
                         while (rs.next() && !result.isPresent()) {
                             T candidate = mapper.map(rs);
                             if (filter.test(candidate)) {
-                                result = Optional.of(candidate);
+                                result = Optional.ofNullable(candidate);
                             }
                         }
                         return result;
