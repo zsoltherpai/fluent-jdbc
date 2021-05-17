@@ -12,6 +12,7 @@ import org.codejargon.fluentjdbc.api.FluentJdbcException;
 import org.codejargon.fluentjdbc.api.FluentJdbcSqlException;
 import org.codejargon.fluentjdbc.api.integration.ConnectionProvider;
 import org.codejargon.fluentjdbc.api.query.BatchQuery;
+import org.codejargon.fluentjdbc.api.query.CallableQuery;
 import org.codejargon.fluentjdbc.api.query.PlainConnectionQuery;
 import org.codejargon.fluentjdbc.api.query.Query;
 import org.codejargon.fluentjdbc.api.query.SelectQuery;
@@ -52,6 +53,11 @@ public class QueryInternal implements Query {
         return new BatchQueryInternal(sql, this);
     }
 
+    @Override
+    public CallableQuery call(String sql) {
+        return new CallableQueryInternal(sql, this);
+    }
+    
     @Override
     public Transaction transaction() {
         return new TransactionInternal(this);

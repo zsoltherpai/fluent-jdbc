@@ -1,5 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -14,9 +15,11 @@ class PreparedStatementFactory {
         this.config = config;
     }
 
-    PreparedStatement createSingle(Connection con, SingleQueryBase singleQueryBase, boolean fetchGenerated, String[] genColumns) throws SQLException {
+    PreparedStatement createSingle(Connection con, SingleQueryBase singleQueryBase, boolean fetchGenerated,
+            String[] genColumns) throws SQLException {
         SqlAndParams sqlAndParams = singleQueryBase.sqlAndParams(config);
-        PreparedStatement statement = prepareStatement(con, sqlAndParams.sql(), fetchGenerated, genColumns);
+        PreparedStatement statement = sqlAndParams.hasOutParameters() ? prepareCall(con, sqlAndParams.sql())
+                : prepareStatement(con, sqlAndParams.sql(), fetchGenerated, genColumns);
         singleQueryBase.customizeQuery(statement, config);
         assignParams(statement, sqlAndParams.params());
         return statement;
@@ -39,7 +42,9 @@ class PreparedStatementFactory {
                 con.prepareStatement(sql);
     }
 
-
+    private CallableStatement prepareCall(Connection con, String sql) throws SQLException {
+        return con.prepareCall(sql);
+    }
 
 
 }
