@@ -1,13 +1,17 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import org.codejargon.fluentjdbc.api.query.SqlErrorHandler;
 import org.codejargon.fluentjdbc.internal.query.namedparameter.SqlAndParamsForNamed;
 import org.codejargon.fluentjdbc.internal.support.Preconditions;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.function.Supplier;
 
 abstract class SingleQueryBase {
     protected final String sql;
@@ -68,7 +72,7 @@ abstract class SingleQueryBase {
                     try (PreparedStatement ps = query.preparedStatementFactory.createSingle(connection, this, fetchGenerated, genColumns)) {
                         return queryRunnerPreparedStatement.run(ps);
                     }
-                }, Optional.of(sql),
+                }, QueryInfoInternal.optional(sql, params, namedParams),
                 sqlErrorHandler);
     }
 

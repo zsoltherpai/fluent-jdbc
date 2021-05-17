@@ -1,11 +1,11 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import java.util.Optional;
+
 import org.codejargon.fluentjdbc.api.query.inspection.DatabaseInspection;
 import org.codejargon.fluentjdbc.api.query.inspection.MetaDataAccess;
 import org.codejargon.fluentjdbc.api.query.inspection.MetaDataResultSet;
 import org.codejargon.fluentjdbc.api.query.inspection.MetaDataSelect;
-
-import java.util.Optional;
 
 class DatabaseInspectionInternal implements DatabaseInspection {
     private final QueryInternal query;
@@ -18,7 +18,7 @@ class DatabaseInspectionInternal implements DatabaseInspection {
     public <T> T accessMetaData(MetaDataAccess<T> access) {
         return query.query(
                 connection -> access.access(connection.getMetaData()),
-                Optional.of("JDBC Database Inspection"),
+                Optional.of(QueryInfoInternal.of("JDBC Database Inspection")),
                 query.config.defaultSqlErrorHandler.get()
         );
     }

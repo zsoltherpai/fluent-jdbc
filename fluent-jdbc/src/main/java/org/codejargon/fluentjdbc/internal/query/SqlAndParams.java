@@ -1,5 +1,6 @@
 package org.codejargon.fluentjdbc.internal.query;
 
+import java.sql.SQLType;
 import java.util.List;
 
 public class SqlAndParams {
@@ -17,5 +18,14 @@ public class SqlAndParams {
 
     List<Object> params() {
         return params;
+    }
+    
+    /**
+     * check whether parameters assume callable statement or prepared statement
+     * 
+     * @return true if at least one of parameters is out parameter
+     */
+    public boolean hasOutParameters() {
+        return params.parallelStream().anyMatch(param -> param instanceof SQLType);
     }
 }
